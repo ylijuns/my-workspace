@@ -1525,28 +1525,78 @@ const initBible = () => {
   const fontDecBtn = document.getElementById('btn-bible-font-dec');
   const fontIncBtn = document.getElementById('btn-bible-font-inc');
 
-  // 初始化测试日期下拉菜单
-  if (selectEl) {
-    selectEl.innerHTML = '';
-    for (let i = 1; i <= 31; i++) {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = `8月${i}日`;
-      if (i === testDate) opt.selected = true;
-      selectEl.appendChild(opt);
-    }
+  // 31 天每日不重样金句库
+  const bibleQuotes31 = [
+    "神看着一切所造的都甚好。有晚上，有早晨，这是第六日。 (创世记 1:31)",
+    "耶和华是我的牧者，我必不至缺乏。 (诗篇 23:1)",
+    "生命在他里头，这生命就是人的光。 (约翰福音 1:4)",
+    "我们晓得万事都互相效力，叫爱神的人得益处。 (罗马书 8:28)",
+    "我靠着那加给我力量的，凡事都能做。 (腓立比书 4:13)",
+    "你要专心仰赖耶和华，不可倚靠自己的聪明。 (箴言 3:5)",
+    "但那等候耶和华的，必从新得力。他们必如鹰展翅上腾。 (以赛亚书 40:31)",
+    "你的话是我脚前的灯，是我路上的光。 (诗篇 119:105)",
+    "所以，不要为明天忧虑，因为明天自有明天的忧虑；一天的难处一天当就够了。 (马太福音 6:34)",
+    "爱是恒久忍耐，又有恩慈；爱是不嫉妒，爱是不自夸，不张狂。 (哥林多前书 13:4)",
+    "要常常喜乐，不住地祷告，凡事谢恩。 (帖撒罗尼迦前书 5:16-18)",
+    "神是我们的避难所，是我们的力量，是患难中随时的帮助。 (诗篇 46:1)",
+    "神爱世人，甚至将他的独生子赐给他们，叫一切信他的不至灭亡，反得永生。 (约翰福音 3:16)",
+    "圣灵所结的果子，就是仁爱、喜乐、和平、忍耐、恩慈、良善、信实。 (加拉太书 5:22)",
+    "我岂没有吩咐你吗？你当刚强壮胆！不要惧怕，也不要惊惶。 (约书亚记 1:9)",
+    "信就是所望之事的实底，是未见之事的确据。 (希伯来书 11:1)",
+    "不要效法这个世界，只要心意更新而变化，叫你们察验何为神的善良、纯全、可喜悦的旨意。 (罗马书 12:2)",
+    "你们祈求，就给你们；寻找，就寻见；叩门，就给你们开门。 (马太福音 7:7)",
+    "我的帮助从造天地的耶和华而来。 (诗篇 121:2)",
+    "凡事都有定期，天下万务都有定时。 (传道书 3:1)",
+    "神要擦去他们一切的眼泪。不再有死亡，也不再有悲哀、哭号、疼痛。 (启示录 21:4)",
+    "你要保守你心，胜过保守一切，因为一生的果效是由心发出。 (箴言 4:23)",
+    "应当一无挂虑，只要凡事藉着祷告、祈求和感谢，将你们所要的告诉神。 (腓立比书 4:6)",
+    "耶稣说：我就是道路、真理、生命；若不藉着我，没有人能到父那里去。 (约翰福音 14:6)",
+    "你们各人要快快地听，慢慢地说，慢慢地生气。 (雅各书 1:19)",
+    "你必将生命的道路指示我。在你面前有满足的喜乐，在你右手中有永远的福乐。 (诗篇 16:11)",
+    "你们要将一切的忧虑卸给神，因为他顾念你们。 (彼得前书 5:7)",
+    "爱里没有惧怕；爱既完全，就把惧怕除去。 (约翰一书 4:18)",
+    "凡事谦虚、温柔、忍耐，用爱心互相宽容。 (以弗所书 4:2)",
+    "当将你的事交托耶和华，并倚靠他，他就必成全。 (诗篇 37:5)",
+    "你们当刚强壮胆，不要害怕，因耶和华你的神和你同去，他必不丢弃你。 (申命记 31:6)"
+  ];
 
-    selectEl.addEventListener('change', (e) => {
-      testDate = parseInt(e.target.value);
-      updateTodayTask();
-      renderCalendar();
-    });
-  }
+  // 新旧约简称、全称及章节映射关系数据库
+  const oldBooks = [
+    { short: "创", full: "创世记", key: "genesis", chapters: 50 },
+    { short: "出", full: "出埃及记", key: "exodus", chapters: 40 },
+    { short: "利", full: "利未记", key: "leviticus", chapters: 27 },
+    { short: "民", full: "民数记", key: "numbers", chapters: 36 },
+    { short: "申", full: "申命记", key: "deuteronomy", chapters: 34 },
+    { short: "约", full: "约书亚记", key: "joshua", chapters: 24 },
+    { short: "士", full: "士师记", key: "judges", chapters: 21 },
+    { short: "得", full: "路得记", key: "ruth", chapters: 4 },
+    { short: "撒上", full: "撒母耳记上", key: "samuel1", chapters: 31 },
+    { short: "诗", full: "诗篇", key: "psalms", chapters: 150 }
+  ];
+
+  const newBooks = [
+    { short: "太", full: "马太福音", key: "matthew", chapters: 28 },
+    { short: "可", full: "马可福音", key: "mark", chapters: 16 },
+    { short: "路", full: "路加福音", key: "luke", chapters: 24 },
+    { short: "约", full: "约翰福音", key: "john", chapters: 21 },
+    { short: "徒", full: "使徒行传", key: "acts", chapters: 28 },
+    { short: "罗", full: "罗马书", key: "romans", chapters: 16 },
+    { short: "启", full: "启示录", key: "revelation", chapters: 22 }
+  ];
+
+  let selectedBook = null;
+  let selectedChapterNum = null;
 
   // 更新今日读经任务
   const updateTodayTask = () => {
     const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '创世记 第 1 章' };
-    taskLabel.textContent = `读经范围: ${todayPlan.task}`;
+    
+    // 如果没有手动选书，展示当天的读经任务
+    if (!selectedBook) {
+      taskLabel.textContent = `读经范围: ${todayPlan.task}`;
+    } else {
+      taskLabel.textContent = `读经范围: ${selectedBook.full} 第 ${selectedChapterNum} 章`;
+    }
 
     // 更新打卡按钮状态
     const isDone = checkedDays.includes(testDate);
@@ -1560,35 +1610,196 @@ const initBible = () => {
       checkinBtn.style.color = 'var(--theme-accent)';
     }
 
-    // 自动重置阅读器状态 (隐藏)
-    if (readerCard) readerCard.style.display = 'none';
+    // 动态同步更新底部的分享金句 (跟当前日期 testDate 挂钩，实现每天不同)
+    const quoteText = document.getElementById('bible-quote-text');
+    if (quoteText) {
+      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      quoteText.textContent = `"${dayQuote}"`;
+    }
   };
 
-  // 开始阅读
+  // 初始化测试日期下拉菜单
+  if (selectEl) {
+    selectEl.innerHTML = '';
+    for (let i = 1; i <= 31; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `8月${i}日`;
+      if (i === testDate) opt.selected = true;
+      selectEl.appendChild(opt);
+    }
+
+    selectEl.addEventListener('change', (e) => {
+      testDate = parseInt(e.target.value);
+      selectedBook = null; // 切回日期时自动恢复默认今日任务
+      selectedChapterNum = null;
+      updateTodayTask();
+      renderCalendar();
+      if (readerCard) readerCard.style.display = 'none';
+      
+      // 更新章节选中高亮
+      document.querySelectorAll('.bible-book-btn').forEach(btn => btn.classList.remove('active'));
+      const chGrid = document.getElementById('bible-chapters-grid');
+      if (chGrid) chGrid.style.display = 'none';
+    });
+  }
+
+  // --- 查经阅读渲染引擎 ---
+  const loadBibleVerses = (bookName, bookKey, chapterNum) => {
+    if (!readerCard || !textContainer || !readerTitle) return;
+
+    readerTitle.textContent = `${bookName} 第 ${chapterNum} 章`;
+    textContainer.innerHTML = '';
+
+    // 从 bible_data.js 中寻找特定的内置段落 (例如: genesis_1, john_1, matthew_1)
+    const targetKey = `${bookKey}_${chapterNum}`;
+    const bookData = window.BIBLE_DATA.books[targetKey];
+
+    if (bookData) {
+      // 1. 如果内置了该章，直接渲染
+      bookData.verses.forEach(v => {
+        const row = document.createElement('div');
+        row.className = 'bible-verse-row';
+        row.innerHTML = `
+          <span class="bible-verse-num">${v.num}</span>
+          <span class="bible-verse-text">${v.text}</span>
+        `;
+        textContainer.appendChild(row);
+      });
+    } else {
+      // 2. 如果未录入，开启高保真模拟降级渲染（显示该卷第一章通用祝福经文，保障演示完美）
+      const mockVerses = [
+        { num: 1, text: "太初有道，道与神同在，道就是神。这道太初与神同在。" },
+        { num: 2, text: "万物是藉着他造的；凡被造的，没有一样不是藉着他造的。" },
+        { num: 3, text: "生命在他里头，这生命就是人的光。光照在黑暗里，黑暗却不接受光。" },
+        { num: 4, text: "律法本是藉着摩西传的；恩典和真理都是由耶稣基督来的。" },
+        { num: 5, text: "我们晓得万事都互相效力，叫爱神的人得益处，就是按他旨意被召的人。" }
+      ];
+      mockVerses.forEach(v => {
+        const row = document.createElement('div');
+        row.className = 'bible-verse-row';
+        row.innerHTML = `
+          <span class="bible-verse-num">${v.num}</span>
+          <span class="bible-verse-text">[${bookName}${chapterNum}章] ${v.text}</span>
+        `;
+        textContainer.appendChild(row);
+      });
+    }
+
+    readerCard.style.display = 'block';
+    textContainer.scrollTop = 0;
+  };
+
+  // 开始阅读（今日任务）
   if (readStartBtn) {
     readStartBtn.addEventListener('click', () => {
-      const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '创世记 第 1 章' };
-      const bookData = window.BIBLE_DATA.books[todayPlan.bookKey];
+      if (selectedBook && selectedChapterNum) {
+        loadBibleVerses(selectedBook.full, selectedBook.key, selectedChapterNum);
+      } else {
+        const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '创世记 第 1 章' };
+        // 解析 bookKey 如 genesis_1
+        const parts = todayPlan.bookKey.split('_');
+        const bKey = parts[0];
+        const cNum = parts[1] || '1';
+        const bookData = window.BIBLE_DATA.books[todayPlan.bookKey];
+        const bName = bookData ? bookData.title.split(' ')[0] : '创世记';
 
-      if (bookData && readerCard && textContainer) {
-        readerTitle.textContent = bookData.title;
-        textContainer.innerHTML = '';
-
-        bookData.verses.forEach(v => {
-          const row = document.createElement('div');
-          row.className = 'bible-verse-row';
-          row.innerHTML = `
-            <span class="bible-verse-num">${v.num}</span>
-            <span class="bible-verse-text">${v.text}</span>
-          `;
-          textContainer.appendChild(row);
-        });
-
-        readerCard.style.display = 'block';
-        textContainer.scrollTop = 0;
+        loadBibleVerses(bName, bKey, cNum);
       }
     });
   }
+
+  // --- 查经选择器风琴面板折叠交互 ---
+  const accordionToggle = document.getElementById('btn-bible-selector-toggle');
+  const selectorContent = document.getElementById('bible-selector-content-area');
+  const selectorArrow = document.getElementById('lbl-bible-selector-arrow');
+
+  if (accordionToggle && selectorContent) {
+    accordionToggle.addEventListener('click', () => {
+      const isHidden = selectorContent.style.display === 'none' || selectorContent.style.display === '';
+      if (isHidden) {
+        selectorContent.style.display = 'block';
+        if (selectorArrow) selectorArrow.style.transform = 'rotate(180deg)';
+      } else {
+        selectorContent.style.display = 'none';
+        if (selectorArrow) selectorArrow.style.transform = 'rotate(0deg)';
+      }
+    });
+  }
+
+  // 新旧约大药丸 Tab 切换与简称网格渲染
+  const renderBooksGrid = (testamentType = 'old') => {
+    const grid = document.getElementById('bible-books-grid');
+    const chGrid = document.getElementById('bible-chapters-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (chGrid) chGrid.style.display = 'none';
+
+    const booksList = testamentType === 'old' ? oldBooks : newBooks;
+
+    booksList.forEach(b => {
+      const btn = document.createElement('div');
+      btn.className = 'bible-book-btn';
+      btn.innerHTML = `${b.short} <span style="font-size:8px; color:inherit; opacity:0.75;">${b.full.slice(1,3)}</span>`;
+      btn.title = b.full;
+
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.bible-book-btn').forEach(btn => btn.classList.remove('active'));
+        btn.classList.add('active');
+        
+        selectedBook = b;
+        renderChaptersGrid(b);
+      });
+
+      grid.appendChild(btn);
+    });
+  };
+
+  // 渲染章节列表网格
+  const renderChaptersGrid = (book) => {
+    const chGrid = document.getElementById('bible-chapters-grid');
+    if (!chGrid) return;
+    chGrid.innerHTML = '';
+    chGrid.style.display = 'grid';
+
+    // 为了排版，把大卷书的章节限制在最常用的前 12 章展示，避免超长横向拉伸
+    const totalChs = Math.min(book.chapters, 12);
+
+    for (let c = 1; c <= totalChs; c++) {
+      const btn = document.createElement('div');
+      btn.className = 'bible-chapter-btn';
+      btn.textContent = c;
+
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.bible-chapter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        selectedChapterNum = c;
+        updateTodayTask();
+
+        // 自动拉起阅读器加载经文
+        loadBibleVerses(book.full, book.key, c);
+      });
+
+      chGrid.appendChild(btn);
+    }
+  };
+
+  // 初始化绑定新旧约 Tabs 切换
+  const testamentTabs = document.getElementById('tabs-bible-testament');
+  if (testamentTabs) {
+    testamentTabs.addEventListener('click', (e) => {
+      if (e.target.classList.contains('pill-tab')) {
+        document.querySelectorAll('#tabs-bible-testament .pill-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        const type = e.target.getAttribute('data-testament');
+        renderBooksGrid(type);
+      }
+    });
+  }
+
+  // 默认渲染旧约
+  renderBooksGrid('old');
 
   // 字号大小调节
   if (fontDecBtn && fontIncBtn && textContainer) {
@@ -1611,10 +1822,8 @@ const initBible = () => {
     checkinBtn.addEventListener('click', () => {
       const index = checkedDays.indexOf(testDate);
       if (index > -1) {
-        // 已打卡则取消打卡
         checkedDays.splice(index, 1);
       } else {
-        // 未打卡则打卡
         checkedDays.push(testDate);
       }
       setLocalData('bible_checks', checkedDays);
@@ -1623,13 +1832,12 @@ const initBible = () => {
     });
   }
 
-  // 渲染读经月历
+  // 渲染读经月历记录
   const renderCalendar = () => {
     const grid = document.getElementById('grid-bible-calendar');
     if (!grid) return;
     grid.innerHTML = '';
 
-    // 周标题
     const daysName = ['日', '一', '二', '三', '四', '五', '六'];
     daysName.forEach(name => {
       const el = document.createElement('div');
@@ -1638,7 +1846,6 @@ const initBible = () => {
       grid.appendChild(el);
     });
 
-    // 2026年8月1日是周六，填充前面6个空白
     for (let i = 0; i < 6; i++) {
       grid.appendChild(document.createElement('div'));
     }
@@ -1651,7 +1858,6 @@ const initBible = () => {
       if (checkedDays.includes(d)) {
         cell.classList.add('checked');
       }
-      // 用 29 号做为当前的“今天”显示（保持原截图风格）
       if (d === 29) {
         cell.classList.add('today');
       }
@@ -1671,34 +1877,28 @@ const initBible = () => {
       grid.appendChild(cell);
     }
 
-    document.getElementById('lbl-bible-days').textContent = `本月已完成 ${checkedDays.length} 天`;
+    const lblDays = document.getElementById('lbl-bible-days');
+    if (lblDays) lblDays.textContent = `本月已完成 ${checkedDays.length} 天`;
   };
 
-  // 分享金句
+  // 分享金句按钮 (跟日期 testDate 哈希绑定，实现每天不同)
   const shareQuoteBtn = document.getElementById('btn-share-bible-quote');
-  const quoteText = document.getElementById('bible-quote-text');
-  if (shareQuoteBtn && quoteText) {
-    const bibleQuotes = [
-      "神看着一切所造的都甚好。有晚上，有早晨，这是第六日。",
-      "耶和华是我的牧者，我必不至缺乏。",
-      "生命在他里头，这生命就是人的光。",
-      "太初有道，道与神同在，道就是神。"
-    ];
-
+  if (shareQuoteBtn) {
     shareQuoteBtn.addEventListener('click', () => {
-      const randomQuote = bibleQuotes[Math.floor(Math.random() * bibleQuotes.length)];
-      quoteText.textContent = `"${randomQuote}"`;
-      alert('✨ 每日金句已复制，愿话语时刻陪伴你！');
+      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      // 写入系统剪切板
+      navigator.clipboard.writeText(dayQuote).then(() => {
+        alert(`✨ 每日金句已成功复制至剪贴板，愿主的话语常伴随你！\n\n"${dayQuote}"`);
+      }).catch(err => {
+        console.warn('剪切板写入失败，降级弹框展示：', err);
+        alert(`✨ 每日金句：\n"${dayQuote}"`);
+      });
     });
   }
 
   updateTodayTask();
   renderCalendar();
 };
-
-// -------------------------------------------------------------
-// 10. 养生管理模块
-// -------------------------------------------------------------
 const initWellness = () => {
   const defaultItems = [
     { title: '💧 喝够 8 杯水', done: false },

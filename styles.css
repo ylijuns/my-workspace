@@ -1008,3 +1008,96 @@ body {
   color: #27ae60;
   animation: softPulseGreen 2s infinite ease-in-out;
 }
+
+/* -------------------------------------------------------------
+ * 查经新旧约与章节选择器样式
+ * ------------------------------------------------------------- */
+.bible-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.bible-selector-content {
+  display: none;
+  margin-top: 12px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+}
+
+.bible-books-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.bible-book-btn {
+  background: var(--bg-app);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 6px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bible-book-btn:hover {
+  background: var(--theme-light-bg);
+  color: var(--theme-accent);
+  border-color: var(--theme-accent);
+}
+
+.bible-book-btn.active {
+  background: var(--theme-accent);
+  color: #FFFFFF;
+  border-color: var(--theme-accent);
+}
+
+.bible-chapters-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+  background: var(--bg-app);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-light);
+}
+
+.bible-chapter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  background: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bible-chapter-btn:hover {
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+  background: var(--theme-light-bg);
+}
+
+.bible-chapter-btn.active {
+  background: var(--theme-accent);
+  color: #FFFFFF;
+  border-color: var(--theme-accent);
+}
+

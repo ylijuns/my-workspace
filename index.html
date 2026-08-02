@@ -552,6 +552,32 @@
         </div>
       </div>
 
+      <!-- 📖 查经选择器风琴卡片 -->
+      <div class="card" id="card-bible-selector">
+        <div class="bible-selector-header" id="btn-bible-selector-toggle">
+          <span style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px;">📖 自助查经选择器</span>
+          <span id="lbl-bible-selector-arrow" style="font-size:12px; transition: transform 0.2s ease; transform: rotate(0deg); color: var(--text-secondary);">▼</span>
+        </div>
+        
+        <div class="bible-selector-content" id="bible-selector-content-area">
+          <!-- 新旧约分类大药丸 Tab -->
+          <div class="pill-tabs" id="tabs-bible-testament" style="margin-bottom:12px; border:none; padding:0;">
+            <div class="pill-tab active" data-testament="old" style="padding: 6px 12px; font-size: 11px;">旧约 📜</div>
+            <div class="pill-tab" data-testament="new" style="padding: 6px 12px; font-size: 11px;">新约 📖</div>
+          </div>
+          
+          <!-- 书卷胶囊网格 -->
+          <div class="bible-books-grid" id="bible-books-grid">
+            <!-- 动态书卷 -->
+          </div>
+          
+          <!-- 章节圆圈按钮网格 -->
+          <div class="bible-chapters-grid" id="bible-chapters-grid" style="display:none;">
+            <!-- 动态章节 -->
+          </div>
+        </div>
+      </div>
+
       <!-- 经文阅读器 -->
       <div class="card" id="card-bible-reader" style="display:none; transition: var(--transition);">
         <div class="card-title" style="justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px;">
