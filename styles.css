@@ -82,6 +82,16 @@ body[data-theme="treehole"] {
   --theme-light-bg: #EDF2F7;
   --theme-hover: #2C3E50;
 }
+body[data-theme="bible"] {
+  --theme-accent: #16A085;
+  --theme-light-bg: #E8F8F5;
+  --theme-hover: #117A65;
+}
+body[data-theme="hymns"] {
+  --theme-accent: #D4AC0D;
+  --theme-light-bg: #FEF9E7;
+  --theme-hover: #B7950B;
+}
 
 /* 全局重置 */
 * {
@@ -159,7 +169,7 @@ body {
 }
 
 .menu-item.active svg {
-  stroke: #FFFFFF;
+  stroke: var(--theme-accent) !important;
 }
 
 /* 内容区布局 */
