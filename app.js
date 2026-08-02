@@ -462,6 +462,7 @@ const initWorkout = () => {
 
   const renderCalendar = () => {
     const grid = document.getElementById('grid-workout-calendar');
+    if (!grid) return;
     grid.innerHTML = '';
     
     // 渲染周标题
@@ -504,7 +505,8 @@ const initWorkout = () => {
       grid.appendChild(cell);
     }
 
-    document.getElementById('lbl-workout-days').textContent = `已打卡 ${checkedDays.length} 天`;
+    const lblDays = document.getElementById('lbl-workout-days');
+    if (lblDays) lblDays.textContent = `已打卡 ${checkedDays.length} 天`;
   };
 
   // 运动计时器
@@ -516,6 +518,7 @@ const initWorkout = () => {
   const startBtn = document.getElementById('btn-timer-start');
 
   const updateTimerCircle = () => {
+    if (!timerCircle || !timerVal) return;
     const total = 30 * 60;
     const progress = timeRemaining / total;
     const circumference = 251.2;
@@ -526,44 +529,151 @@ const initWorkout = () => {
     timerVal.textContent = `${mins}:${secs}`;
   };
 
-  startBtn.addEventListener('click', () => {
-    if (timerInterval) {
-      // 暂停
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      if (timerInterval) {
+        // 暂停
+        clearInterval(timerInterval);
+        timerInterval = null;
+        startBtn.textContent = '开始锻炼';
+        if (timerStatus) timerStatus.textContent = '已暂停';
+      } else {
+        // 开始
+        if (timerStatus) timerStatus.textContent = '坚持就是胜利';
+        startBtn.textContent = '暂停锻炼';
+        timerInterval = setInterval(() => {
+          if (timeRemaining > 0) {
+            timeRemaining--;
+            updateTimerCircle();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            startBtn.textContent = '完成！';
+            alert('恭喜你完成了 30 分钟的锻炼！已自动在日历打卡。');
+            if (!checkedDays.includes(29)) {
+              checkedDays.push(29);
+              setLocalData('workout_checks', checkedDays);
+              renderCalendar();
+            }
+          }
+        }, 1000);
+      }
+    });
+  }
+
+  const resetBtn = document.getElementById('btn-timer-reset');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
       clearInterval(timerInterval);
       timerInterval = null;
-      startBtn.textContent = '开始锻炼';
-      timerStatus.textContent = '已暂停';
-    } else {
-      // 开始
-      timerStatus.textContent = '坚持就是胜利';
-      startBtn.textContent = '暂停锻炼';
-      timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-          updateTimerCircle();
-        } else {
-          clearInterval(timerInterval);
-          timerInterval = null;
-          startBtn.textContent = '完成！';
-          alert('恭喜你完成了 30 分钟的锻炼！已自动在日历打卡。');
-          if (!checkedDays.includes(29)) {
-            checkedDays.push(29);
-            setLocalData('workout_checks', checkedDays);
-            renderCalendar();
-          }
-        }
-      }, 1000);
-    }
-  });
+      timeRemaining = 30 * 60;
+      if (startBtn) startBtn.textContent = '开始锻炼';
+      if (timerStatus) timerStatus.textContent = '倒计时';
+      updateTimerCircle();
+    });
+  }
 
-  document.getElementById('btn-timer-reset').addEventListener('click', () => {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    timeRemaining = 30 * 60;
-    startBtn.textContent = '开始锻炼';
-    timerStatus.textContent = '倒计时';
-    updateTimerCircle();
-  });
+  // --- 计步器逻辑 ---
+  let stepCount = getLocalData('workout_step_count', 0);
+  let isPedometerActive = false;
+  let lastStepTime = 0;
+  const stepThreshold = 11.6; // 合加速度判定阈值 (9.8 是重力静态值，轻晃超过11.6判定走了一步)
+
+  const stepCountVal = document.getElementById('lbl-step-count');
+  const pedometerStatus = document.getElementById('lbl-pedometer-status');
+  const pedometerToggleBtn = document.getElementById('btn-pedometer-toggle');
+  const simulateBtn = document.getElementById('btn-pedometer-simulate');
+
+  if (stepCountVal) {
+    stepCountVal.textContent = stepCount.toLocaleString();
+    stepCountVal.style.transition = 'transform 0.15s ease';
+  }
+
+  const updateSteps = (newSteps) => {
+    stepCount = newSteps;
+    setLocalData('workout_step_count', stepCount);
+    if (stepCountVal) {
+      stepCountVal.textContent = stepCount.toLocaleString();
+    }
+  };
+
+  const handleDeviceMotion = (event) => {
+    if (!isPedometerActive) return;
+    const acc = event.accelerationIncludingGravity;
+    if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
+
+    // 计算合加速度
+    const totalAcc = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+    const currentTime = Date.now();
+
+    if (totalAcc > stepThreshold && (currentTime - lastStepTime) > 350) {
+      lastStepTime = currentTime;
+      updateSteps(stepCount + 1);
+      
+      // 绿点微动效闪烁
+      if (pedometerStatus) {
+        pedometerStatus.style.transform = 'scale(1.2)';
+        setTimeout(() => pedometerStatus.style.transform = 'scale(1.0)', 120);
+      }
+    }
+  };
+
+  const startTracking = () => {
+    isPedometerActive = true;
+    window.addEventListener('devicemotion', handleDeviceMotion);
+    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '⏸ 暂停计步';
+    if (pedometerStatus) {
+      pedometerStatus.textContent = '计步中...';
+      pedometerStatus.style.background = '#E3F9E5';
+      pedometerStatus.style.color = '#1F8722';
+    }
+  };
+
+  const stopTracking = () => {
+    isPedometerActive = false;
+    window.removeEventListener('devicemotion', handleDeviceMotion);
+    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '🚶 开启计步';
+    if (pedometerStatus) {
+      pedometerStatus.textContent = '已暂停';
+      pedometerStatus.style.background = '#e0e0e0';
+      pedometerStatus.style.color = '#666';
+    }
+  };
+
+  if (pedometerToggleBtn) {
+    pedometerToggleBtn.addEventListener('click', async () => {
+      if (isPedometerActive) {
+        stopTracking();
+      } else {
+        // 处理 iOS 浏览器陀螺仪运动授权
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+          try {
+            const permission = await DeviceMotionEvent.requestPermission();
+            if (permission === 'granted') {
+              startTracking();
+            } else {
+              alert('未获得运动传感器授权，可以使用右侧模拟按钮。');
+            }
+          } catch (e) {
+            console.warn('陀螺仪请求权限被拒：', e);
+            startTracking();
+          }
+        } else {
+          startTracking();
+        }
+      }
+    });
+  }
+
+  if (simulateBtn) {
+    simulateBtn.addEventListener('click', () => {
+      updateSteps(stepCount + 100);
+      if (stepCountVal) {
+        stepCountVal.style.transform = 'scale(1.15)';
+        setTimeout(() => stepCountVal.style.transform = 'scale(1.0)', 120);
+      }
+    });
+  }
 
   // 视频列表与过滤
   const videos = [
@@ -604,9 +714,6 @@ const initWorkout = () => {
   renderVideos('aerobic');
 };
 
-// -------------------------------------------------------------
-// 6. 热点新闻与赚钱信息差与博客精选模块
-// -------------------------------------------------------------
 const initNewsArbitrageBlog = () => {
   // 离线备用高保真新闻数据
   const newsList = [

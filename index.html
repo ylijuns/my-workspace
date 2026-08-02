@@ -313,6 +313,22 @@
         </div>
       </div>
 
+      <!-- 动态计步器卡片 -->
+      <div class="card" id="card-pedometer">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>🏃 动态计步器</span>
+          <span style="font-size:11px; font-weight:normal; background:var(--theme-light-bg); color:var(--theme-accent); padding:3px 8px; border-radius:10px;" id="lbl-pedometer-status">未启用</span>
+        </div>
+        <div style="text-align: center; padding: 10px 0;">
+          <div style="font-size: 32px; font-weight: 800; color: var(--theme-accent);" id="lbl-step-count">0</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">今日目标: 10,000 步 (消耗约 350 千卡)</div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:8px;">
+          <button class="btn-pill btn-accent" id="btn-pedometer-toggle" style="padding:8px 16px; border-radius:15px; font-size:12px;">🚶 开启计步</button>
+          <button class="btn-pill" id="btn-pedometer-simulate" style="padding:8px 16px; border-radius:15px; background:var(--theme-light-bg); color:var(--theme-accent); border:none; font-size:12px;">模拟步数 (+100)</button>
+        </div>
+      </div>
+
       <div class="pill-tabs">
         <div class="pill-tab active" data-category="aerobic">有氧</div>
         <div class="pill-tab" data-category="strength">力量</div>
