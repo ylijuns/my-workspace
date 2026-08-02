@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>个人工作台 | 灵感、健康与成长管理</title>
+  <meta name="description" content="一个集成了灵感管理、英语口语、减脂饮食、运动计划、新闻阅读、修心修行等功能的个人成长与工作空间。">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="inspiration">
+
+  <!-- 移动端遮罩层 -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- 左侧固定侧边栏 -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-menu">
+      <div class="menu-item active" data-target="inspiration" id="nav-inspiration">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+        </svg>
+        <span>每日灵感</span>
+      </div>
+      <div class="menu-item" data-target="english" id="nav-english">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+        </svg>
+        <span>多国口语</span>
+      </div>
+      <div class="menu-item" data-target="diet" id="nav-diet">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+        </svg>
+        <span>每日减脂</span>
+      </div>
+      <div class="menu-item" data-target="workout" id="nav-workout">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+        </svg>
+        <span>运动塑形</span>
+      </div>
+      <div class="menu-item" data-target="news" id="nav-news">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.75m-3.75 3h3.75m-3.75 3h3.75m-9.75-6h.008v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.008v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.008v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM20.25 4.5H3.75m0 0a1.5 1.5 0 00-1.5 1.5v12a1.5 1.5 0 001.5 1.5h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5z" />
+        </svg>
+        <span>热点新闻</span>
+      </div>
+      <div class="menu-item" data-target="books" id="nav-books">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        <span>书籍推荐</span>
+      </div>
+      <div class="menu-item hidden" data-target="finance" id="nav-finance">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.251.11a3.375 3.375 0 003.498 0l.25-.11m-3-1.636l.251.11a3.375 3.375 0 003.498 0l.25-.11M6.75 12h.008v.008H6.75V12zm0-.375h.008v.008H6.75V11.625zm0-.375h.008v.008H6.75v-.008zM17.25 12h.008v.008h-.008V12zm0-.375h.008v.008h-.008V11.625zm0-.375h.008v.008h-.008v-.008zM3 5.25h18M3 18.75h18" />
+        </svg>
+        <span>理财存钱</span>
+      </div>
+      <div class="menu-item hidden" data-target="arbitrage" id="nav-arbitrage">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+        </svg>
+        <span>赚钱信息</span>
+      </div>
+      <div class="menu-item" data-target="bible" id="nav-bible">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        <span>读经功课</span>
+      </div>
+      <div class="menu-item" data-target="hymns" id="nav-hymns">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 0L21 8.25M19.5 6V18M19.5 18a2.25 2.25 0 104.5 0 2.25 2.25 0 00-4.5 0zM19.5 18H9.75M9.75 18a2.25 2.25 0 104.5 0 2.25 2.25 0 00-4.5 0zM9.75 18V9.75m0 0a2.25 2.25 0 10-4.5 0 2.25 2.25 0 004.5 0z" />
+        </svg>
+        <span>圣徒诗歌</span>
+      </div>
+      <div class="menu-item" data-target="blog" id="nav-blog">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        <span>博客精选</span>
+      </div>
+      <div class="menu-item" data-target="wellness" id="nav-wellness">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        </svg>
+        <span>养生管理</span>
+      </div>
+      <div class="menu-item" data-target="treehole" id="nav-treehole">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.083.293.125.599.125.912 0 1.954-1.604 3.538-3.583 3.538-1.978 0-3.582-1.584-3.582-3.538 0-.313.042-.619.125-.912M12 12.75c-1.978 0-3.582-1.584-3.582-3.538 0-.313.042-.619.125-.912M12 12.75c1.978 0 3.582-1.584 3.582-3.538 0-.313-.042-.619-.125-.912M12 12.75V21m-4.5-4.5h9M6.375 6.75h11.25" />
+        </svg>
+        <span>我的树洞</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- 右侧内容区域 -->
+  <main class="content-area">
+
+    <!-- 移动端顶部导航栏 -->
+    <header class="mobile-header" id="mobile-header">
+      <button id="btn-mobile-menu" title="打开菜单">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+      <span id="lbl-mobile-title">每日灵感</span>
+      <div style="width: 24px;"></div>
+    </header>
+
+    <!-- 1. 每日灵感 -->
+    <section class="page active" id="page-inspiration">
+      <div class="module-header">
+        <h1>每日灵感</h1>
+        <p>记录你的闪光时刻</p>
+      </div>
+      
+      <div class="input-group">
+        <input type="text" placeholder="今天想到了什么好点子？" id="inp-inspiration">
+        <button id="btn-inspiration-voice" title="语音录入">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+          </svg>
+        </button>
+        <button class="btn-pill btn-accent" id="btn-inspiration-submit">发布</button>
+      </div>
+
+      <div class="pill-tabs" id="tabs-inspiration">
+        <div class="pill-tab active" data-filter="all">全部</div>
+        <div class="pill-tab" data-filter="创意">创意</div>
+        <div class="pill-tab" data-filter="生活">生活</div>
+        <div class="pill-tab" data-filter="工作">工作</div>
+        <div class="pill-tab" data-filter="学习">学习</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>灵感列表</span>
+          <span style="font-size:12px; font-weight:normal; color:var(--text-secondary);" id="cnt-inspiration">0 条</span>
+        </div>
+        <div id="list-inspiration">
+          <!-- 灵感项目动态生成 -->
+        </div>
+      </div>
+      
+      <button class="fab-btn" id="fab-inspiration">
+        <span>+ 新增</span>
+      </button>
+    </section>
+
+    <!-- 2. 多国口语 -->
+    <section class="page" id="page-english">
+      <div class="module-header">
+        <h1 id="lbl-speech-title">多国口语练习</h1>
+        <p>每天进步一点点</p>
+      </div>
+
+      <!-- 多国语言切换 Tab 栏 -->
+      <div class="pill-tabs" id="english-lang-tabs" style="margin-bottom:16px;">
+        <span class="pill-tab active" data-lang="en">English 英语</span>
+        <span class="pill-tab" data-lang="es">Español 西语</span>
+        <span class="pill-tab" data-lang="ja">日本語 日语</span>
+        <span class="pill-tab" data-lang="fr">Français 法语</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title" id="lbl-daily-quote-header">每日金句</div>
+        <div id="lbl-daily-quote-text" style="font-size: 16px; font-weight:700; color:var(--theme-accent); margin-bottom: 8px;">
+          "It does not matter how slowly you go as long as you do not stop."
+        </div>
+        <div id="lbl-daily-quote-translation" style="font-size: 13px; color:var(--text-secondary); margin-bottom:16px;">
+          前进的速度不重要，只要不停下来。
+        </div>
+        <button class="btn-pill btn-accent" id="btn-english-read">▶ 朗读发音</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span id="lbl-phrases-header">口语练习短句</span>
+          <span style="font-size:11px; font-weight:normal; background:var(--theme-light-bg); color:var(--theme-accent); padding:3px 8px; border-radius:10px;">点击播放</span>
+        </div>
+        <div id="list-english-phrases">
+          <!-- 动态短句 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">学习视频</div>
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+          <div style="background:#f0f0f0; border-radius:var(--radius-md); padding:30px 10px; text-align:center; cursor:pointer;" class="video-card">
+            <span style="font-size:30px;">▶</span>
+            <div style="font-size:12px; font-weight:700; margin-top:8px;">日常英语对话</div>
+          </div>
+          <div style="background:#f0f0f0; border-radius:var(--radius-md); padding:30px 10px; text-align:center; cursor:pointer;" class="video-card">
+            <span style="font-size:30px;">▶</span>
+            <div style="font-size:12px; font-weight:700; margin-top:8px;">发音纠正课</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 每日减脂 -->
+    <section class="page" id="page-diet">
+      <div class="module-header">
+        <h1>每日减脂饮食</h1>
+        <p>控制卡路里，科学膳食</p>
+      </div>
+
+      <div class="card" style="display:flex; align-items:center; gap:20px;">
+        <div class="circle-progress-wrapper" style="margin:0;">
+          <svg class="circle-progress-svg" viewBox="0 0 100 100">
+            <circle class="circle-progress-bg" cx="50" cy="50" r="40"></circle>
+            <circle class="circle-progress-bar" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="53.5" id="diet-circle"></circle>
+          </svg>
+          <div class="circle-text">
+            <span class="circle-value" id="diet-calories-val">1180</span>
+            <span class="circle-label">千卡</span>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:15px; font-weight:700; margin-bottom:8px;">今日已摄入 / 1500 千卡</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height: 1.6;" id="diet-macronutrients">
+            剩余: 320 千卡<br>
+            蛋白质: 65g · 碳水: 110g · 脂肪: 35g
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>🌅 早餐</span>
+          <button class="btn-pill btn-accent btn-add-diet" data-meal="breakfast">+ 添加</button>
+        </div>
+        <div id="list-diet-breakfast" style="font-size:13px; font-weight:600; line-height:1.8;">
+          <!-- 动态 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>☀️ 午餐</span>
+          <button class="btn-pill btn-accent btn-add-diet" data-meal="lunch">+ 添加</button>
+        </div>
+        <div id="list-diet-lunch" style="font-size:13px; font-weight:600; line-height:1.8;">
+          <!-- 动态 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>🌙 晚餐</span>
+          <button class="btn-pill btn-accent btn-add-diet" data-meal="dinner">+ 添加</button>
+        </div>
+        <div id="list-diet-dinner" style="font-size:13px; font-weight:600; line-height:1.8;">
+          <!-- 动态 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">减脂食谱推荐</div>
+        <div id="list-diet-recipes">
+          <!-- 动态食谱 -->
+        </div>
+      </div>
+
+      <button class="fab-btn" id="fab-diet-add">
+        <span>+ 新增饮食</span>
+      </button>
+    </section>
+
+    <!-- 4. 运动塑形 -->
+    <section class="page" id="page-workout">
+      <div class="module-header">
+        <h1>运动塑形锻炼</h1>
+        <p>坚持就是胜利</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>运动日历</span>
+          <span style="font-size:12px; font-weight:700; background:var(--theme-light-bg); color:var(--theme-accent); padding:4px 10px; border-radius:10px;" id="lbl-workout-days">已打卡 9 天</span>
+        </div>
+        <div class="calendar-grid" id="grid-workout-calendar">
+          <!-- 动态日历 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">运动计时器</div>
+        <div class="circle-progress-wrapper">
+          <svg class="circle-progress-svg" viewBox="0 0 100 100">
+            <circle class="circle-progress-bg" cx="50" cy="50" r="40"></circle>
+            <circle class="circle-progress-bar" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="0" id="timer-circle"></circle>
+          </svg>
+          <div class="circle-text">
+            <span class="circle-value" id="timer-val">30:00</span>
+            <span class="circle-label" id="timer-status">倒计时</span>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:10px;">
+          <button class="btn-pill btn-accent" id="btn-timer-start" style="padding:10px 24px; border-radius:20px;">开始锻炼</button>
+          <button class="btn-pill" id="btn-timer-reset" style="padding:10px 24px; border-radius:20px; background:#e0e0e0;">重置</button>
+        </div>
+      </div>
+
+      <div class="pill-tabs">
+        <div class="pill-tab active" data-category="aerobic">有氧</div>
+        <div class="pill-tab" data-category="strength">力量</div>
+        <div class="pill-tab" data-category="stretch">拉伸</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">视频教程</div>
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;" id="list-workout-videos">
+          <!-- 动态视频 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 热点新闻 -->
+    <section class="page" id="page-news">
+      <div class="module-header">
+        <h1>热点新闻</h1>
+        <p>了解世界正在发生什么</p>
+      </div>
+
+      <div class="pill-tabs" id="tabs-news">
+        <div class="pill-tab active" data-filter="all">全部</div>
+        <div class="pill-tab" data-filter="时政">时政</div>
+        <div class="pill-tab" data-filter="财经">财经</div>
+        <div class="pill-tab" data-filter="科技">科技</div>
+        <div class="pill-tab" data-filter="娱乐">娱乐</div>
+      </div>
+
+      <div id="list-news">
+        <!-- 动态新闻卡片 -->
+      </div>
+    </section>
+
+    <!-- 6. 书籍推荐 -->
+    <section class="page" id="page-books">
+      <div class="module-header">
+        <h1>成长书籍推荐</h1>
+        <p>阅读是最低成本的成长</p>
+      </div>
+
+      <div class="card" style="background: linear-gradient(135deg, #FDE8E9, #FBDFE2); position:relative;">
+        <span style="position:absolute; top:12px; right:12px; font-size:10px; font-weight:700; background:#D81B60; color:#fff; padding:3px 8px; border-radius:10px;">本月精选</span>
+        <div style="display:flex; gap:16px;">
+          <div style="width:70px; height:95px; background:#D81B60; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; font-weight:bold;">书</div>
+          <div style="flex:1;">
+            <div style="font-size:16px; font-weight:700; margin-bottom:4px;">《荒漠甘泉》</div>
+            <div style="font-size:11px; color:#8E8E93; margin-bottom:8px;">考门夫人 · 每日灵修</div>
+            <div style="font-size:12px; line-height:1.5; color:var(--text-primary); font-weight: 500;">
+              以丰富的圣经默想与生命感悟，为干渴的心灵注入清泉，是历久弥新的基督教灵修经典。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">书单列表</div>
+        <div id="list-books">
+          <!-- 动态书单 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 理财存钱 (设计补全) -->
+    <section class="page hidden" id="page-finance">
+      <div class="module-header">
+        <h1>理财存钱</h1>
+        <p>存下第一笔财富，合理规划开支</p>
+      </div>
+
+      <div class="card" style="display:flex; align-items:center; gap:20px;">
+        <div class="circle-progress-wrapper" style="margin:0;">
+          <svg class="circle-progress-svg" viewBox="0 0 100 100">
+            <circle class="circle-progress-bg" cx="50" cy="50" r="40"></circle>
+            <circle class="circle-progress-bar" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="100" id="finance-circle"></circle>
+          </svg>
+          <div class="circle-text">
+            <span class="circle-value" id="lbl-saving-percent">60%</span>
+            <span class="circle-label">存钱进度</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:16px; font-weight:700; margin-bottom:6px;">本月存钱目标: 3000 元</div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;" id="lbl-finance-summary">
+            已存入: 1800 元<br>
+            剩余目标: 1200 元
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>365天存钱挑战</span>
+          <span style="font-size:12px; font-weight:normal; color:var(--text-secondary);" id="lbl-saving-total">已存 450 元</span>
+        </div>
+        <div class="savings-board" id="board-savings">
+          <!-- 365天存钱板网格 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 赚钱信息 -->
+    <section class="page hidden" id="page-arbitrage">
+      <div class="module-header">
+        <h1>赚钱信息差</h1>
+        <p>发现更多赚钱机会</p>
+      </div>
+
+      <div class="pill-tabs" id="tabs-arbitrage">
+        <div class="pill-tab active" data-filter="all">全部</div>
+        <div class="pill-tab" data-filter="副业">副业</div>
+        <div class="pill-tab" data-filter="兼职">兼职</div>
+        <div class="pill-tab" data-filter="投资">投资</div>
+        <div class="pill-tab" data-filter="创业">创业</div>
+      </div>
+
+      <div id="list-arbitrage">
+        <!-- 动态信息差卡片 -->
+      </div>
+    </section>
+
+    <!-- 9. 读经功课 -->
+    <section class="page" id="page-bible">
+      <div class="module-header">
+        <h1>读经功课</h1>
+        <p>每日灵修，丰盛生命</p>
+      </div>
+
+      <!-- 今日读经计划 -->
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>📖 今日读经任务</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:11px; color:var(--text-secondary);">测试日期:</span>
+            <select id="sel-bible-date-test" style="border:1px solid var(--border-light); border-radius:6px; font-size:11px; padding:2px; font-family:inherit; outline:none; background:#fff; cursor:pointer;">
+              <!-- 动态填入 -->
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size: 15px; font-weight: 700; color: var(--theme-accent);" id="lbl-bible-today-task">
+            加载中...
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+            建议安静身心，用 5-10 分钟细细研读和默想。
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-pill btn-accent" id="btn-bible-read-start" style="padding:8px 16px; border-radius:15px;">📖 开始阅读</button>
+          <button class="btn-pill" id="btn-bible-checkin" style="padding:8px 16px; border-radius:15px; background:var(--theme-light-bg); color:var(--theme-accent); font-weight:700;">打卡完成</button>
+        </div>
+      </div>
+
+      <!-- 经文阅读器 -->
+      <div class="card" id="card-bible-reader" style="display:none; transition: var(--transition);">
+        <div class="card-title" style="justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px;">
+          <span id="lbl-bible-reader-title">创世记 第 1 章</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="btn-pill" id="btn-bible-font-dec" style="background:#e0e0e0; color:var(--text-primary); font-weight:bold; width:28px; height:28px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">A-</button>
+            <button class="btn-pill" id="btn-bible-font-inc" style="background:#e0e0e0; color:var(--text-primary); font-weight:bold; width:28px; height:28px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">A+</button>
+          </div>
+        </div>
+        <div id="bible-text-container" style="font-size: 14px; line-height: 1.8; color: var(--text-primary); max-height: 350px; overflow-y: auto; padding-right: 8px;">
+          <!-- 经文内容渲染 -->
+        </div>
+      </div>
+
+      <!-- 读经月历记录 -->
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>读经进度月历</span>
+          <span style="font-size:12px; font-weight:700; background:var(--theme-light-bg); color:var(--theme-accent); padding:4px 10px; border-radius:10px;" id="lbl-bible-days">本月已完成 18 天</span>
+        </div>
+        <div class="calendar-grid" id="grid-bible-calendar">
+          <!-- 动态读经月历 -->
+        </div>
+      </div>
+
+      <!-- 每日金句 -->
+      <div class="card" style="background:#F4EBFC; border-left: 5px solid #9B5DE5; color:#8040C9; padding:20px; text-align:center;">
+        <blockquote style="font-size:15px; font-weight:700; font-style:italic; line-height:1.6; margin-bottom:12px;" id="bible-quote-text">
+          "神看着一切所造的都甚好。有晚上，有早晨，这是第六日。"
+        </blockquote>
+        <button class="btn-pill btn-accent" id="btn-share-bible-quote" style="background:#9B5DE5;">🔗 分享金句</button>
+      </div>
+    </section>
+
+    <!-- 9.5 圣徒诗歌 -->
+    <section class="page" id="page-hymns">
+      <div class="module-header">
+        <h1>圣徒诗歌</h1>
+        <p>赞美歌颂，灵里喜乐</p>
+      </div>
+
+      <!-- 目录视图 -->
+      <div id="hymns-directory-view">
+        <div class="card" style="margin-bottom: 12px; padding: 12px 14px;">
+          <input type="text" id="hymns-search-input" placeholder="🔍 输入诗歌标题或编号进行搜索..." style="width: 100%; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; background: #fff;">
+        </div>
+        <div class="card" style="padding: 10px;">
+          <div id="list-hymns" style="display: flex; flex-direction: column; gap: 4px;">
+            <!-- 动态目录行 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 详情歌词正文视图 -->
+      <div id="hymns-detail-view" style="display: none;">
+        <button class="btn-pill" id="btn-hymns-back" style="margin-bottom:12px; background:var(--theme-light-bg); color:var(--theme-accent); border:none; padding:8px 14px; font-weight:700; border-radius:15px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+          ← 返回目录
+        </button>
+        <div class="card" style="text-align: center; padding: 24px 16px;">
+          <h2 id="lbl-hymn-detail-title" style="font-size: 18px; font-weight: 700; color: var(--theme-accent); margin-bottom: 4px;">大能手</h2>
+          <div id="lbl-hymn-detail-info" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 20px;">首选 · 圣徒诗歌第 32 首</div>
+          <div id="hymn-lyrics-container" style="font-size: 14px; line-height: 2.0; color: var(--text-primary); white-space: pre-wrap; font-weight: 500;">
+            <!-- 动态歌词段落 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. 博客精选 -->
+    <section class="page" id="page-blog">
+      <div class="module-header">
+        <h1>博客精选</h1>
+        <p>看看别人的生活与思考</p>
+      </div>
+
+      <div class="pill-tabs" id="tabs-blog">
+        <div class="pill-tab active" data-filter="all">全部</div>
+        <div class="pill-tab" data-filter="生活">生活</div>
+        <div class="pill-tab" data-filter="职场">职场</div>
+        <div class="pill-tab" data-filter="情感">情感</div>
+        <div class="pill-tab" data-filter="成长">成长</div>
+      </div>
+
+      <div id="list-blog">
+        <!-- 动态博客卡片 -->
+      </div>
+    </section>
+
+    <!-- 11. 养生管理 -->
+    <section class="page" id="page-wellness">
+      <div class="module-header">
+        <h1>养生</h1>
+        <p>好好照顾自己</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>🌿 今日养生计划</span>
+          <span style="font-size:12px; font-weight:700; color:var(--theme-accent);" id="lbl-wellness-percent">0% 已完成</span>
+        </div>
+        <div id="list-wellness-today" style="display:flex; flex-direction:column; gap:12px; font-weight: 600;">
+          <!-- 动态Checkbox列表 -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">养生知识</div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="padding-left:12px; border-left:4px solid #FF8A8A;">
+            <div style="font-size:14px; font-weight:700; color:#FF8A8A; margin-bottom:4px;">🌸 春养肝</div>
+            <div style="font-size:12px; color:var(--text-secondary);">春季宜疏肝理气，多吃绿色蔬菜，少熬夜，保持心情舒畅。</div>
+          </div>
+          <div style="padding-left:12px; border-left:4px solid #FFBE76;">
+            <div style="font-size:14px; font-weight:700; color:#FFBE76; margin-bottom:4px;">☀️ 夏养心</div>
+            <div style="font-size:12px; color:var(--text-secondary);">夏季重在养心祛暑，多喝温水，避免大汗淋漓。</div>
+          </div>
+          <div style="padding-left:12px; border-left:4px solid #E58E26;">
+            <div style="font-size:14px; font-weight:700; color:#E58E26; margin-bottom:4px;">🍂 秋养肺</div>
+            <div style="font-size:12px; color:var(--text-secondary);">秋季润肺为主，多吃白色食物如梨、银耳、百合。</div>
+          </div>
+          <div style="padding-left:12px; border-left:4px solid #54A0FF;">
+            <div style="font-size:14px; font-weight:700; color:#54A0FF; margin-bottom:4px;">❄️ 冬养肾</div>
+            <div style="font-size:12px; color:var(--text-secondary);">冬季藏精养肾，注意保暖，多吃黑色食物如黑豆、黑芝麻。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:700;">养生记录</span>
+        <span style="font-size:12px; font-weight:700; background:var(--theme-light-bg); color:var(--theme-accent); padding:4px 10px; border-radius:10px;">本月完成 22 天</span>
+      </div>
+    </section>
+
+    <!-- 12. 我的树洞 -->
+    <section class="page" id="page-treehole">
+      <div class="module-header">
+        <h1>我的树洞</h1>
+        <p>在这里，你可以畅所欲言</p>
+      </div>
+
+      <div class="card" style="background:linear-gradient(135deg, #D4ECFC, #BAC8FF); text-align:center; padding:24px 20px;">
+        <span style="font-size:40px;">🌳</span>
+        <div style="font-size:15px; font-weight:700; color:#2C3E50; margin-top:8px;">在这里，你可以写下任何心事</div>
+        <div style="font-size:12px; color:#566573; margin-top:4px;">我会温柔地倾听你</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">今天想说说什么？</div>
+        <textarea id="txt-treehole" placeholder="写下你的真实感受..." style="width:100%; height:100px; border-radius:var(--radius-md); border:1px solid var(--border-light); padding:12px; font-family:inherit; outline:none; resize:none; font-size:13px; margin-bottom:14px; transition:var(--transition);"></textarea>
+        
+        <div class="emotion-bubble-container" id="emotions-treehole">
+          <div class="emotion-bubble active" data-emotion="开心">😊 开心</div>
+          <div class="emotion-bubble" data-emotion="难过">😢 难过</div>
+          <div class="emotion-bubble" data-emotion="焦虑">😰 焦虑</div>
+          <div class="emotion-bubble" data-emotion="生气">😡 生气</div>
+          <div class="emotion-bubble" data-emotion="平静">😌 平静</div>
+          <div class="emotion-bubble" data-emotion="疲惫">😴 疲惫</div>
+        </div>
+
+        <button class="btn-pill btn-accent" id="btn-treehole-submit" style="width:100%; padding:12px; border-radius:20px; font-size:14px;">投递到树洞 🌳</button>
+      </div>
+
+      <div class="card" id="card-treehole-reply" style="display:none;">
+        <div class="card-title">树洞回信</div>
+        <div class="treehole-reply-card">
+          <div class="treehole-reply-author">
+            <span>🌳</span>
+            <span>树洞精灵</span>
+          </div>
+          <div id="lbl-treehole-reply-content">
+            亲爱的你，今天辛苦了。允许自己停下来休息一下吧。抱抱自己，明天又是崭新的一天。💗
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>心事记录</span>
+          <span style="font-size:12px; font-weight:normal; color:var(--text-secondary);" id="lbl-treehole-count">0 条</span>
+        </div>
+        <div id="list-treehole" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- 动态心事列表 -->
+        </div>
+      </div>
+
+      <button class="fab-btn" id="fab-treehole-clear" style="border-color:#7F8C8D; color:#7F8C8D; background:#F2F4F4;">
+        <span>🗑️ 清空</span>
+      </button>
+    </section>
+
+  </main>
+
+  <!-- 电子书阅读器 Modal 弹窗 -->
+  <div class="modal-backdrop" id="modal-book-reader">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="lbl-modal-title">书籍阅读</h3>
+        <button class="btn-pill" id="btn-modal-close" style="background:#e0e0e0; font-weight:bold; width:28px; height:28px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">×</button>
+      </header>
+      <div class="modal-body" id="modal-reader-body" style="white-space: pre-wrap;">
+        <!-- 试读经文 -->
+      </div>
+      <footer class="modal-footer">
+        <a id="btn-modal-external-link" href="#" target="_blank" class="btn-pill btn-accent" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">阅读原著全文 →</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 新闻/博客阅读器 Modal 弹窗 -->
+  <div class="modal-backdrop" id="modal-article-reader">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="lbl-article-modal-title">新闻阅读</h3>
+        <button class="btn-pill" id="btn-article-modal-close" style="background:#e0e0e0; font-weight:bold; width:28px; height:28px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">×</button>
+      </header>
+      <div class="modal-body" id="modal-article-body" style="white-space: pre-wrap; padding: 20px 24px;">
+        <!-- 新闻详细内容 -->
+      </div>
+      <footer class="modal-footer">
+        <a id="btn-article-modal-external-link" href="#" target="_blank" class="btn-pill btn-accent" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">阅读媒体原文 →</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 圣经数据与动态核心脚本 -->
+  <script src="bible_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
