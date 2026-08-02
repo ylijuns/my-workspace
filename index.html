@@ -236,6 +236,76 @@
         </div>
       </div>
 
+      <!-- Cal AI 食物智能识别与病理预警 -->
+      <div class="card" id="card-cal-ai">
+        <div class="card-title" style="justify-content: space-between;">
+          <span>🥗 Cal AI 食物智能识别</span>
+          <span style="font-size:11px; font-weight:normal; background:var(--theme-light-bg); color:var(--theme-accent); padding:3px 8px; border-radius:10px;">三高病理预警</span>
+        </div>
+        
+        <!-- 病理指标勾选挂件 -->
+        <div style="background:var(--bg-app); border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:14px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <span style="font-size:11px; font-weight:700; color:var(--text-secondary);">患者健康画像:</span>
+          <label style="font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="chk-health-diabetes"> 糖尿病 / 高血糖
+          </label>
+          <label style="font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="chk-health-cholesterol"> 高胆固醇 / 高血脂
+          </label>
+        </div>
+
+        <!-- 模拟拍照/扫描上传区 -->
+        <div id="cal-ai-scanner-box" style="border: 2px dashed var(--border-light); border-radius: var(--radius-md); padding: 24px 16px; text-align: center; position: relative; overflow: hidden; background: #fafafa; cursor: pointer; transition: all 0.2s ease;">
+          <input type="file" id="file-cal-ai-upload" accept="image/*" style="display: none;">
+          <div id="cal-ai-upload-placeholder">
+            <span style="font-size:32px;">📸</span>
+            <div style="font-size:13px; font-weight:700; margin-top:8px; color:var(--text-primary);">点击上传食物照片 或 键入食物名称</div>
+            <div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">支持 AI 估算卡路里并进行血糖及胆固醇风险筛查</div>
+          </div>
+          <!-- 动态扫描特效图容器 (默认隐藏) -->
+          <div id="cal-ai-scan-active" style="display: none; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="width: 130px; height: 130px; border-radius: var(--radius-md); position: relative; overflow: hidden; background-size: cover; background-position: center; border: 1px solid var(--border-light);" id="img-cal-ai-food">
+              <!-- AI 红色扫描激光线 -->
+              <div style="position: absolute; left:0; right:0; height:4px; background:rgba(255, 75, 75, 0.9); box-shadow: 0 0 10px #ff4b4b; animation: scanLaser 1.5s ease-in-out infinite; top: 0;" id="cal-ai-laser"></div>
+            </div>
+            <div style="font-size:12px; font-weight:700; color:var(--theme-accent); margin-top:10px;" id="lbl-scan-progress">AI 图像分析中...</div>
+          </div>
+        </div>
+
+        <!-- 手动文本识别输入框 (平替) -->
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <input type="text" id="txt-cal-ai-food-input" placeholder="输入食物，例如：红烧肉半碗 + 蛋炒饭" style="flex:1; border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:8px 12px; font-family:inherit; font-size:12px; outline:none; background:#fff;">
+          <button class="btn-pill btn-accent" id="btn-cal-ai-text-identify" style="font-size:12px; padding:0 16px; border-radius:15px; flex-shrink:0;">AI 分析</button>
+        </div>
+
+        <!-- 食物图片快速预设测试按钮（极其方便演示！） -->
+        <div style="margin-top: 12px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:10px; color:var(--text-secondary);">快捷预设:</span>
+          <button class="btn-pill btn-preset-food" data-food="hamburger" style="font-size:11px; padding:3px 10px; background:#f0f0f0;">🍔 双层芝士汉堡</button>
+          <button class="btn-pill btn-preset-food" data-food="fish" style="font-size:11px; padding:3px 10px; background:#f0f0f0;">🐟 鳕鱼粗粮饭</button>
+          <button class="btn-pill btn-preset-food" data-food="sweetpotato" style="font-size:11px; padding:3px 10px; background:#f0f0f0;">🍠 拔丝地瓜</button>
+        </div>
+
+        <!-- AI 识别结果反馈面板 (默认隐藏) -->
+        <div id="cal-ai-result-panel" style="display: none; margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 16px;">
+          <!-- 基础营养分析 -->
+          <div style="background:var(--theme-light-bg); border-radius:var(--radius-sm); padding:12px; margin-bottom:12px;">
+            <div style="font-weight:700; color:var(--theme-accent); font-size:13px; margin-bottom:6px;" id="lbl-result-food-name">识别结果: 双层芝士汉堡</div>
+            <div style="font-size:12px; line-height:1.6; color:var(--text-primary);" id="lbl-result-nutrition-facts">
+              估算热量: 620 千卡 <br>
+              碳水: 48g | 蛋白质: 28g | 脂肪: 32g
+            </div>
+            <!-- 一键计入今日卡路里 -->
+            <button class="btn-pill btn-accent" id="btn-cal-ai-log-meal" style="margin-top:10px; font-size:11px; padding:4px 12px; border-radius:10px; width: 100%;">+ 计入今日卡路里大盘</button>
+          </div>
+          
+          <!-- ⚠️ 三高病理警告提醒区 (动态显示) -->
+          <div id="cal-ai-warning-box">
+            <!-- 预警卡片 -->
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title" style="justify-content: space-between;">
           <span>🌅 早餐</span>

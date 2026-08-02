@@ -944,3 +944,57 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* -------------------------------------------------------------
+ * Cal AI 膳食智能扫描与病理警告动画
+ * ------------------------------------------------------------- */
+@keyframes scanLaser {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+@keyframes softPulseRed {
+  0% { box-shadow: 0 0 4px rgba(255, 75, 75, 0.2); background: rgba(255, 75, 75, 0.05); }
+  50% { box-shadow: 0 0 16px rgba(255, 75, 75, 0.4); background: rgba(255, 75, 75, 0.12); }
+  100% { box-shadow: 0 0 4px rgba(255, 75, 75, 0.2); background: rgba(255, 75, 75, 0.05); }
+}
+
+@keyframes softPulseYellow {
+  0% { box-shadow: 0 0 4px rgba(242, 201, 76, 0.2); background: rgba(242, 201, 76, 0.05); }
+  50% { box-shadow: 0 0 16px rgba(242, 201, 76, 0.4); background: rgba(242, 201, 76, 0.12); }
+  100% { box-shadow: 0 0 4px rgba(242, 201, 76, 0.2); background: rgba(242, 201, 76, 0.05); }
+}
+
+@keyframes softPulseGreen {
+  0% { box-shadow: 0 0 4px rgba(39, 174, 96, 0.1); background: rgba(39, 174, 96, 0.03); }
+  50% { box-shadow: 0 0 16px rgba(39, 174, 96, 0.3); background: rgba(39, 174, 96, 0.08); }
+  100% { box-shadow: 0 0 4px rgba(39, 174, 96, 0.1); background: rgba(39, 174, 96, 0.03); }
+}
+
+.warning-card {
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: 10px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  line-height: 1.6;
+}
+
+.warning-blink-red {
+  border-color: rgba(255, 75, 75, 0.3);
+  color: #c0392b;
+  animation: softPulseRed 2s infinite ease-in-out;
+}
+
+.warning-blink-yellow {
+  border-color: rgba(242, 201, 76, 0.4);
+  color: #b78500;
+  animation: softPulseYellow 2s infinite ease-in-out;
+}
+
+.warning-blink-green {
+  border-color: rgba(39, 174, 96, 0.3);
+  color: #27ae60;
+  animation: softPulseGreen 2s infinite ease-in-out;
+}

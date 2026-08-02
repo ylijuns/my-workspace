@@ -345,32 +345,48 @@ const initDiet = () => {
   ];
 
   const updateCalories = () => {
-    // 粗略计算每餐的卡路里
-    const count = (meals.breakfast.length + meals.lunch.length + meals.dinner.length) * 150;
-    const total = count === 0 ? 0 : Math.min(count, 1500);
-    
-    document.getElementById('diet-calories-val').textContent = total;
+    let total = 0;
+    ['breakfast', 'lunch', 'dinner'].forEach(meal => {
+      meals[meal].forEach(item => {
+        // 使用正则提取括号中的卡路里
+        const match = item.match(/(?:(\d+)千卡|(\d+)大卡)/);
+        if (match) {
+          total += parseInt(match[1] || match[2]);
+        } else {
+          total += 150; // 默认每项算 150 千卡
+        }
+      });
+    });
+
+    total = Math.min(total, 1500);
+    const caloriesVal = document.getElementById('diet-calories-val');
+    if (caloriesVal) caloriesVal.textContent = total;
     
     // 更新 SVG 圆环进度
     const circle = document.getElementById('diet-circle');
-    const radius = 40;
-    const circumference = 2 * Math.PI * radius; // 251.2
-    const offset = circumference - (total / 1500) * circumference;
-    circle.style.strokeDashoffset = offset;
+    if (circle) {
+      const circumference = 251.2;
+      const offset = circumference - (total / 1500) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
 
     // 更新宏量营养元素文本
     const prot = Math.round(total * 0.05);
     const carb = Math.round(total * 0.09);
     const fat = Math.round(total * 0.03);
-    document.getElementById('diet-macronutrients').innerHTML = `
-      剩余: ${1500 - total} 千卡<br>
-      蛋白质: ${prot}g · 碳水: ${carb}g · 脂肪: ${fat}g
-    `;
+    const macroText = document.getElementById('diet-macronutrients');
+    if (macroText) {
+      macroText.innerHTML = `
+        剩余: ${1500 - total} 千卡<br>
+        蛋白质: ${prot}g · 碳水: ${carb}g · 脂肪: ${fat}g
+      `;
+    }
   };
 
   const renderMeals = () => {
     ['breakfast', 'lunch', 'dinner'].forEach(meal => {
       const container = document.getElementById(`list-diet-${meal}`);
+      if (!container) return;
       container.innerHTML = '';
       meals[meal].forEach(item => {
         const itemEl = document.createElement('div');
@@ -403,17 +419,20 @@ const initDiet = () => {
     });
   });
 
-  document.getElementById('fab-diet-add').addEventListener('click', () => {
-    const meal = prompt('请选择餐别 (早餐/午餐/晚餐)：');
-    let key = '';
-    if (meal === '早餐') key = 'breakfast';
-    else if (meal === '午餐') key = 'lunch';
-    else if (meal === '晚餐') key = 'dinner';
-    else return alert('请输入正确的餐别');
+  const fabDiet = document.getElementById('fab-diet-add');
+  if (fabDiet) {
+    fabDiet.addEventListener('click', () => {
+      const meal = prompt('请选择餐别 (早餐/午餐/晚餐)：');
+      let key = '';
+      if (meal === '早餐') key = 'breakfast';
+      else if (meal === '午餐') key = 'lunch';
+      else if (meal === '晚餐') key = 'dinner';
+      else return alert('请输入正确的餐别');
 
-    const item = prompt('输入食物名称：');
-    if (item) addMealItem(key, item);
-  });
+      const item = prompt('输入食物名称：');
+      if (item) addMealItem(key, item);
+    });
+  }
 
   // 删除饮食项
   document.body.addEventListener('click', (e) => {
@@ -429,33 +448,327 @@ const initDiet = () => {
 
   // 渲染推荐食谱
   const recipesContainer = document.getElementById('list-diet-recipes');
-  recipes.forEach(r => {
-    const el = document.createElement('div');
-    el.className = 'list-item';
-    el.style.cursor = 'pointer';
-    el.innerHTML = `
-      <div style="font-weight:700; color:#27AE60;">${r.title}</div>
-      <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${r.desc}</div>
-      <div style="margin-top:6px;"><span class="list-item-tag">🔥 ${r.cal} 千卡</span></div>
-    `;
-    el.addEventListener('click', () => {
-      const meal = prompt('加入哪一餐？(早餐/午餐/晚餐)：');
-      let key = '';
-      if (meal === '早餐') key = 'breakfast';
-      else if (meal === '午餐') key = 'lunch';
-      else if (meal === '晚餐') key = 'dinner';
-      if (key) addMealItem(key, r.title);
+  if (recipesContainer) {
+    recipesContainer.innerHTML = '';
+    recipes.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'list-item';
+      el.style.cursor = 'pointer';
+      el.innerHTML = `
+        <div style="font-weight:700; color:#27AE60;">${r.title}</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${r.desc}</div>
+        <div style="margin-top:6px;"><span class="list-item-tag">🔥 ${r.cal} 千卡</span></div>
+      `;
+      el.addEventListener('click', () => {
+        const meal = prompt('加入哪一餐？(早餐/午餐/晚餐)：');
+        let key = '';
+        if (meal === '早餐') key = 'breakfast';
+        else if (meal === '午餐') key = 'lunch';
+        else if (meal === '晚餐') key = 'dinner';
+        if (key) addMealItem(key, `${r.title} (${r.cal}千卡)`);
+      });
+      recipesContainer.appendChild(el);
     });
-    recipesContainer.appendChild(el);
+  }
+
+  // -------------------------------------------------------------
+  // Cal AI 食物热量与病理风险评估逻辑
+  // -------------------------------------------------------------
+  let hasDiabetes = getLocalData('diet_health_diabetes', false);
+  let hasCholesterol = getLocalData('diet_health_cholesterol', false);
+  let currentFoodResult = null;
+
+  const diabetesChk = document.getElementById('chk-health-diabetes');
+  const cholesterolChk = document.getElementById('chk-health-cholesterol');
+
+  if (diabetesChk) {
+    diabetesChk.checked = hasDiabetes;
+    diabetesChk.addEventListener('change', (e) => {
+      hasDiabetes = e.target.checked;
+      setLocalData('diet_health_diabetes', hasDiabetes);
+      if (currentFoodResult) runHealthCheck(currentFoodResult);
+    });
+  }
+
+  if (cholesterolChk) {
+    cholesterolChk.checked = hasCholesterol;
+    cholesterolChk.addEventListener('change', (e) => {
+      hasCholesterol = e.target.checked;
+      setLocalData('diet_health_cholesterol', hasCholesterol);
+      if (currentFoodResult) runHealthCheck(currentFoodResult);
+    });
+  }
+
+  // 食物高保真本地规则库
+  const foodDatabase = {
+    hamburger: {
+      name: "双层芝士汉堡",
+      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80",
+      cal: 620,
+      carb: 48,
+      prot: 28,
+      fat: 32,
+      warningText: "🍔 汉堡包含有高精制面粉，且芝士与双层牛肉饼富含饱和脂肪和胆固醇。"
+    },
+    fish: {
+      name: "清蒸鳕鱼配糙米饭",
+      image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=300&q=80",
+      cal: 310,
+      carb: 35,
+      prot: 25,
+      fat: 5,
+      warningText: "🐟 鳕鱼属于极为健康的优质低脂蛋白，糙米饭则是典型的高纤维低 GI 慢碳水，推荐食用！"
+    },
+    sweetpotato: {
+      name: "拔丝地瓜",
+      image: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=300&q=80",
+      cal: 450,
+      carb: 92,
+      prot: 2,
+      fat: 8,
+      warningText: "🍠 拔丝地瓜裹着大量精制白糖浆，且地瓜淀粉本身糊化度极高，属于超高升糖指数（GI）食物。"
+    }
+  };
+
+  // 三高病理筛查警告分析器
+  const runHealthCheck = (food) => {
+    const warningBox = document.getElementById('cal-ai-warning-box');
+    if (!warningBox || !food) return;
+    warningBox.innerHTML = '';
+
+    let hasWarning = false;
+
+    // 1. 糖尿病 / 高血糖警报
+    if (hasDiabetes) {
+      const isHighGI = food.name.includes('地瓜') || food.name.includes('糖') || 
+                       food.name.includes('米饭') || food.name.includes('可乐') || 
+                       food.name.includes('面包') || food.name.includes('面条') || 
+                       food.name.includes('蛋糕') || food.name.includes('汉堡') ||
+                       food.carb > 45;
+      
+      if (isHighGI) {
+        hasWarning = true;
+        const card = document.createElement('div');
+        card.className = 'warning-card warning-blink-red';
+        card.innerHTML = `
+          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">⚠️ 血糖红色预警 (高升糖膳食)</div>
+          <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
+            该食物在糖尿病/高血糖状态下，容易导致血糖迅速攀升。
+            ${food.warningText ? '<br>分析: ' + food.warningText : ''}
+            <br><strong>💡 平替推荐:</strong> 建议换成荞麦面、全麦燕麦或糙米饭，并优先搭配膳食纤维延缓糖分吸收。
+          </div>
+        `;
+        warningBox.appendChild(card);
+      }
+    }
+
+    // 2. 高胆固醇 / 高血脂警报
+    if (hasCholesterol) {
+      const isHighFat = food.name.includes('汉堡') || food.name.includes('红烧肉') || 
+                        food.name.includes('肥牛') || food.name.includes('肥肉') || 
+                        food.name.includes('炸') || food.name.includes('油') ||
+                        food.fat > 20;
+
+      if (isHighFat) {
+        hasWarning = true;
+        const card = document.createElement('div');
+        card.className = 'warning-card warning-blink-yellow';
+        card.innerHTML = `
+          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">⚠️ 胆固醇黄色预警 (高饱和脂肪)</div>
+          <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
+            该食物所含饱和脂肪与胆固醇较高，易加重血管负担，不利于胆固醇控制。
+            ${food.warningText && !hasDiabetes ? '<br>分析: ' + food.warningText : ''}
+            <br><strong>💡 平替推荐:</strong> 建议将红肉/油炸食品换成去皮鸡胸肉、水煮虾或清蒸鳕鱼等优质海鲜蛋白。
+          </div>
+        `;
+        warningBox.appendChild(card);
+      }
+    }
+
+    // 3. 指标安全推荐（当勾选了画像，但食物十分健康时）
+    if ((hasDiabetes || hasCholesterol) && !hasWarning) {
+      const card = document.createElement('div');
+      card.className = 'warning-card warning-blink-green';
+      card.innerHTML = `
+        <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">✨ 三高绿灯推荐膳食</div>
+        <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
+          ${food.name} 属于低升糖、低脂肪、高蛋白的健康膳食。符合糖尿病与高胆固醇膳食管理指标，建议放心食用。
+        </div>
+      `;
+      warningBox.appendChild(card);
+    }
+  };
+
+  // 简易文本食物 AI 识别
+  const parseFoodText = (text) => {
+    const query = text.trim().toLowerCase();
+    if (!query) return null;
+
+    let name = text;
+    let cal = 260;
+    let carb = 30;
+    let prot = 15;
+    let fat = 10;
+    let warningText = "本地 AI 估算数据";
+
+    if (query.includes('汉堡') || query.includes('hamburger')) {
+      return foodDatabase.hamburger;
+    } else if (query.includes('鱼') || query.includes('鳕鱼') || query.includes('cod')) {
+      return foodDatabase.fish;
+    } else if (query.includes('地瓜') || query.includes('红薯') || query.includes('拔丝')) {
+      return foodDatabase.sweetpotato;
+    } else if (query.includes('红烧肉') || query.includes('猪肉') || query.includes('肥肉')) {
+      name = "经典红烧肉";
+      cal = 580;
+      carb = 15;
+      prot = 18;
+      fat = 52;
+      warningText = "🥩 红烧肉富含饱和脂肪和胆固醇，且调味中含有大量高升糖的冰糖。";
+    } else if (query.includes('可乐') || query.includes('汽水') || query.includes('饮料')) {
+      name = "可乐 (一听)";
+      cal = 140;
+      carb = 35;
+      prot = 0;
+      fat = 0;
+      warningText = "🥤 饮料中富含精制果糖与游离糖，会迅速拉高血糖水平，糖尿病患者禁忌。";
+    } else if (query.includes('燕麦') || query.includes('麦片') || query.includes('粗粮')) {
+      name = "全麦燕麦片";
+      cal = 220;
+      carb = 38;
+      prot = 8;
+      fat = 3;
+      warningText = "🌾 燕麦含有丰富的 β-葡聚糖水溶性膳食纤维，可大大延缓碳水吸收，低 GI 极其推荐。";
+    }
+
+    return { name, cal, carb, prot, fat, warningText };
+  };
+
+  // 统一展现 AI 识别结果的扫描流
+  const showScanResult = (foodObj) => {
+    const uploadPlaceholder = document.getElementById('cal-ai-upload-placeholder');
+    const scanActive = document.getElementById('cal-ai-scan-active');
+    const foodImg = document.getElementById('img-cal-ai-food');
+    const resultPanel = document.getElementById('cal-ai-result-panel');
+
+    if (!uploadPlaceholder || !scanActive || !resultPanel) return;
+
+    // 显示扫描特效
+    uploadPlaceholder.style.display = 'none';
+    scanActive.style.display = 'flex';
+    resultPanel.style.display = 'none';
+
+    // 绑定大图
+    if (foodImg && foodObj.image) {
+      foodImg.style.backgroundImage = `url('${foodObj.image}')`;
+    } else if (foodImg) {
+      foodImg.style.backgroundImage = 'linear-gradient(135deg, #FF9F43 0%, #FF5252 100%)';
+    }
+
+    // 1.5 秒后展示 AI 分析数据
+    setTimeout(() => {
+      scanActive.style.display = 'none';
+      uploadPlaceholder.style.display = 'block';
+      resultPanel.style.display = 'block';
+
+      currentFoodResult = foodObj;
+
+      // 填充基础营养数据
+      const resName = document.getElementById('lbl-result-food-name');
+      const resFacts = document.getElementById('lbl-result-nutrition-facts');
+      if (resName) resName.textContent = `识别结果: ${foodObj.name}`;
+      if (resFacts) {
+        resFacts.innerHTML = `
+          估算热量: <strong>${foodObj.cal}</strong> 千卡 <br>
+          碳水: ${foodObj.carb}g | 蛋白质: ${foodObj.prot}g | 脂肪: ${foodObj.fat}g
+        `;
+      }
+
+      // 执行三高病理预警
+      runHealthCheck(foodObj);
+    }, 1500);
+  };
+
+  // 绑定相机/相册上传
+  const scannerBox = document.getElementById('cal-ai-scanner-box');
+  const fileInput = document.getElementById('file-cal-ai-upload');
+  if (scannerBox && fileInput) {
+    scannerBox.addEventListener('click', (e) => {
+      if (e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          showScanResult({
+            name: "已上传食物",
+            image: event.target.result,
+            cal: 480,
+            carb: 52,
+            prot: 20,
+            fat: 18,
+            warningText: "自传食物估算值"
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // 绑定文本分析
+  const textBtn = document.getElementById('btn-cal-ai-text-identify');
+  const textInput = document.getElementById('txt-cal-ai-food-input');
+  if (textBtn && textInput) {
+    textBtn.addEventListener('click', () => {
+      const parsed = parseFoodText(textInput.value);
+      if (parsed) {
+        showScanResult(parsed);
+      } else {
+        alert('请输入具体的食物名称（支持汉堡、鳕鱼、地瓜、可乐、红烧肉、燕麦等匹配演示）');
+      }
+    });
+  }
+
+  // 绑定快捷演示按钮
+  document.querySelectorAll('.btn-preset-food').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-food');
+      const food = foodDatabase[key];
+      if (food) {
+        showScanResult(food);
+      }
+    });
   });
+
+  // 绑定一键计入卡路里大盘
+  const logMealBtn = document.getElementById('btn-cal-ai-log-meal');
+  if (logMealBtn) {
+    logMealBtn.addEventListener('click', () => {
+      if (currentFoodResult) {
+        const meal = prompt('计入哪一餐？(早餐/午餐/晚餐)：');
+        let key = '';
+        if (meal === '早餐') key = 'breakfast';
+        else if (meal === '午餐') key = 'lunch';
+        else if (meal === '晚餐') key = 'dinner';
+        
+        if (key) {
+          addMealItem(key, `${currentFoodResult.name} (${currentFoodResult.cal}千卡)`);
+          alert(`已成功将 [${currentFoodResult.name}] 的 ${currentFoodResult.cal} 千卡记入${meal}！`);
+          
+          const resultPanel = document.getElementById('cal-ai-result-panel');
+          if (resultPanel) resultPanel.style.display = 'none';
+          currentFoodResult = null;
+        }
+      }
+    });
+  }
 
   renderMeals();
   updateCalories();
 };
-
-// -------------------------------------------------------------
-// 5. 运动塑形锻炼模块
-// -------------------------------------------------------------
 const initWorkout = () => {
   // 运动日历打卡状态
   let checkedDays = getLocalData('workout_checks', [1, 3, 5, 7, 10, 12, 15, 18, 22, 25, 27]);
