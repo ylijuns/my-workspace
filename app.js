@@ -18,16 +18,6 @@ const updateProfileUI = () => {
   if (sidebarAvatar) {
     sidebarAvatar.style.backgroundImage = `url('${cachedAvatar}')`;
   }
-
-  // 动态同步更新 iOS 桌面 App 图标与应用标题
-  const appleIcon = document.getElementById('apple-touch-icon');
-  if (appleIcon) {
-    appleIcon.href = cachedAvatar;
-  }
-  const appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
-  if (appleTitle) {
-    appleTitle.content = cachedName;
-  }
 };
 
 // -------------------------------------------------------------
