@@ -1988,6 +1988,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. 📷 智能证件照生成器 (纯自研摄像头拍照与排版 - 100% 免协议限制)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (手机原生直拍 + 电脑抠图换背景 - 100% 免协议)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   // 模式切换按钮
   const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
@@ -2000,6 +2003,7 @@ const initIdPhoto = () => {
   const svgGuide = document.getElementById('svg-idphoto-guide');
   const placeholderCam = document.getElementById('placeholder-idphoto-cam');
   const btnStartCam = document.getElementById('btn-idphoto-start-cam');
+  const fileMobileCam = document.getElementById('file-idphoto-mobile-cam');
   const ctrlCam = document.getElementById('ctrl-idphoto-cam');
   const btnCapture = document.getElementById('btn-idphoto-capture');
   const btnStopCam = document.getElementById('btn-idphoto-stop-cam');
@@ -2024,7 +2028,7 @@ const initIdPhoto = () => {
   let activeColor = '#3498DB';
   let processedSingleCanvas = null;
 
-  // 尺寸映射 (300DPI 毫米与像素换算)
+  // 尺寸映射 (300DPI 标准)
   const sizeSpecs = {
     '1in': { name: '一寸 (295×413px)', w: 295, h: 413, gridCols: 4, gridRows: 2 },
     '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
@@ -2032,11 +2036,84 @@ const initIdPhoto = () => {
     'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
   };
 
-  // 📷 1. 开启摄像头
+  // 🧠 核心算法：纯前端像素级智能背景抠图与底色融合 (Smart Color & Edge Matting Engine)
+  const processMattingAndRender = (img, targetCanvas, bgColor) => {
+    const w = targetCanvas.width;
+    const h = targetCanvas.height;
+    const ctx = targetCanvas.getContext('2d');
+
+    // 1. 在临时 Canvas 上绘制缩放调整后的图像
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w;
+    tempCanvas.height = h;
+    const tCtx = tempCanvas.getContext('2d');
+
+    const scale = Math.max(w / img.width, h / img.height);
+    const nw = img.width * scale;
+    const nh = img.height * scale;
+    const nx = (w - nw) / 2;
+    const ny = (h - nh) / 2;
+
+    tCtx.drawImage(img, nx, ny, nw, nh);
+
+    // 2. 读取像素数据
+    const imgData = tCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    // 采样四个顶角的背景色平均值
+    const getPixel = (x, y) => {
+      const idx = (y * w + x) * 4;
+      return [data[idx], data[idx + 1], data[idx + 2]];
+    };
+
+    const bgSamples = [
+      getPixel(5, 5),
+      getPixel(w - 5, 5),
+      getPixel(5, 15),
+      getPixel(w - 5, 15)
+    ];
+
+    const avgBgR = (bgSamples[0][0] + bgSamples[1][0] + bgSamples[2][0] + bgSamples[3][0]) / 4;
+    const avgBgG = (bgSamples[0][1] + bgSamples[1][1] + bgSamples[2][1] + bgSamples[3][1]) / 4;
+    const avgBgB = (bgSamples[0][2] + bgSamples[1][2] + bgSamples[2][2] + bgSamples[3][2]) / 4;
+
+    // 算法遍历：计算像素点与背景采样的色差距离
+    const colorDistanceThreshold = 65;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const dist = Math.sqrt(
+        (r - avgBgR) * (r - avgBgR) +
+        (g - avgBgG) * (g - avgBgG) +
+        (b - avgBgB) * (b - avgBgB)
+      );
+
+      if (dist < colorDistanceThreshold) {
+        data[i + 3] = 0; // 设置背景为透明
+      } else if (dist < colorDistanceThreshold + 20) {
+        const alphaRatio = (dist - colorDistanceThreshold) / 20;
+        data[i + 3] = Math.floor(data[i + 3] * alphaRatio); // 边缘平滑羽化
+      }
+    }
+
+    tCtx.putImageData(imgData, 0, 0);
+
+    // 3. 在目标 Canvas 上绘制选中的底色 (红底/蓝底/白底)
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, w, h);
+
+    // 4. 将剥离背景的人像精准无缝叠加在目标底色上方
+    ctx.drawImage(tempCanvas, 0, 0);
+  };
+
+  // 📷 1. 开启电脑 Web 摄像头
   const startCamera = async () => {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        return alert('你的浏览器暂不支持摄像头访问，请使用本地上传模式！');
+        return alert('手机端请直接点击“📱 手机端：直接调起相机拍照”按钮！');
       }
       stream = await navigator.mediaDevices.getUserMedia({
         video: { width: { ideal: 1280 }, height: { ideal: 960 }, facingMode: 'user' },
@@ -2050,7 +2127,7 @@ const initIdPhoto = () => {
       if (placeholderCam) placeholderCam.style.display = 'none';
       if (ctrlCam) ctrlCam.style.display = 'flex';
     } catch (err) {
-      alert('无法开启摄像头，请确保已授予浏览器摄像头权限！');
+      alert('开启摄像头失败。如果是手机端，请直接点击下方的绿色“📱 手机端：直接调起相机拍照”按钮！');
     }
   };
 
@@ -2062,7 +2139,7 @@ const initIdPhoto = () => {
     }
     if (videoCam) videoCam.style.display = 'none';
     if (svgGuide) svgGuide.style.display = 'none';
-    if (placeholderCam) placeholderCam.style.display = 'block';
+    if (placeholderCam) placeholderCam.style.display = 'flex';
     if (ctrlCam) ctrlCam.style.display = 'none';
   };
 
@@ -2078,13 +2155,22 @@ const initIdPhoto = () => {
       canvas.height = videoCam.videoHeight || 480;
       const ctx = canvas.getContext('2d');
       
-      // 镜像翻转处理（使拍照画面与预演视角一致）
+      // 镜像翻转
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(videoCam, 0, 0, canvas.width, canvas.height);
 
       currentImageSrc = canvas.toDataURL('image/png');
-      renderIDPhoto();
+      renderIDPhoto(); // 拍照后自动触发抠图换底色！
+    });
+  }
+
+  // 📱 3. 手机原生相机拍照回调
+  if (fileMobileCam) {
+    fileMobileCam.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      handleFileSelect(file);
     });
   }
 
@@ -2110,7 +2196,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 3. 全自动实时生成构图渲染 (Instant Canvas Engine)
+  // 4. 全自动实时生成与抠图换底色 (Instant Matting Canvas Engine)
   const renderIDPhoto = () => {
     if (!currentImageSrc) return;
 
@@ -2128,20 +2214,9 @@ const initIdPhoto = () => {
         const canvas = document.createElement('canvas');
         canvas.width = spec.w;
         canvas.height = spec.h;
-        const ctx = canvas.getContext('2d');
 
-        // 填充底层标准背景色
-        ctx.fillStyle = activeColor;
-        ctx.fillRect(0, 0, spec.w, spec.h);
-
-        // 计算人像黄金比例居中裁切
-        const scale = Math.max(spec.w / img.width, spec.h / img.height);
-        const nw = img.width * scale;
-        const nh = img.height * scale;
-        const nx = (spec.w - nw) / 2;
-        const ny = (spec.h - nh) / 2;
-
-        ctx.drawImage(img, nx, ny, nw, nh);
+        // 执行智能抠图与底色融合
+        processMattingAndRender(img, canvas, activeColor);
 
         processedSingleCanvas = canvas;
         const singleResultUrl = canvas.toDataURL('image/png');
@@ -2161,14 +2236,14 @@ const initIdPhoto = () => {
     img.src = currentImageSrc;
   };
 
-  // 4. 底色切换
+  // 5. 底色切换
   colorBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       colorBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeColor = btn.getAttribute('data-color');
       if (pickerColor) pickerColor.value = activeColor.startsWith('#') ? activeColor : '#3498DB';
-      renderIDPhoto();
+      renderIDPhoto(); // 切换颜色立即重新抠图换底出图！
     });
   });
 
@@ -2180,12 +2255,12 @@ const initIdPhoto = () => {
     });
   }
 
-  // 5. 规格切换
+  // 6. 规格切换
   if (selSize) {
     selSize.addEventListener('change', () => renderIDPhoto());
   }
 
-  // 6. 本地文件上传
+  // 7. 本地文件上传
   const handleFileSelect = (file) => {
     if (!file || !file.type.startsWith('image/')) {
       return alert('请选择正确的图片格式！');
@@ -2219,7 +2294,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 7. 导出单张
+  // 8. 导出单张
   if (btnDownloadSingle) {
     btnDownloadSingle.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
@@ -2230,7 +2305,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 8. 导出 4x6 冲印排版版面
+  // 9. 导出 4x6 冲印排版版面
   if (btnDownloadGrid) {
     btnDownloadGrid.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
@@ -2276,7 +2351,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 初始预演渲染
+  // 初始渲染
   renderIDPhoto();
 };
 

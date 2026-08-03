@@ -738,10 +738,15 @@
             </svg>
 
             <!-- 未开启摄像头的占位状态 -->
-            <div id="placeholder-idphoto-cam" style="text-align: center; color: #94A3B8; padding: 20px;">
-              <div style="font-size: 36px; margin-bottom: 6px;">📷</div>
-              <button id="btn-idphoto-start-cam" class="btn-pill" style="background: #2563EB; color: #FFFFFF; font-size: 13px; padding: 8px 18px; font-weight: 700; border-radius: 8px;">开启摄像头实时拍照</button>
-              <div style="font-size: 11px; margin-top: 8px; color: #64748B;">点击开启权限，自带标准证件照对齐框线</div>
+            <div id="placeholder-idphoto-cam" style="text-align: center; color: #94A3B8; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="font-size: 32px;">📷</div>
+              <button id="btn-idphoto-start-cam" class="btn-pill" style="background: #2563EB; color: #FFFFFF; font-size: 13px; padding: 8px 18px; font-weight: 700; border-radius: 8px;">电脑端：开启摄像头拍照</button>
+              
+              <!-- 手机端专属原生相机快捷按钮 -->
+              <label for="file-idphoto-mobile-cam" class="btn-pill" style="background: #10B981; color: #FFFFFF; font-size: 13px; padding: 8px 18px; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: 4px;">📱 手机端：直接调起相机拍照</label>
+              <input type="file" id="file-idphoto-mobile-cam" accept="image/*" capture="user" style="display:none;">
+              
+              <div style="font-size: 11px; color: #64748B; margin-top: 4px;">支持电脑 Web 镜头与手机原生相机直拍</div>
             </div>
           </div>
 
