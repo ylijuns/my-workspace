@@ -659,10 +659,8 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* 手机端彻底隐藏管理后台入口 */
-  .admin-only {
-    display: none !important;
-  }
+  .pc-only-inline { display: none !important; }
+  .mobile-only-inline { display: inline !important; }
 
   /* 强制横屏禁用与隐藏移动端顶栏 */
   html, body {
@@ -802,6 +800,24 @@ body {
   
   .sidebar-profile-name {
     display: none !important;
+  }
+
+  /* 手机端隐藏除个人信息外的后台选项 */
+  #page-admin .admin-tab-btn:not([data-tab="profile"]),
+  #page-admin .admin-panel:not(#admin-panel-profile),
+  #page-admin div[style*="background: linear-gradient(135deg, #FFF3CD, #FFEBAA);"] {
+    display: none !important;
+  }
+
+  #page-admin .admin-tab-btn[data-tab="profile"] {
+    display: block !important;
+    width: 100%;
+    text-align: center;
+    border-bottom: 2px solid var(--theme-accent);
+  }
+
+  #page-admin #admin-panel-profile {
+    display: block !important;
   }
 }
 
@@ -1273,5 +1289,16 @@ body {
 .preset-avatar-img.active {
   border-color: var(--theme-accent) !important;
   box-shadow: 0 0 8px var(--theme-accent);
+}
+
+/* -------------------------------------------------------------
+ * 电脑与手机自适应展示辅助类
+ * ------------------------------------------------------------- */
+.pc-only-inline {
+  display: inline !important;
+}
+
+.mobile-only-inline {
+  display: none !important;
 }
 
