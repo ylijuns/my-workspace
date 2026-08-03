@@ -2813,44 +2813,6 @@ const initAdmin = () => {
   };
 
   // 蝏穃��穃蘂敶訫�靽嘥�
-  if (btnAddQuote) {
-    const newBtn = btnAddQuote.cloneNode(true);
-    btnAddQuote.parentNode.replaceChild(newBtn, btnAddQuote);
-    newBtn.addEventListener('click', () => {
-      const quoteTextVal = document.getElementById('txt-admin-quote-text').value.trim();
-      const quoteSourceVal = document.getElementById('txt-admin-quote-source').value.trim() || '雿𡁜�';
-
-      if (!quoteTextVal) {
-        return alert('�穃蘂甇��銝滩�銝箇征嚗�');
-      }
-
-      const customQuotes = getLocalData('custom_bible_quotes', []);
-      customQuotes.push({ text: quoteTextVal, source: quoteSourceVal });
-      setLocalData('custom_bible_quotes', customQuotes);
-
-      document.getElementById('txt-admin-quote-text').value = '';
-      document.getElementById('txt-admin-quote-source').value = '';
-
-      refreshAdminQuotes();
-      alert('�� �萎耨�穃蘂靽嘥��𣂼�嚗�歇摮睃�雿删��穃蘂韏��摨瓐��');
-      
-      // �峕郊�瑟鰵霂餌��枏㨃�∠�銝羓�隞𦠜𠯫�穃蘂
-      const quoteText = document.getElementById('bible-quote-text');
-      if (quoteText) {
-        let testDate = new Date().getDate();
-        let dayQuote = '';
-        if (customQuotes.length > 0) {
-          const q = customQuotes[(testDate - 1) % customQuotes.length];
-          dayQuote = `${q.text} (${q.source})`;
-        } else {
-          dayQuote = bibleQuotes31[(testDate - 1) % 31];
-        }
-        quoteText.textContent = `"${dayQuote}"`;
-      }
-    });
-  }
-
-  // 蝏穃���祗敶訫�靽嘥�
   if (btnAddSpeech) {
     const newBtn = btnAddSpeech.cloneNode(true);
     btnAddSpeech.parentNode.replaceChild(newBtn, btnAddSpeech);
