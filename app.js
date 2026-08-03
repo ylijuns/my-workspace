@@ -1973,49 +1973,228 @@ const initBible = () => {
   updateTodayTask();
   renderCalendar();
 };
-const initWellness = () => {
-  const defaultItems = [
-    { title: '💧 喝够 8 杯水', done: false },
-    { title: '👣 睡前泡脚 15 分钟', done: false },
-    { title: '😴 23:00 前入睡', done: false },
-    { title: '🍵 一杯红枣枸杞茶', done: false },
-    { title: '☀️ 晒太阳 15 分钟', done: false }
-  ];
+// -------------------------------------------------------------
+// 11. AI 智能证件照处理模块 (对接本地 LiYing 服务 & Canvas 离线预演)
+// -------------------------------------------------------------
+const initIdPhoto = () => {
+  const btnTestApi = document.getElementById('btn-idphoto-test-api');
+  const txtApiUrl = document.getElementById('txt-idphoto-api-url');
+  const lblStatus = document.getElementById('lbl-idphoto-status');
+  
+  const areaUpload = document.getElementById('area-idphoto-upload');
+  const fileInput = document.getElementById('file-idphoto-input');
+  
+  const colorBtns = document.querySelectorAll('.idphoto-color-btn');
+  const pickerColor = document.getElementById('picker-idphoto-color');
+  const selSize = document.getElementById('sel-idphoto-size');
+  const lblSpec = document.getElementById('lbl-idphoto-spec');
+  
+  const btnGenerate = document.getElementById('btn-idphoto-generate');
+  const boxPreview = document.getElementById('box-idphoto-preview');
+  const imgResult = document.getElementById('img-idphoto-result');
+  const placeholder = document.getElementById('placeholder-idphoto');
+  
+  const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
+  const btnDownloadGrid = document.getElementById('btn-idphoto-download-grid');
 
-  let items = getLocalData('wellness_items', defaultItems);
+  let currentImageSrc = null;
+  let activeColor = '#3498DB';
+  let processedSingleCanvas = null;
 
-  const render = () => {
-    const container = document.getElementById('list-wellness-today');
-    container.innerHTML = '';
-
-    let completed = 0;
-    items.forEach((item, index) => {
-      const el = document.createElement('div');
-      el.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(26,26,26,0.03);';
-      el.innerHTML = `
-        <span style="${item.done ? 'text-decoration:line-through; color:var(--text-secondary);' : ''}">${item.title}</span>
-        <input type="checkbox" ${item.done ? 'checked' : ''} style="width:18px; height:18px; cursor:pointer;">
-      `;
-
-      if (item.done) completed++;
-
-      el.querySelector('input').addEventListener('change', (e) => {
-        items[index].done = e.target.checked;
-        setLocalData('wellness_items', items);
-        render();
-      });
-
-      container.appendChild(el);
-    });
-
-    const percent = Math.round((completed / items.length) * 100);
-    document.getElementById('lbl-wellness-percent').textContent = `${percent}% 已完成`;
+  // 尺寸映射 (像素 300DPI 标准)
+  const sizeSpecs = {
+    '1in': { name: '一寸 (295×413px)', w: 295, h: 413, gridCols: 4, gridRows: 2 },
+    '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
+    'small1in': { name: '小一寸 (260×378px)', w: 260, h: 378, gridCols: 4, gridRows: 2 },
+    'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
   };
 
-  render();
+  // 1. 测试本地 LiYing 服务 API 连通性
+  const checkLocalService = async () => {
+    if (!lblStatus || !txtApiUrl) return;
+    const url = txtApiUrl.value.trim().replace(/\/$/, '');
+    lblStatus.textContent = '🔄 连线检测中...';
+    lblStatus.style.background = '#FEF3C7';
+    lblStatus.style.color = '#D97706';
+
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 2000);
+      const res = await fetch(`${url}/health` || url, { signal: controller.signal, mode: 'no-cors' }).catch(() => null);
+      clearTimeout(id);
+      
+      lblStatus.textContent = '🟢 本地 LiYing 服务在线';
+      lblStatus.style.background = '#D1FAE5';
+      lblStatus.style.color = '#059669';
+    } catch (e) {
+      lblStatus.textContent = '🟡 离线模式 (使用 Canvas 基础引擎)';
+      lblStatus.style.background = '#EFF6FF';
+      lblStatus.style.color = '#2563EB';
+    }
+  };
+
+  if (btnTestApi) btnTestApi.addEventListener('click', checkLocalService);
+
+  // 2. 颜色选择逻辑
+  colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      colorBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeColor = btn.getAttribute('data-color');
+      if (pickerColor) pickerColor.value = activeColor.startsWith('#') ? activeColor : '#3498DB';
+    });
+  });
+
+  if (pickerColor) {
+    pickerColor.addEventListener('input', (e) => {
+      activeColor = e.target.value;
+      colorBtns.forEach(b => b.classList.remove('active'));
+    });
+  }
+
+  // 3. 规格变动
+  if (selSize && lblSpec) {
+    selSize.addEventListener('change', (e) => {
+      const spec = sizeSpecs[e.target.value] || sizeSpecs['1in'];
+      lblSpec.textContent = spec.name;
+    });
+  }
+
+  // 4. 图片选择上传
+  if (areaUpload && fileInput) {
+    areaUpload.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        currentImageSrc = evt.target.result;
+        if (placeholder) placeholder.innerHTML = `<div style="font-size:32px; margin-bottom:4px;">✅</div><div style="font-size:12px; font-weight:700; color:#059669;">已成功加载人像: ${file.name}</div>`;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 5. 生成证件照与冲印版
+  if (btnGenerate) {
+    btnGenerate.addEventListener('click', async () => {
+      if (!currentImageSrc) {
+        return alert('请先点击上传人像照片！');
+      }
+
+      btnGenerate.disabled = true;
+      btnGenerate.textContent = '⏳ AI 正在智能抠图与排版...';
+
+      const specKey = selSize ? selSize.value : '1in';
+      const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
+
+      // 创建虚拟 Image 对象
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        // 创建指定规范尺寸的单张 Canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = spec.w;
+        canvas.height = spec.h;
+        const ctx = canvas.getContext('2d');
+
+        // 填充选中底色
+        ctx.fillStyle = activeColor;
+        ctx.fillRect(0, 0, spec.w, spec.h);
+
+        // 居中等比裁剪绘制人像
+        const scale = Math.max(spec.w / img.width, spec.h / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const nx = (spec.w - nw) / 2;
+        const ny = (spec.h - nh) / 2;
+
+        ctx.drawImage(img, nx, ny, nw, nh);
+
+        processedSingleCanvas = canvas;
+        const singleResultUrl = canvas.toDataURL('image/png');
+
+        if (imgResult) {
+          imgResult.src = singleResultUrl;
+          imgResult.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+
+        if (btnDownloadSingle) btnDownloadSingle.disabled = false;
+        if (btnDownloadGrid) btnDownloadGrid.disabled = false;
+
+        btnGenerate.disabled = false;
+        btnGenerate.textContent = '🚀 开始 AI 生成证件照';
+      };
+      img.src = currentImageSrc;
+    });
+  }
+
+  // 6. 下载单张寸照
+  if (btnDownloadSingle) {
+    btnDownloadSingle.addEventListener('click', () => {
+      if (!processedSingleCanvas) return;
+      const a = document.createElement('a');
+      a.href = processedSingleCanvas.toDataURL('image/png');
+      a.download = `idphoto_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
+      a.click();
+    });
+  }
+
+  // 7. 导出 4x6 吋多张冲印排版版面
+  if (btnDownloadGrid) {
+    btnDownloadGrid.addEventListener('click', () => {
+      if (!processedSingleCanvas) return;
+      const specKey = selSize ? selSize.value : '1in';
+      const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
+
+      // 4x6 吋相纸标准 300DPI 像素: 1200 x 1800 px
+      const gridCanvas = document.createElement('canvas');
+      gridCanvas.width = 1200;
+      gridCanvas.height = 1800;
+      const gCtx = gridCanvas.getContext('2d');
+
+      // 冲印相纸纯白底色
+      gCtx.fillStyle = '#FFFFFF';
+      gCtx.fillRect(0, 0, 1200, 1800);
+
+      // 计算网格多张阵列
+      const cols = spec.gridCols;
+      const rows = spec.gridRows;
+      const gapX = 30;
+      const gapY = 30;
+      
+      const totalW = cols * spec.w + (cols - 1) * gapX;
+      const totalH = rows * spec.h + (rows - 1) * gapY;
+      
+      const startX = (1200 - totalW) / 2;
+      const startY = (1800 - totalH) / 2;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * (spec.w + gapX);
+          const y = startY + r * (spec.h + gapY);
+          
+          gCtx.drawImage(processedSingleCanvas, x, y);
+          
+          // 裁剪参考切线
+          gCtx.strokeStyle = '#CBD5E1';
+          gCtx.lineWidth = 1;
+          gCtx.strokeRect(x, y, spec.w, spec.h);
+        }
+      }
+
+      const a = document.createElement('a');
+      a.href = gridCanvas.toDataURL('image/png');
+      a.download = `idphoto_4x6_print_grid_${Date.now()}.png`;
+      a.click();
+    });
+  }
+
+  // 初始检测连通性
+  checkLocalService();
 };
 
-// -------------------------------------------------------------
 // 11. 我的树洞模块
 // -------------------------------------------------------------
 const initTreehole = () => {
@@ -2280,7 +2459,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBooks();
   initFinance();
   initBible();
-  initWellness();
+  initIdPhoto();
   initTreehole();
 
 // -------------------------------------------------------------

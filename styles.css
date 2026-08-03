@@ -67,6 +67,11 @@ body[data-theme="mindfulness"] {
   --theme-light-bg: #F4EBFC;
   --theme-hover: #8040C9;
 }
+body[data-theme="idphoto"] {
+  --theme-accent: #2563EB;
+  --theme-light-bg: #EFF6FF;
+  --theme-hover: #1D4ED8;
+}
 body[data-theme="blog"] {
   --theme-accent: #E67E22;
   --theme-light-bg: #FDF2E9;
@@ -1304,5 +1309,34 @@ body {
 
 .mobile-only-block {
   display: none !important;
+}
+
+/* 📷 AI 智能证件照专属样式 */
+.idphoto-color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.idphoto-color-btn.active {
+  border-color: #2563EB;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.idphoto-preview-box {
+  background: #F8FAFC;
+  border: 2px dashed #E2E8F0;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 280px;
 }
 
