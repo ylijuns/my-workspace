@@ -2480,26 +2480,6 @@ const initAdmin = () => {
     avatarPreview.style.backgroundImage = `url('${selectedAvatarUrl}')`;
   }
 
-  // 绑定预设头像的高亮点击
-  const presetAvatarImgs = document.querySelectorAll('#page-admin .preset-avatar-img');
-  presetAvatarImgs.forEach(img => {
-    const avatarUrl = img.getAttribute('data-avatar');
-    if (avatarUrl === selectedAvatarUrl) {
-      img.classList.add('active');
-    } else {
-      img.classList.remove('active');
-    }
-
-    img.addEventListener('click', () => {
-      presetAvatarImgs.forEach(i => i.classList.remove('active'));
-      img.classList.add('active');
-      selectedAvatarUrl = avatarUrl;
-      if (avatarPreview) {
-        avatarPreview.style.backgroundImage = `url('${avatarUrl}')`;
-      }
-    });
-  });
-
   // 监听本地头像文件上传，并使用 Canvas 在前端强剪裁压缩为 128x128 像素
   if (fileAvatarUpload) {
     fileAvatarUpload.addEventListener('change', (e) => {
@@ -2531,9 +2511,6 @@ const initAdmin = () => {
           if (avatarPreview) {
             avatarPreview.style.backgroundImage = `url('${compressedData}')`;
           }
-
-          // 取消预设头像的高亮
-          presetAvatarImgs.forEach(i => i.classList.remove('active'));
         };
         img.src = event.target.result;
       };
