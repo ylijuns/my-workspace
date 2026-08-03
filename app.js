@@ -1994,6 +1994,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. 📷 智能证件照生成器 (步骤重构 + 动态背景剥离灵敏度微调引擎)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (边缘连通泛洪 BFS + 肤色安全防护抠图引擎)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   // 模式切换按钮
   const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
@@ -2031,7 +2034,7 @@ const initIdPhoto = () => {
   let stream = null;
   let currentImageSrc = './apple-touch-icon.png';
   let activeColor = '#3498DB';
-  let tolerance = 65; // 默认扣背景色差容差
+  let tolerance = 45; // 优化后的默认抠背景灵敏度
   let processedSingleCanvas = null;
 
   // 尺寸映射 (300DPI 标准)
@@ -2039,11 +2042,11 @@ const initIdPhoto = () => {
     '1in': { name: '一寸 (295×413px)', w: 295, h: 413, gridCols: 4, gridRows: 2 },
     '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
     'small1in': { name: '小一寸 (260×378px)', w: 260, h: 378, gridCols: 4, gridRows: 2 },
-    'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
+    'small2in': { name: '小二寸 / 签证 (35 × 45 mm)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
   };
 
-  // 🧠 动态高精背景剥离与换底算法 (Dynamic Matting & Color Engine)
-  const processMattingAndRender = (img, targetCanvas, bgColor, mattingTolerance) => {
+  // 🧠 计算机图形学算法：边缘连通广度优先搜索 (Connected BFS Matting) + 肤色人脸安全保护
+  const processConnectedMattingAndRender = (img, targetCanvas, bgColor, mattingTolerance) => {
     const w = targetCanvas.width;
     const h = targetCanvas.height;
     const ctx = targetCanvas.getContext('2d');
@@ -2064,9 +2067,9 @@ const initIdPhoto = () => {
     const imgData = tCtx.getImageData(0, 0, w, h);
     const data = imgData.data;
 
-    // 多点自动取样背景色
+    // 1. 采样四周边缘背景色
     const getPixel = (x, y) => {
-      const idx = Math.floor(y * w + x) * 4;
+      const idx = (y * w + x) * 4;
       return [data[idx], data[idx + 1], data[idx + 2]];
     };
 
@@ -2075,8 +2078,7 @@ const initIdPhoto = () => {
       getPixel(w - 5, 5),
       getPixel(5, 15),
       getPixel(w - 5, 15),
-      getPixel(15, 5),
-      getPixel(w - 15, 5)
+      getPixel(Math.floor(w / 2), 5)
     ];
 
     let avgBgR = 0, avgBgG = 0, avgBgB = 0;
@@ -2089,33 +2091,78 @@ const initIdPhoto = () => {
     avgBgG /= bgSamples.length;
     avgBgB /= bgSamples.length;
 
-    // 像素比对与背景剥离
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
+    // 判断是否为人体肤色 (Skin Detection Protection Model)
+    const isSkinColor = (r, g, b) => {
+      return (r > 60 && g > 40 && b > 20 && (r - g > 10) && r > b && (Math.max(r, g, b) - Math.min(r, g, b) > 15));
+    };
 
+    // 2. 广度优先搜索 (BFS) 队列：仅从四条外边界向内部连通漫延
+    const visited = new Uint8Array(w * h);
+    const queue = [];
+
+    // 将图像四周 4 条外边缘全部注入初始 BFS 队列
+    for (let x = 0; x < w; x++) {
+      queue.push(x, 0); // 上边缘
+      queue.push(x, h - 1); // 下边缘
+      visited[x] = 1;
+      visited[(h - 1) * w + x] = 1;
+    }
+    for (let y = 0; y < h; y++) {
+      queue.push(0, y); // 左边缘
+      queue.push(w - 1, y); // 右边缘
+      visited[y * w] = 1;
+      visited[y * w + (w - 1)] = 1;
+    }
+
+    // BFS 遍历向内剥离背景
+    let head = 0;
+    while (head < queue.length) {
+      const cx = queue[head++];
+      const cy = queue[head++];
+      const idx = (cy * w + cx) * 4;
+
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+
+      // 计算与采样背景色的色差距离
       const dist = Math.sqrt(
         (r - avgBgR) * (r - avgBgR) +
         (g - avgBgG) * (g - avgBgG) +
         (b - avgBgB) * (b - avgBgB)
       );
 
-      if (dist < mattingTolerance) {
-        data[i + 3] = 0; // 设置背景为透明
-      } else if (dist < mattingTolerance + 25) {
-        const alphaRatio = (dist - mattingTolerance) / 25;
-        data[i + 3] = Math.floor(data[i + 3] * alphaRatio); // 边缘渐变平滑羽化
+      // 如果属于连通背景区，且不是五官肤色：设为透明
+      if (dist < mattingTolerance && !isSkinColor(r, g, b)) {
+        data[idx + 3] = 0; // 透明
+
+        // 向四周 4 邻域继续漫延
+        const neighbors = [
+          [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
+        ];
+
+        for (let i = 0; i < neighbors.length; i++) {
+          const nx = neighbors[i][0];
+          const ny = neighbors[i][1];
+
+          if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+            const vIdx = ny * w + nx;
+            if (!visited[vIdx]) {
+              visited[vIdx] = 1;
+              queue.push(nx, ny);
+            }
+          }
+        }
       }
     }
 
     tCtx.putImageData(imgData, 0, 0);
 
-    // 绘制用户选中的全新背景底色 (红底/蓝底/白底)
+    // 3. 在目标 Canvas 上绘制选中的纯正底色 (红底/蓝底/白底)
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, w, h);
 
-    // 叠加剥离背景后的透明人像
+    // 4. 叠加经过连通防误伤剥离后的人像
     ctx.drawImage(tempCanvas, 0, 0);
   };
 
@@ -2165,13 +2212,12 @@ const initIdPhoto = () => {
       canvas.height = videoCam.videoHeight || 480;
       const ctx = canvas.getContext('2d');
       
-      // 镜像翻转
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(videoCam, 0, 0, canvas.width, canvas.height);
 
       currentImageSrc = canvas.toDataURL('image/png');
-      renderIDPhoto(); // 拍照即刻自动执行抠图与底色合成！
+      renderIDPhoto();
     });
   }
 
@@ -2225,8 +2271,8 @@ const initIdPhoto = () => {
         canvas.width = spec.w;
         canvas.height = spec.h;
 
-        // 执行抠图与底色合成 (传入动态容差)
-        processMattingAndRender(img, canvas, activeColor, tolerance);
+        // 执行连通防误伤抠图与底色融合
+        processConnectedMattingAndRender(img, canvas, activeColor, tolerance);
 
         processedSingleCanvas = canvas;
         const singleResultUrl = canvas.toDataURL('image/png');
@@ -2246,12 +2292,12 @@ const initIdPhoto = () => {
     img.src = currentImageSrc;
   };
 
-  // 5. 灵敏度容差滑块调节 (微调背景剔除效果)
+  // 5. 灵敏度容差滑块调节
   if (rangeTolerance && lblToleranceVal) {
     rangeTolerance.addEventListener('input', (e) => {
       tolerance = parseInt(e.target.value, 10);
       lblToleranceVal.textContent = `扣背景容差: ${tolerance}`;
-      renderIDPhoto(); // 拉动滑块 0 毫秒即时自动变色出图！
+      renderIDPhoto();
     });
   }
 
