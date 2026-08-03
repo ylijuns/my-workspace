@@ -2560,6 +2560,92 @@ const initAdmin = () => {
     });
   }
 
+  // 💾 数据口令备份导出与恢复导入
+  const btnExportData = document.getElementById('btn-admin-export-data');
+  const btnImportData = document.getElementById('btn-admin-import-data');
+  const txtImportCode = document.getElementById('txt-admin-import-code');
+
+  if (btnExportData) {
+    btnExportData.addEventListener('click', () => {
+      // 收集 localStorage 里的所有相关配置
+      const keysToBackup = [
+        'admin_profile_name',
+        'admin_profile_avatar',
+        'book_list',
+        'admin_blogs_db',
+        'admin_hymns_db',
+        'starred_items',
+        'starred_news_db',
+        'chk-health-diabetes',
+        'chk-health-cholesterol',
+        'diet_calories_total',
+        'diet_items',
+        'wellness_sleep_records',
+        'wellness_bp_records',
+        'wellness_bg_records',
+        'pedometer_daily_steps',
+        'treehole_records',
+        'treehole_emotions'
+      ];
+      
+      const backupObj = {};
+      keysToBackup.forEach(key => {
+        const val = localStorage.getItem(key);
+        if (val !== null) {
+          backupObj[key] = val;
+        }
+      });
+
+      try {
+        // 转为 Base64 口令代码
+        const jsonStr = JSON.stringify(backupObj);
+        // 使用 encodeURIComponent 配合 btoa 处理中文及 Base64 宽字符问题
+        const base64Code = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+          return String.fromCharCode(parseInt(p1, 16));
+        }));
+
+        // 写入剪贴板
+        navigator.clipboard.writeText(base64Code).then(() => {
+          alert('🎉 备份成功！已将你所有的打卡和资料数据口令成功复制到剪贴板。请前往桌面 App 的设置页粘贴并恢复。');
+        }).catch(err => {
+          // 如果剪贴板限制，直接填入恢复文本框让用户手动拷贝
+          if (txtImportCode) txtImportCode.value = base64Code;
+          alert('数据打包成功！因为手机权限限制未能自动复制，已将口令填入下方的输入框中，请手动复制它！');
+        });
+      } catch (e) {
+        alert('备份数据打包失败，请重试！');
+      }
+    });
+  }
+
+  if (btnImportData && txtImportCode) {
+    btnImportData.addEventListener('click', () => {
+      const codeVal = txtImportCode.value.trim();
+      if (!codeVal) {
+        return alert('请先粘贴你的数据备份口令代码！');
+      }
+
+      try {
+        // 解码 Base64
+        const jsonStr = decodeURIComponent(atob(codeVal).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const backupObj = JSON.parse(jsonStr);
+
+        // 遍历还原写入 localStorage
+        Object.keys(backupObj).forEach(key => {
+          localStorage.setItem(key, backupObj[key]);
+        });
+
+        alert('🎉 恭喜！你的所有打卡、计步和历史记录已成功恢复并满血复活！页面即将重新加载以应用配置。');
+        window.location.reload();
+      } catch (e) {
+        alert('❌ 恢复失败！你粘贴的可能不是有效的数据口令，或者口令代码有损坏。请确保完整复制了备份代码。');
+      }
+    });
+  }
+
   // 一键导出 hymns_db.json
   const btnExportHymns = document.getElementById('btn-admin-export-hymns');
   if (btnExportHymns) {

@@ -926,7 +926,23 @@
               <input type="file" id="file-admin-avatar-upload" accept="image/*" style="display:none;">
             </div>
           </div>
-          <button class="btn-pill btn-accent" id="btn-admin-save-profile" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存资料到本地缓存 ＋</button>
+          <button class="btn-pill btn-accent" id="btn-admin-save-profile" style="width:100%; border-radius:15px; padding:10px; font-size:12px; margin-bottom:12px;">保存资料到本地缓存 ＋</button>
+
+          <!-- 数据备份与多端迁移 -->
+          <div style="margin-top:24px; border-top:1px dashed var(--border-light); padding-top:20px;">
+            <div style="font-size:13px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">💾 个人数据备份与多端迁移</div>
+            <div style="font-size:11px; line-height:1.5; color:var(--text-secondary); margin-bottom:12px;">
+              iOS Safari 和主屏幕桌面 App 的本地缓存是完全隔离的。如需搬运打卡记录或备份：
+            </div>
+            
+            <button class="btn-pill" id="btn-admin-export-data" style="width:100%; padding:10px; border-radius:12px; font-size:12px; margin-bottom:12px; background:var(--theme-light-bg); color:var(--theme-accent); border:1px solid var(--theme-accent); font-weight:700;">📤 备份并复制当前数据口令</button>
+            
+            <div class="admin-form-group">
+              <label>恢复或导入数据 (粘贴备份数据口令)：</label>
+              <textarea id="txt-admin-import-code" class="admin-textarea" placeholder="在此粘贴你的备份数据口令代码..." style="min-height:60px; font-size:11px;"></textarea>
+            </div>
+            <button class="btn-pill btn-accent" id="btn-admin-import-data" style="width:100%; border-radius:12px; padding:10px; font-size:12px;">📥 粘贴并恢复数据 ＋</button>
+          </div>
         </div>
       </div>
     </section>
