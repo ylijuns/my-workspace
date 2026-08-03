@@ -1652,11 +1652,50 @@ const initBible = () => {
     // �冽���甇交凒�啣��函���澈�穃蘂 (頝笔��齿𠯫�� testDate ��偬嚗���唳�憭拐���)
     const quoteText = document.getElementById('bible-quote-text');
     if (quoteText) {
-      const customQuotes = getLocalData('custom_bible_quotes', []);
-      let activeQuoteObj = null;
-      if (customQuotes.length > 0) {
-        activeQuoteObj = customQuotes[(testDate - 1) % customQuotes.length];
-      } else {
+      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      const match = dayQuote.match(/^(.*?)\s*\((.*?)\)\s*$/);
+      const textOnly = match ? match[1].trim() : dayQuote;
+      const sourceOnly = match ? match[2].trim() : '';
+
+      quoteText.textContent = `"${textOnly}"`;
+      const quoteSource = document.getElementById('bible-quote-source');
+      if (quoteSource) {
+        quoteSource.textContent = sourceOnly;
+      }
+
+      const calYear = document.getElementById('calendar-header-year');
+      const calMonth = document.getElementById('calendar-header-month');
+      const calDay = document.getElementById('calendar-day-num');
+      const calLunarWeek = document.getElementById('calendar-lunar-week');
+
+      if (calYear && calMonth && calDay) {
+        const today = new Date();
+        const dObj = new Date(today.getFullYear(), today.getMonth(), testDate);
+        
+        calYear.textContent = dObj.getFullYear();
+        
+        const monthsZh = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+        const monthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        calMonth.textContent = `${monthsEn[dObj.getMonth()]} ${monthsZh[dObj.getMonth()]}`;
+        
+        calDay.textContent = testDate;
+
+        const weeksZh = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        const weeksEn = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const weekStr = `${weeksZh[dObj.getDay()]} ${weeksEn[dObj.getDay()]}`;
+
+        const lunarListAug2026 = [
+          '六月十九', '六月二十', '六月廿一', '六月廿二', '六月廿三', '六月廿四', '六月廿五', '六月廿六', '六月廿七', '六月廿八', 
+          '六月廿九', '六月三十', '七月初一', '七月初二', '七月初三', '七月初四', '七月初五', '七月初六', '七月初七', '七月初八', 
+          '七月初九', '七月初十', '七月十一', '七月十二', '七月十三', '七月十四', '七月十五', '七月十六', '七月十七', '七月十八', '七月十九'
+        ];
+        const lunarDayStr = lunarListAug2026[(testDate - 1) % 30];
+        
+        if (calLunarWeek) {
+          calLunarWeek.textContent = `丙午马年 · ${weekStr} · ${lunarDayStr}`;
+        }
+      }
+    } else {
         activeQuoteObj = bibleQuotes31[(testDate - 1) % 31];
       }
 
@@ -1973,20 +2012,17 @@ const initBible = () => {
   const shareQuoteBtn = document.getElementById('btn-share-bible-quote');
   if (shareQuoteBtn) {
     shareQuoteBtn.addEventListener('click', () => {
-      const customQuotes = getLocalData('custom_bible_quotes', []);
-      let dayQuote = '';
-      if (customQuotes.length > 0) {
-        const q = customQuotes[(testDate - 1) % customQuotes.length];
-        dayQuote = `${q.text} (${q.source})`;
-      } else {
-        dayQuote = bibleQuotes31[(testDate - 1) % 31];
-      }
-      // �坔�蝟餌��芸���
-      navigator.clipboard.writeText(dayQuote).then(() => {
-        alert(`�� 瘥𤩺𠯫�穃蘂撌脫��笔��嗉秐�芾斐�選��蹂蜓���霂剖虜隡湧�雿𩤃�\n\n"${dayQuote}"`);
+      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      const match = dayQuote.match(/^(.*?)\s*\((.*?)\)\s*$/);
+      const textOnly = match ? match[1].trim() : dayQuote;
+      const sourceOnly = match ? match[2].trim() : '';
+      const shareText = `"${textOnly}" — ${sourceOnly}`;
+      
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert(`✨ 每日金句已成功复制至剪贴板，愿主的话语常伴随你！\n\n${shareText}`);
       }).catch(err => {
-        console.warn('�芸��踹��亙仃韐伐��滨漣撘寞�撅閧內嚗�', err);
-        alert(`�� 瘥𤩺𠯫�穃蘂嚗䨵n"${dayQuote}"`);
+        console.warn('剪切板写入失败，降级弹框展示：', err);
+        alert(`✨ 每日金句：\n${shareText}`);
       });
     });
   }
@@ -2579,25 +2615,52 @@ const initAdmin = () => {
       const nameVal = profileNameInput.value.trim();
 
       if (!nameVal) {
-        return alert('撅閧內�萇妍銝滩�銝箇征嚗�');
+        return alert('姓名不能为空！');
       }
 
       localStorage.setItem('admin_profile_name', nameVal);
       localStorage.setItem('admin_profile_avatar', selectedAvatarUrl);
 
       updateProfileUI();
-      alert('銝芯犖靽⊥��滨蔭�湔鰵�𣂼�嚗�窈�瑟鰵蝵煾△嚗屸��𤾸朖�臬銁�𧢲㦤蝡胯�峕溶�惩�銝餃�撟𨰻�齿𧒄�芸𢆡�曄內雿删�銝枏�憭游���');
+      
+      if (selectedAvatarUrl.startsWith('data:image/')) {
+        try {
+          const parts = selectedAvatarUrl.split(',');
+          const mime = parts[0].match(/:(.*?);/)[1];
+          const bstr = atob(parts[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          const fileBlob = new Blob([u8arr], { type: mime });
+          const downloadUrl = URL.createObjectURL(fileBlob);
+          
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = 'apple-touch-icon.png';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(downloadUrl);
+          
+          alert('🎉 保存成功！\n\n已自动为你裁剪并下载了标准的桌面图标文件 [apple-touch-icon.png]。\n\n请直接将电脑 Downloads 目录下的该图片拖入你的项目根目录中覆盖同名文件，然后再运行一次 ./deploy.sh 即可！');
+        } catch (err) {
+          alert('个人信息配置更新成功！');
+        }
+      } else {
+        alert('个人信息配置更新成功！');
+      }
+      location.reload();
     });
   }
 
-  // �𠒣 �唳旿��誘憭�遢撖澆枂銝擧�憭滚紡��
-  const btnExportData = document.getElementById('btn-admin-export-data');
+  // �𠒣 �唳旿��誘憭�遢撖澆枂銝擧�憭滚紡��btn-admin-export-data');
   const btnImportData = document.getElementById('btn-admin-import-data');
   const txtImportCode = document.getElementById('txt-admin-import-code');
 
   if (btnExportData) {
     btnExportData.addEventListener('click', () => {
-      // �園� localStorage �𣬚����厩㮾�喲�蝵�
       const keysToBackup = [
         'admin_profile_name',
         'admin_profile_avatar',
@@ -2616,7 +2679,6 @@ const initAdmin = () => {
         'pedometer_daily_steps',
         'treehole_records',
         'treehole_emotions',
-        'custom_bible_quotes',
         'custom_speech_phrases'
       ];
       
@@ -2629,23 +2691,19 @@ const initAdmin = () => {
       });
 
       try {
-        // 頧砌蛹 Base64 ��誘隞��
         const jsonStr = JSON.stringify(backupObj);
-        // 雿輻鍂 encodeURIComponent �滚� btoa 憭��銝剜��� Base64 摰賢�蝚阡䔮憸�
         const base64Code = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => {
           return String.fromCharCode(parseInt(p1, 16));
         }));
 
-        // �坔��芾斐��
         navigator.clipboard.writeText(base64Code).then(() => {
-          alert('�� 憭�遢�𣂼�嚗�歇撠�����厩��枏㨃�諹��蹱㺭�桀藁隞斗��笔��嗅��芾斐�踴��窈�滚�獢屸𢒰 App ��挽蝵桅△蝎䁅斐撟嗆�憭溻��');
+          alert('🎉 备份成功！已将你所有的打卡和资料数据口令成功复制到剪贴板。请前往桌面 App 的设置页粘贴并恢复。');
         }).catch(err => {
-          // 憒���芾斐�輸��塚��湔𦻖憛怠��Ｗ���𧋦獢�悟�冽��见𢆡�瑁�
           if (txtImportCode) txtImportCode.value = base64Code;
-          alert('�唳旿�枏��𣂼�嚗��銝箸��箸��鞾��嗆𧊋�質䌊�典��塚�撌脣���誘憛怠�銝𧢲䲮����交�銝哨�霂瑟��典��嗅�嚗�');
+          alert('数据打包成功！因为手机权限限制未能自动复制，已将口令填入下方的输入框中，请手动复制它！');
         });
       } catch (e) {
-        alert('憭�遢�唳旿�枏�憭梯揖嚗諹窈�滩�嚗�');
+        alert('备份数据打包失败，请重试！');
       }
     });
   }
@@ -2654,68 +2712,43 @@ const initAdmin = () => {
     btnImportData.addEventListener('click', () => {
       const codeVal = txtImportCode.value.trim();
       if (!codeVal) {
-        return alert('霂瑕�蝎䁅斐雿删��唳旿憭�遢��誘隞��嚗�');
+        return alert('请先粘贴你的数据备份口令代码！');
       }
 
       try {
-        // 閫�� Base64
         const jsonStr = decodeURIComponent(atob(codeVal).split('').map(c => {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         
         const backupObj = JSON.parse(jsonStr);
 
-        // �滚�餈睃��坔� localStorage
         Object.keys(backupObj).forEach(key => {
           localStorage.setItem(key, backupObj[key]);
         });
 
-        alert('�� �剖�嚗������㗇��～��恣甇亙���蟮霈啣�撌脫����憭滚僎皛∟�憭齿暑嚗�△�Ｗ朖撠���啣�頧賭誑摨𠉛鍂�滨蔭��');
+        alert('🎉 恭喜！你的所有打卡、计步和历史记录已成功恢复并满血复活！页面即将重新加载以应用配置。');
         window.location.reload();
       } catch (e) {
-        alert('�� �Ｗ�憭梯揖嚗��蝎䁅斐��虾�賭��舀�����唳旿��誘嚗峕���藁隞支誨����笔���窈蝖桐�摰峕㟲憭滚�鈭��隞賭誨����');
+        alert('❌ 恢复失败！你粘贴的可能不是有效的数据口令，或者口令代码有损坏。请确保完整复制了备份代码。');
       }
     });
   }
 
-  // 銝��桀紡�� hymns_db.json
-  const btnExportHymns = document.getElementById('btn-admin-export-hymns');
-  if (btnExportHymns) {
-    const newBtn = btnExportHymns.cloneNode(true);
-    btnExportHymns.parentNode.replaceChild(newBtn, btnExportHymns);
-
-    newBtn.addEventListener('click', () => {
-      const hymns = getLocalData('admin_hymns_db', []);
-      if (hymns.length === 0) {
-        return alert('�砍𧑐������霂埈��唳旿嚗諹窈����乒�𨅯𧁋敺坿�甇𢞖�脲��硋�憪𧢲㺭�格��见極敶訫�霂埈�嚗�');
-      }
-
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hymns, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href",     dataStr);
-      downloadAnchor.setAttribute("download", "hymns_db.json");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    });
-  }
-
-  // 5. �嗆袇韏��瘛餃�銝𡒊恣�� (瘛餃�+蝞∠�)
-  const listAdminQuotes = document.getElementById('list-admin-quotes');
+  // 5. 零散资源添加与管理 (添加+管理)
   const listAdminSpeech = document.getElementById('list-admin-speech');
-  const btnAddQuote = document.getElementById('btn-admin-add-quote');
   const btnAddSpeech = document.getElementById('btn-admin-add-speech');
 
-  // �瑟鰵�芸�銋厰��亙�銵�
-  const refreshAdminQuotes = () => {
-    if (!listAdminQuotes) return;
-    listAdminQuotes.innerHTML = '';
-    const customQuotes = getLocalData('custom_bible_quotes', []);
-    if (customQuotes.length === 0) {
-      listAdminQuotes.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">����芸�銋厩�靽桅��伐��臬銁銝𦠜䲮敶訫���</div>';
+  // 刷新自定义口语列表
+  const refreshAdminSpeech = () => {
+    if (!listAdminSpeech) return;
+    listAdminSpeech.innerHTML = '';
+    const customSpeech = getLocalData('custom_speech_phrases', []);
+    if (customSpeech.length === 0) {
+      listAdminSpeech.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">暂无自定义口语，可在上方录入。</div>';
       return;
     }
-    customQuotes.forEach((q, index) => {
+    const langNames = { en: '英语', es: '西语', ja: '日语', fr: '法语' };
+    customSpeech.forEach((s, index) => {
       const item = document.createElement('div');
       item.className = 'list-item';
       item.style.flexDirection = 'row';
@@ -2723,32 +2756,23 @@ const initAdmin = () => {
       item.style.alignItems = 'center';
       item.innerHTML = `
         <div style="flex:1; padding-right:10px;">
-          <div style="font-size:12px; font-weight:700; color:var(--text-primary); line-height:1.5;">"${q.text}"</div>
-          <div style="font-size:10px; color:var(--theme-accent); margin-top:2px;">�� ${q.source}</div>
+          <div style="font-size:12px; font-weight:700; color:#2F80ED;">${s.text}</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${s.cn}</div>
+          <div style="font-size:9px; color:var(--theme-accent); margin-top:2px; font-weight:700; text-transform:uppercase;">语种: ${langNames[s.lang] || s.lang}</div>
         </div>
-        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">�𣳇膄</button>
+        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">删除</button>
       `;
       item.querySelector('button').addEventListener('click', () => {
-        if (confirm('蝖桀�閬���方��亦�靽桅��亙�嚗�')) {
-          customQuotes.splice(index, 1);
-          setLocalData('custom_bible_quotes', customQuotes);
-          refreshAdminQuotes();
-          // �峕郊�瑟鰵霂餌��枏㨃�∠�銝羓�隞𦠜𠯫�穃蘂
-          const quoteText = document.getElementById('bible-quote-text');
-          if (quoteText) {
-            let testDate = new Date().getDate();
-            let dayQuote = '';
-            if (customQuotes.length > 0) {
-              const q = customQuotes[(testDate - 1) % customQuotes.length];
-              dayQuote = `${q.text} (${q.source})`;
-            } else {
-              dayQuote = bibleQuotes31[(testDate - 1) % 31];
-            }
-            quoteText.textContent = `"${dayQuote}"`;
-          }
+        if (confirm('确定要删除这句口语练习句吗？')) {
+          customSpeech.splice(index, 1);
+          setLocalData('custom_speech_phrases', customSpeech);
+          refreshAdminSpeech();
+          renderSpeechModule();
         }
       });
-      listAdminQuotes.appendChild(item);
+      listAdminSpeech.appendChild(item);
+    });
+  };listAdminQuotes.appendChild(item);
     });
   };
 

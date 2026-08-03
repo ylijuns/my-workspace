@@ -641,10 +641,6 @@
           </cite>
         </div>
         
-        <!-- 灵修注解/字词解析 -->
-        <div style="font-size: 13px; line-height: 1.7; color: #6D4C41; text-align: left; background: #FAF3E0; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border-left: 3px solid #C94A4A; font-weight: 500;" id="bible-quote-tip">
-          希腊语中的爱有不同意思，可以是agape、phileo、eros等。新约圣经指的爱是agape，即「无条件的爱」。
-        </div>
         
         <button class="btn-pill" id="btn-share-bible-quote" style="background:#C94A4A; color:#FFFFFF; border:none; width:100%; border-radius:12px; padding:10px; font-weight:700; cursor:pointer; font-size:12px; box-shadow: 0 4px 8px rgba(201,74,74,0.15); margin: 0;">🔗 一键分享金句 ＋</button>
       </div>
@@ -837,6 +833,10 @@
           <div class="admin-tab-btn" data-tab="resources">添加+管理</div>
         </div>
 
+        <div class="mobile-only-block" style="font-size:11px; color:var(--theme-accent); text-align:center; margin-bottom:10px; font-weight:700; display:none; letter-spacing:1px;">
+          ← 左右滑动上方选项卡，可进入其他管理面板 →
+        </div>
+
         <!-- 1. 诗歌管理表单 -->
         <div id="admin-panel-hymns" class="admin-panel">
           <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入新诗歌</div>
@@ -965,23 +965,6 @@
 
         <!-- 5. 零散资源添加与管理 (添加+管理) -->
         <div id="admin-panel-resources" class="admin-panel" style="display:none;">
-          <!-- 每日金句添加 -->
-          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入每日灵修金句</div>
-          <div class="admin-form-group">
-            <label>金句正文 (内容建议简短隽永)</label>
-            <textarea id="txt-admin-quote-text" class="admin-textarea" placeholder="例如：耶和华是我的亮光，是我的拯救，我还怕谁呢？" style="min-height:50px;"></textarea>
-          </div>
-          <div class="admin-form-group">
-            <label>金句出处/章节</label>
-            <input type="text" id="txt-admin-quote-source" class="admin-input" placeholder="例如：诗篇 27:1">
-          </div>
-          <button class="btn-pill btn-accent" id="btn-admin-add-quote" style="width:100%; border-radius:15px; padding:10px; font-size:12px; margin-bottom:20px;">保存金句到本地库 ＋</button>
-
-          <!-- 每日金句管理列表 -->
-          <div style="font-size:13px; font-weight:700; margin-bottom:10px; border-left:3px solid var(--theme-accent); padding-left:8px;">📋 已录入自定义金句列表</div>
-          <div id="list-admin-quotes" style="margin-bottom:30px;">
-            <!-- 动态渲染自定义金句 -->
-          </div>
 
           <!-- 多国口语句添加 -->
           <div style="font-size:13px; font-weight:700; margin-top:20px; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入多国口语练习句</div>

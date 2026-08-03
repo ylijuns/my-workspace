@@ -661,6 +661,7 @@ body {
 @media (max-width: 768px) {
   .pc-only-inline { display: none !important; }
   .mobile-only-inline { display: inline !important; }
+  .mobile-only-block { display: block !important; }
 
   /* 强制横屏禁用与隐藏移动端顶栏 */
   html, body {
@@ -1298,6 +1299,10 @@ body {
 }
 
 .mobile-only-inline {
+  display: none !important;
+}
+
+.mobile-only-block {
   display: none !important;
 }
 
