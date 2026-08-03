@@ -266,7 +266,10 @@ const initEnglish = () => {
   let currentLang = 'en';
 
   const renderSpeechModule = () => {
-    const data = langData[currentLang];
+    const data = JSON.parse(JSON.stringify(langData[currentLang]));
+    const customSpeech = getLocalData('custom_speech_phrases', []);
+    const matchingCustom = customSpeech.filter(s => s.lang === currentLang);
+    data.phrases = data.phrases.concat(matchingCustom);
     
     // 更新每日金句
     const quoteText = document.getElementById('lbl-daily-quote-text');
@@ -1636,7 +1639,14 @@ const initBible = () => {
     // 动态同步更新底部的分享金句 (跟当前日期 testDate 挂钩，实现每天不同)
     const quoteText = document.getElementById('bible-quote-text');
     if (quoteText) {
-      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      const customQuotes = getLocalData('custom_bible_quotes', []);
+      let dayQuote = '';
+      if (customQuotes.length > 0) {
+        const q = customQuotes[(testDate - 1) % customQuotes.length];
+        dayQuote = `${q.text} (${q.source})`;
+      } else {
+        dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      }
       quoteText.textContent = `"${dayQuote}"`;
     }
   };
@@ -1908,7 +1918,14 @@ const initBible = () => {
   const shareQuoteBtn = document.getElementById('btn-share-bible-quote');
   if (shareQuoteBtn) {
     shareQuoteBtn.addEventListener('click', () => {
-      const dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      const customQuotes = getLocalData('custom_bible_quotes', []);
+      let dayQuote = '';
+      if (customQuotes.length > 0) {
+        const q = customQuotes[(testDate - 1) % customQuotes.length];
+        dayQuote = `${q.text} (${q.source})`;
+      } else {
+        dayQuote = bibleQuotes31[(testDate - 1) % 31];
+      }
       // 写入系统剪切板
       navigator.clipboard.writeText(dayQuote).then(() => {
         alert(`✨ 每日金句已成功复制至剪贴板，愿主的话语常伴随你！\n\n"${dayQuote}"`);
@@ -2543,7 +2560,9 @@ const initAdmin = () => {
         'wellness_bg_records',
         'pedometer_daily_steps',
         'treehole_records',
-        'treehole_emotions'
+        'treehole_emotions',
+        'custom_bible_quotes',
+        'custom_speech_phrases'
       ];
       
       const backupObj = {};
@@ -2626,9 +2645,163 @@ const initAdmin = () => {
     });
   }
 
+  // 5. 零散资源添加与管理 (添加+管理)
+  const listAdminQuotes = document.getElementById('list-admin-quotes');
+  const listAdminSpeech = document.getElementById('list-admin-speech');
+  const btnAddQuote = document.getElementById('btn-admin-add-quote');
+  const btnAddSpeech = document.getElementById('btn-admin-add-speech');
+
+  // 刷新自定义金句列表
+  const refreshAdminQuotes = () => {
+    if (!listAdminQuotes) return;
+    listAdminQuotes.innerHTML = '';
+    const customQuotes = getLocalData('custom_bible_quotes', []);
+    if (customQuotes.length === 0) {
+      listAdminQuotes.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">暂无自定义灵修金句，可在上方录入。</div>';
+      return;
+    }
+    customQuotes.forEach((q, index) => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.style.flexDirection = 'row';
+      item.style.justifyContent = 'space-between';
+      item.style.alignItems = 'center';
+      item.innerHTML = `
+        <div style="flex:1; padding-right:10px;">
+          <div style="font-size:12px; font-weight:700; color:var(--text-primary); line-height:1.5;">"${q.text}"</div>
+          <div style="font-size:10px; color:var(--theme-accent); margin-top:2px;">— ${q.source}</div>
+        </div>
+        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">删除</button>
+      `;
+      item.querySelector('button').addEventListener('click', () => {
+        if (confirm('确定要删除这句灵修金句吗？')) {
+          customQuotes.splice(index, 1);
+          setLocalData('custom_bible_quotes', customQuotes);
+          refreshAdminQuotes();
+          // 同步刷新读经打卡卡片上的今日金句
+          const quoteText = document.getElementById('bible-quote-text');
+          if (quoteText) {
+            let testDate = new Date().getDate();
+            let dayQuote = '';
+            if (customQuotes.length > 0) {
+              const q = customQuotes[(testDate - 1) % customQuotes.length];
+              dayQuote = `${q.text} (${q.source})`;
+            } else {
+              dayQuote = bibleQuotes31[(testDate - 1) % 31];
+            }
+            quoteText.textContent = `"${dayQuote}"`;
+          }
+        }
+      });
+      listAdminQuotes.appendChild(item);
+    });
+  };
+
+  // 刷新自定义口语句子列表
+  const refreshAdminSpeech = () => {
+    if (!listAdminSpeech) return;
+    listAdminSpeech.innerHTML = '';
+    const customSpeech = getLocalData('custom_speech_phrases', []);
+    if (customSpeech.length === 0) {
+      listAdminSpeech.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">暂无自定义口语，可在上方录入。</div>';
+      return;
+    }
+    const langNames = { en: '英语', es: '西语', ja: '日语', fr: '法语' };
+    customSpeech.forEach((s, index) => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.style.flexDirection = 'row';
+      item.style.justifyContent = 'space-between';
+      item.style.alignItems = 'center';
+      item.innerHTML = `
+        <div style="flex:1; padding-right:10px;">
+          <div style="font-size:12px; font-weight:700; color:#2F80ED;">${s.text}</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${s.cn}</div>
+          <div style="font-size:9px; color:var(--theme-accent); margin-top:2px; font-weight:700; text-transform:uppercase;">语种: ${langNames[s.lang] || s.lang}</div>
+        </div>
+        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">删除</button>
+      `;
+      item.querySelector('button').addEventListener('click', () => {
+        if (confirm('确定要删除这句口语练习句吗？')) {
+          customSpeech.splice(index, 1);
+          setLocalData('custom_speech_phrases', customSpeech);
+          refreshAdminSpeech();
+          renderSpeechModule();
+        }
+      });
+      listAdminSpeech.appendChild(item);
+    });
+  };
+
+  // 绑定金句录入保存
+  if (btnAddQuote) {
+    const newBtn = btnAddQuote.cloneNode(true);
+    btnAddQuote.parentNode.replaceChild(newBtn, btnAddQuote);
+    newBtn.addEventListener('click', () => {
+      const quoteTextVal = document.getElementById('txt-admin-quote-text').value.trim();
+      const quoteSourceVal = document.getElementById('txt-admin-quote-source').value.trim() || '佚名';
+
+      if (!quoteTextVal) {
+        return alert('金句正文不能为空！');
+      }
+
+      const customQuotes = getLocalData('custom_bible_quotes', []);
+      customQuotes.push({ text: quoteTextVal, source: quoteSourceVal });
+      setLocalData('custom_bible_quotes', customQuotes);
+
+      document.getElementById('txt-admin-quote-text').value = '';
+      document.getElementById('txt-admin-quote-source').value = '';
+
+      refreshAdminQuotes();
+      alert('🎉 灵修金句保存成功！已存入你的金句资料库。');
+      
+      // 同步刷新读经打卡卡片上的今日金句
+      const quoteText = document.getElementById('bible-quote-text');
+      if (quoteText) {
+        let testDate = new Date().getDate();
+        let dayQuote = '';
+        if (customQuotes.length > 0) {
+          const q = customQuotes[(testDate - 1) % customQuotes.length];
+          dayQuote = `${q.text} (${q.source})`;
+        } else {
+          dayQuote = bibleQuotes31[(testDate - 1) % 31];
+        }
+        quoteText.textContent = `"${dayQuote}"`;
+      }
+    });
+  }
+
+  // 绑定口语录入保存
+  if (btnAddSpeech) {
+    const newBtn = btnAddSpeech.cloneNode(true);
+    btnAddSpeech.parentNode.replaceChild(newBtn, btnAddSpeech);
+    newBtn.addEventListener('click', () => {
+      const langVal = document.getElementById('sel-admin-speech-lang').value;
+      const speechTextVal = document.getElementById('txt-admin-speech-text').value.trim();
+      const speechCnVal = document.getElementById('txt-admin-speech-cn').value.trim();
+
+      if (!speechTextVal || !speechCnVal) {
+        return alert('口语原文和中文翻译不能为空！');
+      }
+
+      const customSpeech = getLocalData('custom_speech_phrases', []);
+      customSpeech.push({ lang: langVal, text: speechTextVal, cn: speechCnVal });
+      setLocalData('custom_speech_phrases', customSpeech);
+
+      document.getElementById('txt-admin-speech-text').value = '';
+      document.getElementById('txt-admin-speech-cn').value = '';
+
+      refreshAdminSpeech();
+      renderSpeechModule();
+      alert('🎉 口语练习句保存成功！已存入对应语言学习库。');
+    });
+  }
+
   // 首次运行
   refreshAdminHymns();
   refreshAdminBooks();
+  refreshAdminQuotes();
+  refreshAdminSpeech();
 };
 
 

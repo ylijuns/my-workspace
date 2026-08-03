@@ -808,6 +808,7 @@
           <div class="admin-tab-btn" data-tab="books">书籍推荐管理</div>
           <div class="admin-tab-btn" data-tab="rss">新闻与博客源</div>
           <div class="admin-tab-btn" data-tab="profile">个人信息设置</div>
+          <div class="admin-tab-btn" data-tab="resources">添加+管理</div>
         </div>
 
         <!-- 1. 诗歌管理表单 -->
@@ -933,6 +934,54 @@
               <textarea id="txt-admin-import-code" class="admin-textarea" placeholder="在此粘贴你的备份数据口令代码..." style="min-height:60px; font-size:11px;"></textarea>
             </div>
             <button class="btn-pill btn-accent" id="btn-admin-import-data" style="width:100%; border-radius:12px; padding:10px; font-size:12px;">📥 粘贴并恢复数据 ＋</button>
+          </div>
+        </div>
+
+        <!-- 5. 零散资源添加与管理 (添加+管理) -->
+        <div id="admin-panel-resources" class="admin-panel" style="display:none;">
+          <!-- 每日金句添加 -->
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入每日灵修金句</div>
+          <div class="admin-form-group">
+            <label>金句正文 (内容建议简短隽永)</label>
+            <textarea id="txt-admin-quote-text" class="admin-textarea" placeholder="例如：耶和华是我的亮光，是我的拯救，我还怕谁呢？" style="min-height:50px;"></textarea>
+          </div>
+          <div class="admin-form-group">
+            <label>金句出处/章节</label>
+            <input type="text" id="txt-admin-quote-source" class="admin-input" placeholder="例如：诗篇 27:1">
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-add-quote" style="width:100%; border-radius:15px; padding:10px; font-size:12px; margin-bottom:20px;">保存金句到本地库 ＋</button>
+
+          <!-- 每日金句管理列表 -->
+          <div style="font-size:13px; font-weight:700; margin-bottom:10px; border-left:3px solid var(--theme-accent); padding-left:8px;">📋 已录入自定义金句列表</div>
+          <div id="list-admin-quotes" style="margin-bottom:30px;">
+            <!-- 动态渲染自定义金句 -->
+          </div>
+
+          <!-- 多国口语句添加 -->
+          <div style="font-size:13px; font-weight:700; margin-top:20px; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入多国口语练习句</div>
+          <div class="admin-form-group">
+            <label>语种选择</label>
+            <select id="sel-admin-speech-lang" class="admin-input" style="height:38px;">
+              <option value="en">English 英语</option>
+              <option value="es">Español 西语</option>
+              <option value="ja">日本語 日语</option>
+              <option value="fr">Français 法语</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label>原文练习语句 (可带标点)</label>
+            <input type="text" id="txt-admin-speech-text" class="admin-input" placeholder="例如：God bless you.">
+          </div>
+          <div class="admin-form-group">
+            <label>中文翻译</label>
+            <input type="text" id="txt-admin-speech-cn" class="admin-input" placeholder="例如：上帝祝福你。">
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-add-speech" style="width:100%; border-radius:15px; padding:10px; font-size:12px; margin-bottom:20px;">保存口语句子到本地库 ＋</button>
+
+          <!-- 多国口语管理列表 -->
+          <div style="font-size:13px; font-weight:700; margin-bottom:10px; border-left:3px solid var(--theme-accent); padding-left:8px;">📋 已录入自定义口语句子</div>
+          <div id="list-admin-speech">
+            <!-- 动态渲染自定义口语 -->
           </div>
         </div>
       </div>
