@@ -615,12 +615,38 @@
         </div>
       </div>
 
-      <!-- 每日金句 -->
-      <div class="card" style="background:#F4EBFC; border-left: 5px solid #9B5DE5; color:#8040C9; padding:20px; text-align:center;">
-        <blockquote style="font-size:15px; font-weight:700; font-style:italic; line-height:1.6; margin-bottom:12px;" id="bible-quote-text">
-          "神看着一切所造的都甚好。有晚上，有早晨，这是第六日。"
-        </blockquote>
-        <button class="btn-pill btn-accent" id="btn-share-bible-quote" style="background:#9B5DE5;">🔗 分享金句</button>
+      <!-- 每日灵修日历卡片 (自动圣经金句提取) -->
+      <div class="card" style="background: #FFFDF9; border: 1px solid #E6D2B5; border-radius: 12px; box-shadow: 0 4px 15px rgba(230,210,181,0.2); padding: 24px; text-align: center; font-family: 'Outfit', 'Inter', sans-serif;">
+        <!-- 日历头部 -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #C94A4A; padding-bottom: 10px; margin-bottom: 18px; color: #C94A4A; font-weight: 700; font-size: 15px;">
+          <span id="calendar-header-year">2026</span>
+          <span id="calendar-header-month">August 八月</span>
+        </div>
+        
+        <!-- 特大日期大字 -->
+        <div style="font-size: 80px; font-weight: 900; color: #C94A4A; line-height: 1.1; margin: 5px 0;" id="calendar-day-num">2</div>
+        
+        <!-- 农历与星期 -->
+        <div style="font-size: 12px; color: #7F5050; letter-spacing: 2px; margin-bottom: 18px; font-weight: 700;" id="calendar-lunar-week">
+          丙午年 · 星期日 SUN · 六月大二十
+        </div>
+        
+        <!-- 经文双线红框 -->
+        <div style="border: 2px double #C94A4A; padding: 20px 14px; margin-bottom: 16px; background: #FFFDFD; border-radius: 4px;">
+          <blockquote style="font-size: 16px; font-weight: 700; line-height: 1.6; color: #333333; margin: 0 0 10px 0; letter-spacing: 0.5px;" id="bible-quote-text">
+            "我们爱，因为神先爱我们。"
+          </blockquote>
+          <cite style="font-size: 12px; color: #C94A4A; font-style: normal; font-weight: 700;" id="bible-quote-source">
+            约翰一书 4:19
+          </cite>
+        </div>
+        
+        <!-- 灵修注解/字词解析 -->
+        <div style="font-size: 13px; line-height: 1.7; color: #6D4C41; text-align: left; background: #FAF3E0; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border-left: 3px solid #C94A4A; font-weight: 500;" id="bible-quote-tip">
+          希腊语中的爱有不同意思，可以是agape、phileo、eros等。新约圣经指的爱是agape，即「无条件的爱」。
+        </div>
+        
+        <button class="btn-pill" id="btn-share-bible-quote" style="background:#C94A4A; color:#FFFFFF; border:none; width:100%; border-radius:12px; padding:10px; font-weight:700; cursor:pointer; font-size:12px; box-shadow: 0 4px 8px rgba(201,74,74,0.15); margin: 0;">🔗 一键分享金句 ＋</button>
       </div>
     </section>
 

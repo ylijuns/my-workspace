@@ -1,4 +1,4 @@
-// 初始化与本地存储
+// �嘥��碶��砍𧑐摮睃�
 const getLocalData = (key, defaultVal) => {
   const data = localStorage.getItem(key);
   return data ? JSON.parse(data) : defaultVal;
@@ -8,7 +8,7 @@ const setLocalData = (key, val) => {
 };
 
 const updateProfileUI = () => {
-  const cachedName = localStorage.getItem('admin_profile_name') || '同工';
+  const cachedName = localStorage.getItem('admin_profile_name') || '��極';
   const cachedAvatar = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
 
   const sidebarName = document.getElementById('lbl-sidebar-name');
@@ -21,7 +21,7 @@ const updateProfileUI = () => {
 };
 
 // -------------------------------------------------------------
-// 1. 路由与主题切换
+// 1. 頝舐眏銝𦒘蜓憸睃���
 // -------------------------------------------------------------
 const setupNavigation = () => {
   const menuItems = document.querySelectorAll('.menu-item');
@@ -34,30 +34,30 @@ const setupNavigation = () => {
     item.addEventListener('click', () => {
       const target = item.getAttribute('data-target');
       
-      // 切换高亮
+      // ��揢擃䀝漁
       menuItems.forEach(m => m.classList.remove('active'));
       item.classList.add('active');
 
-      // 切换页面
+      // ��揢憿菟𢒰
       pages.forEach(p => p.classList.remove('active'));
       document.getElementById(`page-${target}`).classList.add('active');
 
-      // 切换全局主题色变量
+      // ��揢�典�銝駁��脣���
       document.body.setAttribute('data-theme', target);
       
-      // 更新移动端顶栏标题
+      // �湔鰵蝘餃𢆡蝡舫▲�𤩺�憸�
       if (mobileTitle) {
         const text = item.querySelector('span').textContent;
         mobileTitle.textContent = text;
       }
 
-      // 移动端下自动关闭侧边栏抽屉
+      // 蝘餃𢆡蝡臭��芸𢆡�喲𡡒靘扯器�𤩺𡂝撅�
       if (sidebar) sidebar.classList.remove('open');
       if (overlay) overlay.classList.remove('open');
       
-      // 保存当前路由
+      // 靽嘥�敶枏�頝舐眏
       localStorage.setItem('activeModule', target);
-      // 数据联动重载
+      // �唳旿�𥪜𢆡�滩蝸
       if (target === 'hymns') initHymns();
       if (target === 'books') initBooks();
       if (target === 'news') initNewsArbitrageBlog();
@@ -65,7 +65,7 @@ const setupNavigation = () => {
     });
   });
 
-  // 移动端汉堡菜单控制
+  // 蝘餃𢆡蝡舀��∟��閙綉��
   const burgerBtn = document.getElementById('btn-mobile-menu');
   if (burgerBtn) {
     burgerBtn.addEventListener('click', () => {
@@ -81,20 +81,20 @@ const setupNavigation = () => {
     });
   }
 
-  // 恢复上次访问的模块
+  // �Ｗ�銝𦠜活霈輸䔮��芋��
   const activeModule = localStorage.getItem('activeModule') || 'inspiration';
   const targetNav = document.getElementById(`nav-${activeModule}`);
   if (targetNav) targetNav.click();
 };
 
 // -------------------------------------------------------------
-// 2. 每日灵感模块
+// 2. 瘥𤩺𠯫�菜�璅∪�
 // -------------------------------------------------------------
 const initInspiration = () => {
   const defaultList = [
-    { id: '1', category: '创意', content: '做一个记录灵感的App，把所有好的想法集中管理', createdAt: '今天 10:15', isPinned: false },
-    { id: '2', category: '生活', content: '周末尝试做一次露营，远离城市喧嚣', createdAt: '昨天 20:30', isPinned: true },
-    { id: '3', category: '工作', content: '会议前先发议程，让大家提前准备更高效', createdAt: '7月25日 14:20', isPinned: false }
+    { id: '1', category: '�𥟇�', content: '�帋�銝芾扇敶閧��毺�App嚗峕����匧末���瘜閖�銝剔恣��', createdAt: '隞𠰴予 10:15', isPinned: false },
+    { id: '2', category: '��暑', content: '�冽錰撠肽��帋�甈⊿蠧�伐�餈𦦵氖�𤾸��批鶓', createdAt: '�典予 20:30', isPinned: true },
+    { id: '3', category: '撌乩�', content: '隡朞悅�滚��𤏸悅蝔页�霈拙之摰嗆��滚�憭�凒擃䀹�', createdAt: '7��25�� 14:20', isPinned: false }
   ];
 
   let list = getLocalData('inspirations', defaultList);
@@ -105,11 +105,11 @@ const initInspiration = () => {
     const countLabel = document.getElementById('cnt-inspiration');
     container.innerHTML = '';
 
-    // 过滤与置顶排序
+    // 餈�誘銝𡒊蔭憿嗆�摨�
     const filtered = list.filter(item => activeFilter === 'all' || item.category === activeFilter);
     const sorted = [...filtered].sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
 
-    countLabel.textContent = `${sorted.length} 条`;
+    countLabel.textContent = `${sorted.length} �︶;
 
     sorted.forEach(item => {
       const itemEl = document.createElement('div');
@@ -121,10 +121,10 @@ const initInspiration = () => {
           </div>
           <div class="list-item-actions">
             <button class="btn-pill btn-pin" data-id="${item.id}">
-              ${item.isPinned ? '📌 已置顶' : '置顶'}
+              ${item.isPinned ? '�� 撌脩蔭憿�' : '蝵桅▲'}
             </button>
-            <button class="btn-pill btn-edit" data-id="${item.id}">编辑</button>
-            <button class="btn-pill btn-delete" data-id="${item.id}">删除</button>
+            <button class="btn-pill btn-edit" data-id="${item.id}">蝻𤥁�</button>
+            <button class="btn-pill btn-delete" data-id="${item.id}">�𣳇膄</button>
           </div>
         </div>
         <div class="list-item-body">${item.content}</div>
@@ -138,9 +138,9 @@ const initInspiration = () => {
     if (!text.trim()) return;
     const newItem = {
       id: Date.now().toString(),
-      category: ['创意', '生活', '工作', '学习'][Math.floor(Math.random() * 4)],
+      category: ['�𥟇�', '��暑', '撌乩�', '摮虫�'][Math.floor(Math.random() * 4)],
       content: text,
-      createdAt: '今天 ' + new Date().toTimeString().slice(0, 5),
+      createdAt: '隞𠰴予 ' + new Date().toTimeString().slice(0, 5),
       isPinned: false
     };
     list.unshift(newItem);
@@ -148,7 +148,7 @@ const initInspiration = () => {
     render();
   };
 
-  // 事件监听
+  // 鈭衤辣�穃𨯬
   document.getElementById('btn-inspiration-submit').addEventListener('click', () => {
     const input = document.getElementById('inp-inspiration');
     addInspiration(input.value);
@@ -164,11 +164,11 @@ const initInspiration = () => {
   });
 
   document.getElementById('fab-inspiration').addEventListener('click', () => {
-    const text = prompt('请输入你的新灵感：');
+    const text = prompt('霂瑁��乩���鰵�菜�嚗�');
     if (text) addInspiration(text);
   });
 
-  // 分类 Tabs
+  // ��掩 Tabs
   document.getElementById('tabs-inspiration').addEventListener('click', (e) => {
     if (e.target.classList.contains('pill-tab')) {
       document.querySelectorAll('#tabs-inspiration .pill-tab').forEach(t => t.classList.remove('active'));
@@ -178,7 +178,7 @@ const initInspiration = () => {
     }
   });
 
-  // 操作组 (事件委托)
+  // �滢�蝏� (鈭衤辣憪娍�)
   document.getElementById('list-inspiration').addEventListener('click', (e) => {
     const target = e.target;
     const id = target.getAttribute('data-id');
@@ -188,12 +188,12 @@ const initInspiration = () => {
       list = list.map(item => item.id === id ? { ...item, isPinned: !item.isPinned } : item);
     } else if (target.classList.contains('btn-edit')) {
       const item = list.find(item => item.id === id);
-      const newText = prompt('编辑你的灵感：', item.content);
+      const newText = prompt('蝻𤥁�雿删��菜�嚗�', item.content);
       if (newText) {
         list = list.map(item => item.id === id ? { ...item, content: newText } : item);
       }
     } else if (target.classList.contains('btn-delete')) {
-      if (confirm('确定要删除这条灵感吗？')) {
+      if (confirm('蝖桀�閬���方��∠��笔�嚗�')) {
         list = list.filter(item => item.id !== id);
       }
     }
@@ -205,59 +205,59 @@ const initInspiration = () => {
 };
 
 // -------------------------------------------------------------
-// 3. 英语口语练习模块
+// 3. �梯祗��祗蝏��璅∪�
 // -------------------------------------------------------------
 const initEnglish = () => {
   const langData = {
     en: {
       quote: "It does not matter how slowly you go as long as you do not stop.",
-      quoteCn: "前进的速度不重要，只要不停下来。",
+      quoteCn: "�滩����笔漲銝漤�閬���芾�銝滚�銝𧢲䔉��",
       phrases: [
-        { text: 'Nice to meet you.', cn: '很高兴认识你。' },
-        { text: 'How are you doing?', cn: '你最近怎么样？' },
-        { text: 'I love learning languages.', cn: '我喜欢学习外语。' },
-        { text: 'Where is the nearest station?', cn: '最近的车站在哪里？' },
-        { text: 'Could you help me, please?', cn: '请问能帮个忙吗？' },
-        { text: 'What time is it?', cn: '现在几点了？' }
+        { text: 'Nice to meet you.', cn: '敺���渲恕霂����' },
+        { text: 'How are you doing?', cn: '雿䭾�餈烐�𦒘��瘀�' },
+        { text: 'I love learning languages.', cn: '�穃�甈Ｗ郎銋惩�霂准��' },
+        { text: 'Where is the nearest station?', cn: '��餈𤑳�頧衣��典𪑛�䕘�' },
+        { text: 'Could you help me, please?', cn: '霂琿䔮�賢葬銝芸��梹�' },
+        { text: 'What time is it?', cn: '�啣銁�删�鈭��' }
       ],
       speechLang: 'en-US'
     },
     es: {
-      quote: "El éxito no es el final, el fracaso no es fatal: es el valor para continuar lo que cuenta.",
-      quoteCn: "成功不是终点，失败也不是末日：持续前进的勇气才是最重要的。",
+      quote: "El 矇xito no es el final, el fracaso no es fatal: es el valor para continuar lo que cuenta.",
+      quoteCn: "�𣂼�銝齿糓蝏��嚗�仃韐乩�銝齿糓�急𠯫嚗𡁏�蝏剖�餈𤤿�����齿糓���滩�����",
       phrases: [
-        { text: '¡Hola! ¿Cómo estás?', cn: '你好！你怎么样？' },
-        { text: 'Buenos días, que tengas un buen día.', cn: '早上好，祝你有美好的一天。' },
-        { text: 'El éxito requiere un esfuerzo constante.', cn: '成功需要持续的努力。' },
-        { text: 'Muchas gracias por tu ayuda hoy.', cn: '非常感谢你今天的帮助。' },
-        { text: '¿Dónde está el baño, por favor?', cn: '请问洗手间在哪里？' },
-        { text: 'Mucho gusto en conocerte.', cn: '很高兴认识你。' }
+        { text: '癒Hola! 聶C籀mo est獺s?', cn: '雿惩末嚗���𦒘��瘀�' },
+        { text: 'Buenos d穩as, que tengas un buen d穩a.', cn: '�拐�憟踝�蟡苷��厩�憟賜�銝�憭押��' },
+        { text: 'El 矇xito requiere un esfuerzo constante.', cn: '�𣂼���閬��蝏剔��芸���' },
+        { text: 'Muchas gracias por tu ayuda hoy.', cn: '�𧼮虜�蠘陝雿牐�憭拍�撣桀𨭌��' },
+        { text: '聶D籀nde est獺 el ba簽o, por favor?', cn: '霂琿䔮瘣埈��游銁�芷�嚗�' },
+        { text: 'Mucho gusto en conocerte.', cn: '敺���渲恕霂����' }
       ],
       speechLang: 'es-ES'
     },
     ja: {
-      quote: "夢なき者に理想なし、理想なき者に計画なし、計画なき者に実行なし。",
-      quoteCn: "无梦者无理想，无理想者无计划，无计划者无执行。",
+      quote: "憭Ｕ��滩�������芥�����喋��滩���閮�𤫇�芥�����颯��滩���摰蠘��芥���",
+      quoteCn: "�䭾╪������嚗峕�������霈∪�嚗峕�霈∪�����扯���",
       phrases: [
-        { text: 'こんにちは、お元気ですか？', cn: '你好，你身体好吗？' },
-        { text: 'おはようございます、今日も頑張りましょう。', cn: '早上好，今天也一起加油吧。' },
-        { text: '成功するには、絶え間ない努力が必要です。', cn: '成功需要不断的努力。' },
-        { text: '今日は手伝ってくれて本当にありがとう。', cn: '今天谢谢你的帮忙。' },
-        { text: '駅はどちらですか？', cn: '车站是在哪个方向？' },
-        { text: 'お会いできて嬉しいです。', cn: '很高兴见到你。' }
+        { text: '�瓐��怒��胯�������扼��页�', cn: '雿惩末嚗䔶�頨思�憟賢�嚗�' },
+        { text: '�𨳍�����𢛵�����踺����乓��穃撐�𨳍��𨰜�����', cn: '�拐�憟踝�隞𠰴予銋煺�韏瑕�瘝孵嫃��' },
+        { text: '�𣂼��踺��怒���絮����芥��芸����閬���踺��', cn: '�𣂼���閬���剔��芸���' },
+        { text: '隞𦠜𠯫�舀�隡腈��艾��䎚��砍��怒��𨳍��具���', cn: '隞𠰴予靚Ｚ陝雿删�撣桀���' },
+        { text: '擏���押��剹��踺�嚗�', cn: '頧衣��臬銁�芯葵�孵�嚗�' },
+        { text: '�𠹺�����溻�戭剹�����踺��', cn: '敺���渲��唬���' }
       ],
       speechLang: 'ja-JP'
     },
     fr: {
-      quote: "Petit à petit, l'oiseau fait son nid.",
-      quoteCn: "不积跬步，无以至千里。（直译：一点一点，小鸟筑成巢穴。）",
+      quote: "Petit � petit, l'oiseau fait son nid.",
+      quoteCn: "銝滨妖頝祆郊嚗峕�隞亥秐�������渲�嚗帋��嫣��對�撠誯�蝑烐�撌Ｙ庖���",
       phrases: [
-        { text: 'Bonjour ! Comment allez-vous ?', cn: '你好！你最近怎么样？' },
-        { text: 'Bonne journée, profitez bien de votre journée.', cn: '早上好，祝你有美好的一天。' },
-        { text: 'Le succès exige des efforts constants.', cn: '成功需要不断的努力。' },
-        { text: 'Merci beaucoup pour votre aide aujourd\'hui.', cn: '非常感谢你今天的帮助。' },
-        { text: 'Où se trouve la gare la plus proche ?', cn: '最近的火车站在哪里？' },
-        { text: 'Enchanté de vous rencontrer.', cn: '很高兴认识你。' }
+        { text: 'Bonjour ! Comment allez-vous ?', cn: '雿惩末嚗����餈烐�𦒘��瘀�' },
+        { text: 'Bonne journ矇e, profitez bien de votre journ矇e.', cn: '�拐�憟踝�蟡苷��厩�憟賜�銝�憭押��' },
+        { text: 'Le succ癡s exige des efforts constants.', cn: '�𣂼���閬���剔��芸���' },
+        { text: 'Merci beaucoup pour votre aide aujourd\'hui.', cn: '�𧼮虜�蠘陝雿牐�憭拍�撣桀𨭌��' },
+        { text: 'O羅 se trouve la gare la plus proche ?', cn: '��餈𤑳��怨膠蝡坔銁�芷�嚗�' },
+        { text: 'Enchant矇 de vous rencontrer.', cn: '敺���渲恕霂����' }
       ],
       speechLang: 'fr-FR'
     }
@@ -271,7 +271,7 @@ const initEnglish = () => {
     const matchingCustom = customSpeech.filter(s => s.lang === currentLang);
     data.phrases = data.phrases.concat(matchingCustom);
     
-    // 更新每日金句
+    // �湔鰵瘥𤩺𠯫�穃蘂
     const quoteText = document.getElementById('lbl-daily-quote-text');
     const quoteTrans = document.getElementById('lbl-daily-quote-translation');
     if (quoteText && quoteTrans) {
@@ -279,7 +279,7 @@ const initEnglish = () => {
       quoteTrans.textContent = data.quoteCn;
     }
 
-    // 重新渲染口语卡片列表
+    // �齿鰵皜脫���祗�∠��𡑒”
     const container = document.getElementById('list-english-phrases');
     if (container) {
       container.innerHTML = '';
@@ -295,10 +295,10 @@ const initEnglish = () => {
             <div style="font-weight:700; color:#2F80ED; font-size:14px;">${p.text}</div>
             <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${p.cn}</div>
           </div>
-          <span style="font-size:18px;" class="speak-btn">🔊</span>
+          <span style="font-size:18px;" class="speak-btn">��</span>
         `;
         
-        // TTS 播放
+        // TTS �剜𦆮
         const speak = () => {
           const speech = new SpeechSynthesisUtterance(p.text);
           speech.lang = data.speechLang;
@@ -311,7 +311,7 @@ const initEnglish = () => {
     }
   };
 
-  // 绑定金句朗读发音
+  // 蝏穃��穃蘂�𡑒粉�煾𨺗
   const readBtn = document.getElementById('btn-english-read');
   if (readBtn) {
     readBtn.addEventListener('click', (e) => {
@@ -321,14 +321,14 @@ const initEnglish = () => {
       window.speechSynthesis.speak(speech);
       
       const origText = e.target.textContent;
-      e.target.textContent = '🔊 正在发音中...';
+      e.target.textContent = '�� 甇�銁�煾𨺗銝�...';
       setTimeout(() => {
         e.target.textContent = origText;
       }, 1500);
     });
   }
 
-  // 绑定 Tabs 点击切换
+  // 蝏穃� Tabs �孵稬��揢
   const tabs = document.getElementById('english-lang-tabs');
   if (tabs) {
     tabs.addEventListener('click', (e) => {
@@ -341,17 +341,17 @@ const initEnglish = () => {
     });
   }
 
-  // 初次渲染
+  // �脲活皜脫�
   renderSpeechModule();
 };
 
 // -------------------------------------------------------------
-// 4. 每日减脂饮食模块
+// 4. 瘥𤩺𠯫�讛�擖桅�璅∪�
 // -------------------------------------------------------------
 const initDiet = () => {
-  const defaultBreakfast = ['燕麦牛奶 + 蓝莓', '水煮蛋 × 1'];
-  const defaultLunch = ['鸡胸肉沙拉', '杂粮饭 半碗'];
-  const defaultDinner = ['清蒸鱼 + 西兰花', '紫薯 × 1'];
+  const defaultBreakfast = ['�閖漲�𥕦扒 + �肽�', '瘞渡��� � 1'];
+  const defaultLunch = ['曏∟��㗇���', '��皎擖� �羓�'];
+  const defaultDinner = ['皜�𡢄敼� + 镼踹���', '蝝怨鱻 � 1'];
   
   let meals = getLocalData('diet_meals', {
     breakfast: defaultBreakfast,
@@ -360,21 +360,21 @@ const initDiet = () => {
   });
 
   const recipes = [
-    { title: '鸡胸肉蔬菜沙拉', desc: '鸡胸肉150g + 生菜 + 圣女果 + 橄榄油柠檬汁', cal: 280 },
-    { title: '燕麦能量碗', desc: '燕麦 + 蓝莓 + 杏仁 + 希腊酸奶', cal: 320 },
-    { title: '番茄豆腐汤', desc: '番茄 + 嫩豆腐 + 鸡蛋 + 香葱，低脂高蛋白', cal: 180 }
+    { title: '曏∟��㕑𥈡�𨀣���', desc: '曏∟���150g + �蠘� + ��戊�� + 璈��瘝寞�瑼祆�', cal: 280 },
+    { title: '�閖漲�賡�蝣�', desc: '�閖漲 + �肽� + �譍� + 撣諹��詨扒', cal: 320 },
+    { title: '�芾�鞊��瘙�', desc: '�芾� + 憳抵��� + 曏∟� + 擐躰𤍤嚗䔶�����讠蒾', cal: 180 }
   ];
 
   const updateCalories = () => {
     let total = 0;
     ['breakfast', 'lunch', 'dinner'].forEach(meal => {
       meals[meal].forEach(item => {
-        // 使用正则提取括号中的卡路里
-        const match = item.match(/(?:(\d+)千卡|(\d+)大卡)/);
+        // 雿輻鍂甇���𣂼��砍噡銝剔��∟楝��
+        const match = item.match(/(?:(\d+)��㨃|(\d+)憭批㨃)/);
         if (match) {
           total += parseInt(match[1] || match[2]);
         } else {
-          total += 150; // 默认每项算 150 千卡
+          total += 150; // 暺䁅恕瘥誯★蝞� 150 ��㨃
         }
       });
     });
@@ -383,7 +383,7 @@ const initDiet = () => {
     const caloriesVal = document.getElementById('diet-calories-val');
     if (caloriesVal) caloriesVal.textContent = total;
     
-    // 更新 SVG 圆环进度
+    // �湔鰵 SVG ��㴓餈𥕦漲
     const circle = document.getElementById('diet-circle');
     if (circle) {
       const circumference = 251.2;
@@ -391,15 +391,15 @@ const initDiet = () => {
       circle.style.strokeDashoffset = offset;
     }
 
-    // 更新宏量营养元素文本
+    // �湔鰵摰誯��亙������𧋦
     const prot = Math.round(total * 0.05);
     const carb = Math.round(total * 0.09);
     const fat = Math.round(total * 0.03);
     const macroText = document.getElementById('diet-macronutrients');
     if (macroText) {
       macroText.innerHTML = `
-        剩余: ${1500 - total} 千卡<br>
-        蛋白质: ${prot}g · 碳水: ${carb}g · 脂肪: ${fat}g
+        �拐�: ${1500 - total} ��㨃<br>
+        �讠蒾韐�: ${prot}g 繚 蝣單偌: ${carb}g 繚 ���: ${fat}g
       `;
     }
   };
@@ -415,8 +415,8 @@ const initDiet = () => {
         itemEl.style.justifyContent = 'space-between';
         itemEl.style.padding = '4px 0';
         itemEl.innerHTML = `
-          <span>• ${item}</span>
-          <span style="color:var(--text-secondary); cursor:pointer;" class="del-diet-btn" data-meal="${meal}" data-item="${item}">×</span>
+          <span>�� ${item}</span>
+          <span style="color:var(--text-secondary); cursor:pointer;" class="del-diet-btn" data-meal="${meal}" data-item="${item}">�</span>
         `;
         container.appendChild(itemEl);
       });
@@ -431,11 +431,11 @@ const initDiet = () => {
     updateCalories();
   };
 
-  // 添加按钮事件
+  // 瘛餃��厰僼鈭衤辣
   document.querySelectorAll('.btn-add-diet').forEach(btn => {
     btn.addEventListener('click', () => {
       const meal = btn.getAttribute('data-meal');
-      const item = prompt('输入你吃的东西：');
+      const item = prompt('颲枏�雿惩����镼選�');
       if (item) addMealItem(meal, item);
     });
   });
@@ -443,19 +443,19 @@ const initDiet = () => {
   const fabDiet = document.getElementById('fab-diet-add');
   if (fabDiet) {
     fabDiet.addEventListener('click', () => {
-      const meal = prompt('请选择餐别 (早餐/午餐/晚餐)：');
+      const meal = prompt('霂琿�㗇𥋘擗𣂼� (�拚�/���/�𡁻�)嚗�');
       let key = '';
-      if (meal === '早餐') key = 'breakfast';
-      else if (meal === '午餐') key = 'lunch';
-      else if (meal === '晚餐') key = 'dinner';
-      else return alert('请输入正确的餐别');
+      if (meal === '�拚�') key = 'breakfast';
+      else if (meal === '���') key = 'lunch';
+      else if (meal === '�𡁻�') key = 'dinner';
+      else return alert('霂瑁��交迤蝖桃�擗𣂼�');
 
-      const item = prompt('输入食物名称：');
+      const item = prompt('颲枏�憌毺��滨妍嚗�');
       if (item) addMealItem(key, item);
     });
   }
 
-  // 删除饮食项
+  // �𣳇膄擖桅�憿�
   document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('del-diet-btn')) {
       const meal = e.target.getAttribute('data-meal');
@@ -467,7 +467,7 @@ const initDiet = () => {
     }
   });
 
-  // 渲染推荐食谱
+  // 皜脫��刻�憌蠘停
   const recipesContainer = document.getElementById('list-diet-recipes');
   if (recipesContainer) {
     recipesContainer.innerHTML = '';
@@ -478,22 +478,22 @@ const initDiet = () => {
       el.innerHTML = `
         <div style="font-weight:700; color:#27AE60;">${r.title}</div>
         <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${r.desc}</div>
-        <div style="margin-top:6px;"><span class="list-item-tag">🔥 ${r.cal} 千卡</span></div>
+        <div style="margin-top:6px;"><span class="list-item-tag">�𤣳 ${r.cal} ��㨃</span></div>
       `;
       el.addEventListener('click', () => {
-        const meal = prompt('加入哪一餐？(早餐/午餐/晚餐)：');
+        const meal = prompt('�惩��芯�擗琜�(�拚�/���/�𡁻�)嚗�');
         let key = '';
-        if (meal === '早餐') key = 'breakfast';
-        else if (meal === '午餐') key = 'lunch';
-        else if (meal === '晚餐') key = 'dinner';
-        if (key) addMealItem(key, `${r.title} (${r.cal}千卡)`);
+        if (meal === '�拚�') key = 'breakfast';
+        else if (meal === '���') key = 'lunch';
+        else if (meal === '�𡁻�') key = 'dinner';
+        if (key) addMealItem(key, `${r.title} (${r.cal}��㨃)`);
       });
       recipesContainer.appendChild(el);
     });
   }
 
   // -------------------------------------------------------------
-  // Cal AI 食物热量与病理风险评估逻辑
+  // Cal AI 憌毺��剝�銝𡒊�����抵�隡圈�餉�
   // -------------------------------------------------------------
   let hasDiabetes = getLocalData('diet_health_diabetes', false);
   let hasCholesterol = getLocalData('diet_health_cholesterol', false);
@@ -520,38 +520,38 @@ const initDiet = () => {
     });
   }
 
-  // 食物高保真本地规则库
+  // 憌毺�擃䀝���𧋦�啗��坔�
   const foodDatabase = {
     hamburger: {
-      name: "双层芝士汉堡",
+      name: "����嘥ㄚ瘙匧嵗",
       image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=300&q=80",
       cal: 620,
       carb: 48,
       prot: 28,
       fat: 32,
-      warningText: "🍔 汉堡包含有高精制面粉，且芝士与双层牛肉饼富含饱和脂肪和胆固醇。"
+      warningText: "�� 瘙匧嵗��鉄�厰�蝎曉��Ｙ�嚗䔶��嘥ㄚ銝𤾸�撅���厰未撖�鉄擖勗�����諹��粹���"
     },
     fish: {
-      name: "清蒸鳕鱼配糙米饭",
+      name: "皜�𡢄曈閖掉�滨�蝐喲平",
       image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=300&q=80",
       cal: 310,
       carb: 35,
       prot: 25,
       fat: 5,
-      warningText: "🐟 鳕鱼属于极为健康的优质低脂蛋白，糙米饭则是典型的高纤维低 GI 慢碳水，推荐食用！"
+      warningText: "�� 曈閖掉撅硺���蛹�亙熒���韐其�����踝�蝟嗵掖擖剖��臬��讠�擃条漱蝏港� GI �Ｙ４瘞湛��刻�憌毺鍂嚗�"
     },
     sweetpotato: {
-      name: "拔丝地瓜",
+      name: "�𥪯��啁�",
       image: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=300&q=80",
       cal: 450,
       carb: 92,
       prot: 2,
       fat: 8,
-      warningText: "🍠 拔丝地瓜裹着大量精制白糖浆，且地瓜淀粉本身糊化度极高，属于超高升糖指数（GI）食物。"
+      warningText: "�� �𥪯��啁�鋆寧�憭折�蝎曉��賜�瘚��銝𥪜𧑐�𨀣�蝎㗇𧋦頨怎��硋漲���嚗��鈭舘�擃睃�蝟𡝗��堆�GI嚗厰��押��"
     }
   };
 
-  // 三高病理筛查警告分析器
+  // 銝厰����蝑𥟇䰻霅血������
   const runHealthCheck = (food) => {
     const warningBox = document.getElementById('cal-ai-warning-box');
     if (!warningBox || !food) return;
@@ -559,12 +559,12 @@ const initDiet = () => {
 
     let hasWarning = false;
 
-    // 1. 糖尿病 / 高血糖警报
+    // 1. 蝟硋倏�� / 擃䁅�蝟𤥁郎��
     if (hasDiabetes) {
-      const isHighGI = food.name.includes('地瓜') || food.name.includes('糖') || 
-                       food.name.includes('米饭') || food.name.includes('可乐') || 
-                       food.name.includes('面包') || food.name.includes('面条') || 
-                       food.name.includes('蛋糕') || food.name.includes('汉堡') ||
+      const isHighGI = food.name.includes('�啁�') || food.name.includes('蝟�') || 
+                       food.name.includes('蝐喲平') || food.name.includes('�臭�') || 
+                       food.name.includes('�Ｗ�') || food.name.includes('�Ｘ辺') || 
+                       food.name.includes('�讠�') || food.name.includes('瘙匧嵗') ||
                        food.carb > 45;
       
       if (isHighGI) {
@@ -572,22 +572,22 @@ const initDiet = () => {
         const card = document.createElement('div');
         card.className = 'warning-card warning-blink-red';
         card.innerHTML = `
-          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">⚠️ 血糖红色预警 (高升糖膳食)</div>
+          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">�𩤃� 銵�蝟𣇉滯�脤�霅� (擃睃�蝟𤥁�憌�)</div>
           <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
-            该食物在糖尿病/高血糖状态下，容易导致血糖迅速攀升。
-            ${food.warningText ? '<br>分析: ' + food.warningText : ''}
-            <br><strong>💡 平替推荐:</strong> 建议换成荞麦面、全麦燕麦或糙米饭，并优先搭配膳食纤维延缓糖分吸收。
+            霂仿��拙銁蝟硋倏��/擃䁅�蝟𣇉𠶖���嚗�捆�枏紡�渲�蝟𤥁��������
+            ${food.warningText ? '<br>���: ' + food.warningText : ''}
+            <br><strong>�働 撟單𤜯�刻�:</strong> 撱箄悅�Ｘ��鮋漲�Ｕ���暻衣�暻行�蝟嗵掖擖哨�撟嗡���𨰹�滩�憌毺漱蝏游辣蝻梶���𢙺�嗚��
           </div>
         `;
         warningBox.appendChild(card);
       }
     }
 
-    // 2. 高胆固醇 / 高血脂警报
+    // 2. 擃䁅��粹� / 擃䁅���郎��
     if (hasCholesterol) {
-      const isHighFat = food.name.includes('汉堡') || food.name.includes('红烧肉') || 
-                        food.name.includes('肥牛') || food.name.includes('肥肉') || 
-                        food.name.includes('炸') || food.name.includes('油') ||
+      const isHighFat = food.name.includes('瘙匧嵗') || food.name.includes('蝥Ｙ���') || 
+                        food.name.includes('�亦�') || food.name.includes('�亥�') || 
+                        food.name.includes('��') || food.name.includes('瘝�') ||
                         food.fat > 20;
 
       if (isHighFat) {
@@ -595,32 +595,32 @@ const initDiet = () => {
         const card = document.createElement('div');
         card.className = 'warning-card warning-blink-yellow';
         card.innerHTML = `
-          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">⚠️ 胆固醇黄色预警 (高饱和脂肪)</div>
+          <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">�𩤃� ��𤐄����脤�霅� (擃㗛弗�諹���)</div>
           <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
-            该食物所含饱和脂肪与胆固醇较高，易加重血管负担，不利于胆固醇控制。
-            ${food.warningText && !hasDiabetes ? '<br>分析: ' + food.warningText : ''}
-            <br><strong>💡 平替推荐:</strong> 建议将红肉/油炸食品换成去皮鸡胸肉、水煮虾或清蒸鳕鱼等优质海鲜蛋白。
+            霂仿��拇��恍弗�諹��芯���𤐄���擃矋��枏��滩�蝞∟����銝滚⏚鈭舘��粹��批���
+            ${food.warningText && !hasDiabetes ? '<br>���: ' + food.warningText : ''}
+            <br><strong>�働 撟單𤜯�刻�:</strong> 撱箄悅撠�滯��/瘝寧�憌笔��Ｘ��餌铜曏∟��剹��偌�株蓡�𡝗��賊�敼潛�隡䁅捶瘚琿��讠蒾��
           </div>
         `;
         warningBox.appendChild(card);
       }
     }
 
-    // 3. 指标安全推荐（当勾选了画像，但食物十分健康时）
+    // 3. ���摰匧��刻�嚗���暸�劐��餃�嚗䔶�憌毺�����亙熒�塚�
     if ((hasDiabetes || hasCholesterol) && !hasWarning) {
       const card = document.createElement('div');
       card.className = 'warning-card warning-blink-green';
       card.innerHTML = `
-        <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">✨ 三高绿灯推荐膳食</div>
+        <div style="font-weight: 700; display:flex; align-items:center; gap:6px;">�� 銝厰�蝏輻��刻��喲�</div>
         <div style="font-size: 11px; margin-top: 6px; color: var(--text-primary); line-height: 1.5;">
-          ${food.name} 属于低升糖、低脂肪、高蛋白的健康膳食。符合糖尿病与高胆固醇膳食管理指标，建议放心食用。
+          ${food.name} 撅硺�雿𤾸�蝟硔����������讠蒾���摨瑁�憌麄��泵���撠輻�銝𡡞���𤐄���憌毺恣������撱箄悅�曉�憌毺鍂��
         </div>
       `;
       warningBox.appendChild(card);
     }
   };
 
-  // 简易文本食物 AI 识别
+  // 蝞��𤘪��祇��� AI 霂��
   const parseFoodText = (text) => {
     const query = text.trim().toLowerCase();
     if (!query) return null;
@@ -630,41 +630,41 @@ const initDiet = () => {
     let carb = 30;
     let prot = 15;
     let fat = 10;
-    let warningText = "本地 AI 估算数据";
+    let warningText = "�砍𧑐 AI 隡啁��唳旿";
 
-    if (query.includes('汉堡') || query.includes('hamburger')) {
+    if (query.includes('瘙匧嵗') || query.includes('hamburger')) {
       return foodDatabase.hamburger;
-    } else if (query.includes('鱼') || query.includes('鳕鱼') || query.includes('cod')) {
+    } else if (query.includes('敼�') || query.includes('曈閖掉') || query.includes('cod')) {
       return foodDatabase.fish;
-    } else if (query.includes('地瓜') || query.includes('红薯') || query.includes('拔丝')) {
+    } else if (query.includes('�啁�') || query.includes('蝥Ｚ鱻') || query.includes('�𥪯�')) {
       return foodDatabase.sweetpotato;
-    } else if (query.includes('红烧肉') || query.includes('猪肉') || query.includes('肥肉')) {
-      name = "经典红烧肉";
+    } else if (query.includes('蝥Ｙ���') || query.includes('�芾�') || query.includes('�亥�')) {
+      name = "蝏誩�蝥Ｙ���";
       cal = 580;
       carb = 15;
       prot = 18;
       fat = 52;
-      warningText = "🥩 红烧肉富含饱和脂肪和胆固醇，且调味中含有大量高升糖的冰糖。";
-    } else if (query.includes('可乐') || query.includes('汽水') || query.includes('饮料')) {
-      name = "可乐 (一听)";
+      warningText = "�巧 蝥Ｙ��匧��恍弗�諹��芸���𤐄���銝磰��喃葉�急�憭折�擃睃�蝟𣇉��啁���";
+    } else if (query.includes('�臭�') || query.includes('瘙賣偌') || query.includes('擖格�')) {
+      name = "�臭� (銝���)";
       cal = 140;
       carb = 35;
       prot = 0;
       fat = 0;
-      warningText = "🥤 饮料中富含精制果糖与游离糖，会迅速拉高血糖水平，糖尿病患者禁忌。";
-    } else if (query.includes('燕麦') || query.includes('麦片') || query.includes('粗粮')) {
-      name = "全麦燕麦片";
+      warningText = "�奶 擖格�銝剖��怎移�嗆�蝟碶�皜貊氖蝟吔�隡朞����擃䁅�蝟𡝗偌撟喉�蝟硋倏������敹䎚��";
+    } else if (query.includes('�閖漲') || query.includes('暻衣�') || query.includes('蝎㛖皎')) {
+      name = "�券漲�閖漲��";
       cal = 220;
       carb = 38;
       prot = 8;
       fat = 3;
-      warningText = "🌾 燕麦含有丰富的 β-葡聚糖水溶性膳食纤维，可大大延缓碳水吸收，低 GI 极其推荐。";
+      warningText = "�駠 �閖漲�急�銝啣��� 帣-�∟�蝟𡝗偌皞嗆�扯�憌毺漱蝏湛��臬之憭批辣蝻梶４瘞游𢙺�塚�雿� GI ����刻���";
     }
 
     return { name, cal, carb, prot, fat, warningText };
   };
 
-  // 统一展现 AI 识别结果的扫描流
+  // 蝏煺�撅閧緵 AI 霂��蝏𤘪���醌�𤩺�
   const showScanResult = (foodObj) => {
     const uploadPlaceholder = document.getElementById('cal-ai-upload-placeholder');
     const scanActive = document.getElementById('cal-ai-scan-active');
@@ -673,19 +673,19 @@ const initDiet = () => {
 
     if (!uploadPlaceholder || !scanActive || !resultPanel) return;
 
-    // 显示扫描特效
+    // �曄內�急��寞�
     uploadPlaceholder.style.display = 'none';
     scanActive.style.display = 'flex';
     resultPanel.style.display = 'none';
 
-    // 绑定大图
+    // 蝏穃�憭批㦛
     if (foodImg && foodObj.image) {
       foodImg.style.backgroundImage = `url('${foodObj.image}')`;
     } else if (foodImg) {
       foodImg.style.backgroundImage = 'linear-gradient(135deg, #FF9F43 0%, #FF5252 100%)';
     }
 
-    // 1.5 秒后展示 AI 分析数据
+    // 1.5 蝘鍦�撅閧內 AI ����唳旿
     setTimeout(() => {
       scanActive.style.display = 'none';
       uploadPlaceholder.style.display = 'block';
@@ -693,23 +693,23 @@ const initDiet = () => {
 
       currentFoodResult = foodObj;
 
-      // 填充基础营养数据
+      // 憛怠��箇��亙��唳旿
       const resName = document.getElementById('lbl-result-food-name');
       const resFacts = document.getElementById('lbl-result-nutrition-facts');
-      if (resName) resName.textContent = `识别结果: ${foodObj.name}`;
+      if (resName) resName.textContent = `霂��蝏𤘪�: ${foodObj.name}`;
       if (resFacts) {
         resFacts.innerHTML = `
-          估算热量: <strong>${foodObj.cal}</strong> 千卡 <br>
-          碳水: ${foodObj.carb}g | 蛋白质: ${foodObj.prot}g | 脂肪: ${foodObj.fat}g
+          隡啁��剝�: <strong>${foodObj.cal}</strong> ��㨃 <br>
+          蝣單偌: ${foodObj.carb}g | �讠蒾韐�: ${foodObj.prot}g | ���: ${foodObj.fat}g
         `;
       }
 
-      // 执行三高病理预警
+      // �扯�銝厰����憸�郎
       runHealthCheck(foodObj);
     }, 1500);
   };
 
-  // 绑定相机/相册上传
+  // 蝏穃��豢㦤/�詨�銝𠹺�
   const scannerBox = document.getElementById('cal-ai-scanner-box');
   const fileInput = document.getElementById('file-cal-ai-upload');
   if (scannerBox && fileInput) {
@@ -725,13 +725,13 @@ const initDiet = () => {
         const reader = new FileReader();
         reader.onload = (event) => {
           showScanResult({
-            name: "已上传食物",
+            name: "撌脖�隡𣳇���",
             image: event.target.result,
             cal: 480,
             carb: 52,
             prot: 20,
             fat: 18,
-            warningText: "自传食物估算值"
+            warningText: "�芯�憌毺�隡啁���"
           });
         };
         reader.readAsDataURL(file);
@@ -739,7 +739,7 @@ const initDiet = () => {
     });
   }
 
-  // 绑定文本分析
+  // 蝏穃���𧋦���
   const textBtn = document.getElementById('btn-cal-ai-text-identify');
   const textInput = document.getElementById('txt-cal-ai-food-input');
   if (textBtn && textInput) {
@@ -748,12 +748,12 @@ const initDiet = () => {
       if (parsed) {
         showScanResult(parsed);
       } else {
-        alert('请输入具体的食物名称（支持汉堡、鳕鱼、地瓜、可乐、红烧肉、燕麦等匹配演示）');
+        alert('霂瑁��亙�雿梶�憌毺��滨妍嚗�𣈲����～���敼潦��𧑐�栶��虾銋僐��滯�扯����暻衣��寥�瞍𠉛內嚗�');
       }
     });
   }
 
-  // 绑定快捷演示按钮
+  // 蝏穃�敹急㭘瞍𠉛內�厰僼
   document.querySelectorAll('.btn-preset-food').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.getAttribute('data-food');
@@ -764,20 +764,20 @@ const initDiet = () => {
     });
   });
 
-  // 绑定一键计入卡路里大盘
+  // 蝏穃�銝��株恣�亙㨃頝舫�憭抒�
   const logMealBtn = document.getElementById('btn-cal-ai-log-meal');
   if (logMealBtn) {
     logMealBtn.addEventListener('click', () => {
       if (currentFoodResult) {
-        const meal = prompt('计入哪一餐？(早餐/午餐/晚餐)：');
+        const meal = prompt('霈∪��芯�擗琜�(�拚�/���/�𡁻�)嚗�');
         let key = '';
-        if (meal === '早餐') key = 'breakfast';
-        else if (meal === '午餐') key = 'lunch';
-        else if (meal === '晚餐') key = 'dinner';
+        if (meal === '�拚�') key = 'breakfast';
+        else if (meal === '���') key = 'lunch';
+        else if (meal === '�𡁻�') key = 'dinner';
         
         if (key) {
-          addMealItem(key, `${currentFoodResult.name} (${currentFoodResult.cal}千卡)`);
-          alert(`已成功将 [${currentFoodResult.name}] 的 ${currentFoodResult.cal} 千卡记入${meal}！`);
+          addMealItem(key, `${currentFoodResult.name} (${currentFoodResult.cal}��㨃)`);
+          alert(`撌脫��笔� [${currentFoodResult.name}] �� ${currentFoodResult.cal} ��㨃霈啣�${meal}嚗�);
           
           const resultPanel = document.getElementById('cal-ai-result-panel');
           if (resultPanel) resultPanel.style.display = 'none';
@@ -791,7 +791,7 @@ const initDiet = () => {
   updateCalories();
 };
 const initWorkout = () => {
-  // 运动日历打卡状态
+  // 餈𣂼𢆡�亙��枏㨃�嗆��
   let checkedDays = getLocalData('workout_checks', [1, 3, 5, 7, 10, 12, 15, 18, 22, 25, 27]);
 
   const renderCalendar = () => {
@@ -799,8 +799,8 @@ const initWorkout = () => {
     if (!grid) return;
     grid.innerHTML = '';
     
-    // 渲染周标题
-    const daysName = ['日', '一', '二', '三', '四', '五', '六'];
+    // 皜脫��冽�憸�
+    const daysName = ['��', '銝�', '鈭�', '銝�', '��', '鈭�', '��'];
     daysName.forEach(name => {
       const el = document.createElement('div');
       el.className = 'calendar-header-day';
@@ -808,12 +808,12 @@ const initWorkout = () => {
       grid.appendChild(el);
     });
 
-    // 2026年7月：1号是周三。填充前面的空白
+    // 2026撟�7���1�瑟糓�其���‵����Ｙ�蝛箇蒾
     for (let i = 0; i < 3; i++) {
       grid.appendChild(document.createElement('div'));
     }
 
-    // 填充7月份天数 1-31
+    // 憛怠�7��遢憭拇㺭 1-31
     for (let d = 1; d <= 31; d++) {
       const cell = document.createElement('div');
       cell.className = 'calendar-day';
@@ -840,10 +840,10 @@ const initWorkout = () => {
     }
 
     const lblDays = document.getElementById('lbl-workout-days');
-    if (lblDays) lblDays.textContent = `已打卡 ${checkedDays.length} 天`;
+    if (lblDays) lblDays.textContent = `撌脫��� ${checkedDays.length} 憭奈;
   };
 
-  // 运动计时器
+  // 餈𣂼𢆡霈⊥𧒄��
   let timerInterval = null;
   let timeRemaining = 30 * 60; // 30 mins in secs
   const timerCircle = document.getElementById('timer-circle');
@@ -866,15 +866,15 @@ const initWorkout = () => {
   if (startBtn) {
     startBtn.addEventListener('click', () => {
       if (timerInterval) {
-        // 暂停
+        // ���
         clearInterval(timerInterval);
         timerInterval = null;
-        startBtn.textContent = '开始锻炼';
-        if (timerStatus) timerStatus.textContent = '已暂停';
+        startBtn.textContent = '撘�憪钅𤫇��';
+        if (timerStatus) timerStatus.textContent = '撌脫���';
       } else {
-        // 开始
-        if (timerStatus) timerStatus.textContent = '坚持就是胜利';
-        startBtn.textContent = '暂停锻炼';
+        // 撘�憪�
+        if (timerStatus) timerStatus.textContent = '�𡁏�撠望糓�𨅯⏚';
+        startBtn.textContent = '����餌�';
         timerInterval = setInterval(() => {
           if (timeRemaining > 0) {
             timeRemaining--;
@@ -882,8 +882,8 @@ const initWorkout = () => {
           } else {
             clearInterval(timerInterval);
             timerInterval = null;
-            startBtn.textContent = '完成！';
-            alert('恭喜你完成了 30 分钟的锻炼！已自动在日历打卡。');
+            startBtn.textContent = '摰峕�嚗�';
+            alert('�剖�雿惩��𣂷� 30 �����𤫇�潘�撌脰䌊�典銁�亙��枏㨃��');
             if (!checkedDays.includes(29)) {
               checkedDays.push(29);
               setLocalData('workout_checks', checkedDays);
@@ -901,17 +901,17 @@ const initWorkout = () => {
       clearInterval(timerInterval);
       timerInterval = null;
       timeRemaining = 30 * 60;
-      if (startBtn) startBtn.textContent = '开始锻炼';
-      if (timerStatus) timerStatus.textContent = '倒计时';
+      if (startBtn) startBtn.textContent = '撘�憪钅𤫇��';
+      if (timerStatus) timerStatus.textContent = '�坿恣��';
       updateTimerCircle();
     });
   }
 
-  // --- 计步器逻辑 ---
+  // --- 霈⊥郊�券�餉� ---
   let stepCount = getLocalData('workout_step_count', 0);
   let isPedometerActive = false;
   let lastStepTime = 0;
-  const stepThreshold = 11.6; // 合加速度判定阈值 (9.8 是重力静态值，轻晃超过11.6判定走了一步)
+  const stepThreshold = 11.6; // ����笔漲�文����� (9.8 �舫��偦����潘�頧餅�頞��11.6�文�韏唬�銝�甇�)
 
   const stepCountVal = document.getElementById('lbl-step-count');
   const pedometerStatus = document.getElementById('lbl-pedometer-status');
@@ -936,7 +936,7 @@ const initWorkout = () => {
     const acc = event.accelerationIncludingGravity;
     if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
 
-    // 计算合加速度
+    // 霈∠�����笔漲
     const totalAcc = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
     const currentTime = Date.now();
 
@@ -944,7 +944,7 @@ const initWorkout = () => {
       lastStepTime = currentTime;
       updateSteps(stepCount + 1);
       
-      // 绿点微动效闪烁
+      // 蝏輻�敺桀𢆡��緾��
       if (pedometerStatus) {
         pedometerStatus.style.transform = 'scale(1.2)';
         setTimeout(() => pedometerStatus.style.transform = 'scale(1.0)', 120);
@@ -955,9 +955,9 @@ const initWorkout = () => {
   const startTracking = () => {
     isPedometerActive = true;
     window.addEventListener('devicemotion', handleDeviceMotion);
-    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '⏸ 暂停计步';
+    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '�� ���霈⊥郊';
     if (pedometerStatus) {
-      pedometerStatus.textContent = '计步中...';
+      pedometerStatus.textContent = '霈⊥郊銝�...';
       pedometerStatus.style.background = '#E3F9E5';
       pedometerStatus.style.color = '#1F8722';
     }
@@ -966,9 +966,9 @@ const initWorkout = () => {
   const stopTracking = () => {
     isPedometerActive = false;
     window.removeEventListener('devicemotion', handleDeviceMotion);
-    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '🚶 开启计步';
+    if (pedometerToggleBtn) pedometerToggleBtn.textContent = '�𠎠 撘��航恣甇�';
     if (pedometerStatus) {
-      pedometerStatus.textContent = '已暂停';
+      pedometerStatus.textContent = '撌脫���';
       pedometerStatus.style.background = '#e0e0e0';
       pedometerStatus.style.color = '#666';
     }
@@ -979,17 +979,17 @@ const initWorkout = () => {
       if (isPedometerActive) {
         stopTracking();
       } else {
-        // 处理 iOS 浏览器陀螺仪运动授权
+        // 憭�� iOS 瘚讛��券��箔貌餈𣂼𢆡���
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
           try {
             const permission = await DeviceMotionEvent.requestPermission();
             if (permission === 'granted') {
               startTracking();
             } else {
-              alert('未获得运动传感器授权，可以使用右侧模拟按钮。');
+              alert('�芾繮敺𡑒��其��笔膥���嚗�虾隞乩蝙�典𢰧靘扳芋����柴��');
             }
           } catch (e) {
-            console.warn('陀螺仪请求权限被拒：', e);
+            console.warn('���箔貌霂瑟����鋡急�嚗�', e);
             startTracking();
           }
         } else {
@@ -1009,11 +1009,11 @@ const initWorkout = () => {
     });
   }
 
-  // 视频列表与过滤
+  // 閫���𡑒”銝舘�皛�
   const videos = [
-    { title: '15min无跑跳有氧燃脂操', info: '15分钟 · 王心凌金曲', cat: 'aerobic' },
-    { title: '20分钟女团力量燃脂舞', info: '20分钟 · 8首连跳', cat: 'strength' },
-    { title: '10分钟全身拉伸放松', info: '10分钟 · 舒缓白噪音', cat: 'stretch' }
+    { title: '15min�㰘�頝單�瘞抒����', info: '15��� 繚 �见��屸���', cat: 'aerobic' },
+    { title: '20���憟喳𣪧�偦������', info: '20��� 繚 8擐𤥁�頝�', cat: 'strength' },
+    { title: '10����刻澈�劐撓�暹𠹭', info: '10��� 繚 �垍��賢臁��', cat: 'stretch' }
   ];
 
   const renderVideos = (category = 'aerobic') => {
@@ -1024,12 +1024,12 @@ const initWorkout = () => {
       const el = document.createElement('div');
       el.style.cssText = 'background:#f9f9f9; border-radius:var(--radius-md); padding:20px 12px; text-align:center; cursor:pointer;';
       el.innerHTML = `
-        <span style="font-size:24px;">▶</span>
+        <span style="font-size:24px;">��</span>
         <div style="font-size:12px; font-weight:700; margin-top:6px;">${v.title}</div>
         <div style="font-size:10px; color:var(--text-secondary);">${v.info}</div>
       `;
       el.addEventListener('click', () => {
-        alert(`正在播放: ${v.title}`);
+        alert(`甇�銁�剜𦆮: ${v.title}`);
       });
       list.appendChild(el);
     });
@@ -1049,40 +1049,40 @@ const initWorkout = () => {
 };
 
 const initNewsArbitrageBlog = () => {
-  // 离线备用高保真新闻数据
+  // 蝳餌瑪憭�鍂擃䀝���鰵�餅㺭��
   const newsList = [
-    { id: '1', cat: '科技', source: '36氪', title: 'AI 编程助手再升级，可独立完成 80% 代码', desc: '最新一代 AI 编程工具具备更强的自主决策能力，让开发者效率大幅提升。', time: '2小时前', content: '【36氪最新消息】在最新一轮的全球开发者效率评估中，多款主流 AI 编程助手宣布完成了颠覆性升级。\n\n新版助手不再局限于智能补全或单行纠错，而是能够真正理解大型项目的多层代码依赖。通过接入本地 AST 语法分析树与测试执行引擎，AI 助手在接收到简短的人类指令后，可以自主生成方案设计、编写对应文件、自动编译并执行单元测试进行 Debug 闭环。数据表明，其在独立完成常规业务需求方面的比重已跃升至 80% 以上，极大地解放了工程人员的日常重复性劳动。' },
-    { id: '2', cat: '财经', source: '华尔街见闻', title: '全球股市震荡，关注下半年资产配置机会', desc: '美联储加息预期放缓，多国股市出现反弹迹象，投资者需保持理性。', time: '4小时前', content: '【华尔街见闻特稿】随着美联储公布了最新的联邦基金利率决议，市场对“高利率维持更久”的预期显著降温，促使国债收益率快速跳水，全球各大股市迎来了久违的反弹震荡。\n\n然而，资深金融分析师警告，由于全球通胀粘性依然坚固，加上主要经济体供应链重塑成本高企，下半年股市结构性分化可能继续加剧。对于普通个人投资者而言，紧跟宏观政策窗口、向高红利资产（如公用事业、蓝筹龙头）及黄金避险板块分散配置，是控制回撤的首要法宝。' },
-    { id: '3', cat: '生活', source: '生活日报', title: '健康生活方式调查：90后更注重养生', desc: '最新调查显示，年轻人对健康饮食、规律作息、运动健身的关注度持续上升。', time: '今天 09:00', content: '【生活日报社会调查】现在的“养生”话语权，已经逐步从老年群体转移到了 90 后乃至 00 后的年轻一代身上。\n\n根据对一万名青年人生活作息习惯的跟踪统计，超过八成的青年人拥有保温杯、食补理疗、中药茶饮等保健意识。而在面临工作时长压力、职场内卷的挑战下，诸如“睡前泡脚”、“八杯水打卡”以及“轻度力量拉伸”等微习惯，正成为他们构筑心理安全感防线的重要支柱，年轻人的健康焦虑正切实转变为日常的健康自律行为。' },
-    { id: '4', cat: '娱乐', source: '娱乐周刊', title: '暑期档票房破百亿，国漫崛起引人注目', desc: '今年暑期档国产动画电影表现亮眼，多部作品口碑票房双丰收。', time: '昨天 18:30', content: '【娱乐周刊独家盘点】今年暑期档电影市场格外火热。截至本周末，总票房数据已昂首跨过百亿门槛。\n\n这其中，以中国古典神话为蓝本进行现代叙事重构的多部国产动画大片（国漫），取得了前所未有的票房硕果。影片不仅凭借高超的 3D 渲染画面震撼全场，更在角色成长弧光、人性的复杂多义性上深度打磨，赢得了大批非合家欢性质的成人主力消费人群，再次向产业证明了国漫市场的深邃生命力和商业潜力。' }
+    { id: '1', cat: '蝘烐�', source: '36瘞�', title: 'AI 蝻𣇉��拇��滚�蝥改��舐𡠺蝡见��� 80% 隞��', desc: '���唬�隞� AI 蝻𣇉�撌亙��瑕��游撩��䌊銝餃�蝑𤥁��𨥈�霈拙��𤏸�����之撟������', time: '2撠𤩺𧒄��', content: '��36瘞芣��唳��胯�穃銁���唬�頧桃��函�撘��𤏸������隡唬葉嚗��甈曆蜓瘚� AI 蝻𣇉��拇�摰��摰峕�鈭��閬��批�蝥扼��n\n�啁��拇�銝滚�撅��𣂷��箄�銵亙��硋�銵𣬚��辷��峕糓�賢���迤��圾憭批�憿寧𤌍���撅�誨���韏硔���朞��亙��砍𧑐 AST 霂剜�����睲�瘚贝��扯�撘閙�嚗淾I �拇��冽𦻖�嗅�蝞��剔�鈭箇掩��誘�𠬍��臭誑�芯蜓����寞�霈曇恣����坔笆摨娍�隞嗚��䌊�函�霂穃僎�扯��訫�瘚贝�餈𥡝� Debug �剔㴓��㺭�株”�𠬍��嗅銁�祉�摰峕�撣貉�銝𡁜𦛚��瘙�䲮�Ｙ�瘥娪�撌脰���秐 80% 隞乩�嚗峕�憭批𧑐閫�𦆮鈭�極蝔衤犖�条��亙虜�滚��批𠓼�具��' },
+    { id: '2', cat: '韐Ｙ�', source: '�𤾸�銵𡑒���', title: '�函��∪���㨃嚗��瘜其��𠰴僑韏�漣�滨蔭�箔�', desc: '蝢舘��典��舫���𦆮蝻橒�憭𡁜𤙴�∪��箇緵�滚撕餈寡情嚗峕�韏����靽脲����扼��', time: '4撠𤩺𧒄��', content: '�𣂼�撠磰�閫�鉟�寧阮�煾���蝢舘��典�撣�����啁��娪��粹��拍��唾悅嚗���箏笆�𣈯��拍�蝏湔��港��萘�憸���曇��齿萱嚗䔶�雿踹𤙴�箸𤣰�羓�敹恍�蠘歲瘞湛��函���之�∪�餈擧䔉鈭��餈萘��滚撕��㨃��n\n�嗉�䕘�韏�楛�𤏸����撣�郎�𠺪��曹��函��朞�蝎䀹�找��嗅��綽��牐�銝餉�蝏𤩺�雿㮖�摨娪曎�滚��鞉𧋦擃䀝�嚗䔶��𠰴僑�∪�蝏𤘪��批��硋虾�賜誧蝏剖��扼��笆鈭擧芦�帋葵鈭箸�韏����諹�嚗𣬚揮頝笔�閫�錇蝑𣇉������擃条滯�抵�鈭改�憒���其�銝𠾼���蝑寥�憭湛��𢠃��煾��拇踎�堒����蝵殷��舀綉�嗅��斤�擐𤥁�瘜訫���' },
+    { id: '3', cat: '��暑', source: '��暑�交𥁒', title: '�亙熒��暑�孵�靚�䰻嚗�90�擧凒瘜券��餌�', desc: '���啗��交遬蝷綽�撟渲蝠鈭箏笆�亙熒擖桅����敺衤��胯����典�頨怎��單釣摨行�蝏凋�����', time: '隞𠰴予 09:00', content: '�鞟�瘣餅𠯫�亦冗隡朞��乓�𤑳緵�函��𨅯��麨�肽�霂剜�嚗�歇蝏誯�鞉郊隞舘��僑蝢支�頧祉宏�唬� 90 �𦒘��� 00 �𡒊�撟渲蝠銝�隞�澈銝𨳍��n\n�寞旿撖嫣�銝���鍦僑鈭箇�瘣颱��臭��舐�頝蠘葵蝏蠘恣嚗諹�餈���鞟��鍦僑鈭箸𥅾�劐�皜拇𡟵���銵亦��𨰜��葉�航薗擖桃�靽嘥��讛�����銁�Ｖ葩撌乩��園鵭�见�����箏��瑞��烐�銝页�霂詨��𦦵辺�齿部�尠�腈���𨅯��舀偌�枏㨃�苷誑�𪙛�𡏭蝠摨血��𤩺�隡詹�萘�敺桐��荔�甇��銝箔�隞祆�蝑穃�����冽��脩瑪���閬�𣈲�梧�撟渲蝠鈭箇��亙熒�西�甇��摰噼蓮�䀝蛹�亙虜���摨瑁䌊敺贝�銝箝��' },
+    { id: '4', cat: '憡曹�', source: '憡曹��典�', title: '�烐�獢�巨�輻聦�曆瑪嚗�𤙴瞍怠�韏瑕�鈭箸釣��', desc: '隞𠰴僑�烐�獢�𤙴鈭批𢆡�餌㩞敶梯”�唬漁�潘�憭𡁻�雿𨅯����蟡冽��䔶萼�嗚��', time: '�典予 18:30', content: '�𣂼迂銋𣂼𪂹�羓𡠺摰嗥��嫘�睲�撟湔���﹝�萄蔣撣�㦤�澆��怎���⏛�單𧋦�冽錰嚗峕�餌巨�踵㺭�桀歇���頝刻��曆瑪�冽���n\n餈坔�銝哨�隞乩葉�賢𧂈�貊�霂苷蛹�脲𧋦餈𥡝��唬誨�嗘��齿�����典𤙴鈭批𢆡�餃之����賣憤嚗㚁��硋�鈭�����芣���巨�輻��栶��蔣���隞�鐯�罸�頞�� 3D 皜脫��駁𢒰��𠗠�典㦤嚗峕凒�刻��脫��踹憫�剹��犖�抒�憭齿�憭帋��找�瘛勗漲�梶ㄗ嚗諹窖敺𦯀�憭扳鸌�𧼮�摰嗆洽�扯捶���鈭箔蜓�𥟇�韐嫣犖蝢歹��齿活�睲漣銝朞��𦒘��賣憤撣�㦤��楛����賢����銝𡁏��䜘��' }
   ];
 
-  // 赚钱信息差数据 (已从侧栏关闭，备用)
+  // 韏𡁻兝靽⊥�撌格㺭�� (撌脖�靘扳��喲𡡒嚗����)
   const arbitrageList = [
-    { id: '1', cat: '副业', source: '经验谈', title: '小红书博主：普通人月入过万的真实路径', desc: '拆解素人博主从 0 到 1 的运营流程，包括定位、内容、变现关键节点。', time: '3小时前' },
-    { id: '2', cat: '兼职', source: '兼职网', title: '线上家教平台推荐，时薪 100-300 元', desc: '整理了 5 个口碑较好的在线教育平台，适合大学生和职场人。', time: '今天 11:00' },
-    { id: '3', cat: '投资', source: '研报', title: '可转债打新入门：低风险套利策略', desc: '详细介绍可转债打新流程、注意事项，以及如何提高中签率。', time: '昨天 21:00' },
-    { id: '4', cat: '创业', source: '商界', title: '社区团购的下一个机会在哪里？', desc: '分析社区团购市场现状，挖掘潜在的下沉市场机会。', time: '7月26日 16:00' }
+    { id: '1', cat: '�臭�', source: '蝏誯�靚�', title: '撠讐滯銋血�銝鳴��桅�帋犖���餈�����摰噼楝敺�', desc: '��圾蝝牐犖�帋蜓隞� 0 �� 1 ����交�蝔页���𡠺摰帋����摰嫘����啣��株��嫘��', time: '3撠𤩺𧒄��' },
+    { id: '2', cat: '�潸�', source: '�潸�蝵�', title: '蝥蹂�摰嗆�撟喳蝱�刻�嚗峕𧒄�� 100-300 ��', desc: '�渡�鈭� 5 銝芸藁蝣𤏸�憟賜��函瑪�躰�撟喳蝱嚗屸���憭批郎�笔���㦤鈭箝��', time: '隞𠰴予 11:00' },
+    { id: '3', cat: '�閗�', source: '�娍𥁒', title: '�航蓮�箸��啣��剁�雿𡡞��拙��拍���', desc: '霂衣�隞讠��航蓮�箸��唳�蝔卝��釣�譍�憿對�隞亙�憒���鞾�銝剔倌����', time: '�典予 21:00' },
+    { id: '4', cat: '�𥕢�', source: '���', title: '蝷曉躹�Ｚ揚���銝�銝芣㦤隡𡁜銁�芷�嚗�', desc: '���蝷曉躹�Ｚ揚撣�㦤�啁𠶖嚗峕��䀹��函�銝𧢲�撣�㦤�箔���', time: '7��26�� 16:00' }
   ];
 
-  // 博客精选数据
+  // �𡁜恥蝎暸�㗇㺭��
   const defaultBlogs = [
-    { id: '1', cat: 'life', author: '@林小溪', title: '一个人住第三年，我学会了这些事', desc: '从一开始的孤独感，到现在的自在。分享独居生活的实用技巧。', time: '今天 14:00', content: '在搬进这个单身公寓的第三个年头里，我逐渐从最开始的手足无措和半夜孤独感，过渡到了一种极度自洽的生活状态。\n\n独居让我学会的几件大事：\n1. 学会了做一手好菜：为自己做饭是一场极佳的精神治愈过程，食材的香气可以填满空间。\n2. 建立了属于自己的每日固定流程（Daily Routine）：比如晨起的第一杯水和夜间的拉伸，它们让你的生活在无人约束时依然井井有条。\n3. 学会了和孤独握手言和：当你真正享受自己独处的时光时，你会发现世界突然变得格外安静和干净。' },
-    { id: '2', cat: 'work', author: '@职场阿May', title: '从 P6 到 P8，我的阿里五年', desc: '技术人如何规划职业路径，保持核心竞争力。', time: '昨天 20:00', content: '回望在阿里度过的这五年，真是一场脱胎换骨的旅行。从当年刚刚入职、战战兢兢的 P6 螺丝钉，到如今独当一面负责核心业务架构的 P8 架构师，其中的辛酸与收获难以言表。\n\n这里给广大技术研发的几点诚恳建议：\n1. 别只埋头写代码：代码只是工具，要时刻抬起头看清你负责的业务的“商业价值”在哪里。\n2. 结构化思维与向上管理：向上管理的本质是预期对齐与主动分忧，汇报时先讲结论，再陈述证据。\n3. 保持自驱性：拥抱变化是常态，技术迭代快如潮水，唯有时刻保持强烈的好奇心和对底层的钻研热情，才不会在 35 岁时遭遇被动。' },
-    { id: '3', cat: 'emo', author: '@情感树洞', title: '30岁之后才明白的 5 个道理', desc: '关于爱情、婚姻、友情，慢慢来比较快。', time: '7月26日', content: '三十岁是一道分水岭。这并不是说你的身体会瞬间变差，而是你的心智会在这段时间迎来一次重构。\n\n以下是我在三十岁之后，在经历过波折与和解后领悟到的道理：\n1. 慢慢来，真的比较快：无论是关系的确立，还是事业的进阶，揠苗助长只会带来满目疮痍。\n2. 朋友不再追求数量：精简交友圈，人生中能有两三个可以在深夜毫无顾忌打电话痛哭的挚友，就已是莫大的福分。\n3. 婚姻的本质是战战兢兢：爱情是绚丽的烟花，但漫长的生活需要双方拥有共同的价值观与生活节奏，像战友一样并肩作战对抗风雨。' },
-    { id: '4', cat: 'grow', author: '@小满', title: '我用一年时间，从月薪5k到副业月入2万', desc: '复盘这一年做对的事与踩过的坑。', time: '7月24日', content: '许多人觉得月薪 5k 是职场低谷，但事实上，这正是你“野蛮生长”成本最低、时间最充裕的黄金窗口期。\n\n这一年我是这样通过副业突围的：\n1. 发掘可变现的垂直技能：我选择了自媒体运营和基础文案策划。\n2. 铁律般的执行力：在大家都打游戏看剧的下班时间，我坚持每天输出 3 小时，不找任何理由。\n3. 别怕碰壁，先跑通MVP：第一个单子可能只有 200 元，但它证明了你的商业闭环是跑得通的。只要敢于不断复盘优化，雪球就会越滚越大。' }
+    { id: '1', cat: 'life', author: '@�堒�皞�', title: '銝�銝芯犖雿讐洵銝匧僑嚗峕�摮虫�鈭��鈭𥕢�', desc: '隞𦒘�撘�憪讠�摮斤𡠺����啁緵�函��芸銁���鈭怎𡠺撅��瘣餌�摰䂿鍂��撌扼��', time: '隞𠰴予 14:00', content: '�冽𨯬餈𥡝�銝芸�頨怠�撖梶�蝚砌�銝芸僑憭湧�嚗峕��鞉�隞擧�撘�憪讠��贝雲�䭾綳���憭𨅯迨�祆�嚗諹�皜∪�鈭��蝘齿�摨西䌊瘣賜���暑�嗆����n\n�砍�霈拇�摮虫����隞嗅之鈭页�\n1. 摮虫�鈭��銝��见末�頣�銝箄䌊撌勗�擖剜糓銝��箸�雿喟�蝎曄�瘝餅�餈��嚗屸��鞟�擐蹱��臭誑憛急說蝛粹𡢿��n2. 撱箇�鈭��鈭舘䌊撌梁�瘥𤩺𠯫�箏�瘚��嚗㇄aily Routine嚗㚁�瘥𥪜��刻絲��洵銝��舀偌����渡��劐撓嚗��隞祈悟雿删���暑�冽�鈭箇漲��𧒄靘萘�鈭蓥��㗇辺��n3. 摮虫�鈭��摮斤𡠺�⊥�閮��䕘�敶㮖���迤鈭怠��芸楛�砍���𧒄�㗇𧒄嚗䔶�隡𡁜��唬��𣬚��嗅�敺埈聢憭硋��坔�撟脣���' },
+    { id: '2', cat: 'work', author: '@��㦤�燐ay', title: '隞� P6 �� P8嚗峕���燵�䔶�撟�', desc: '���臭犖憒��閫���䔶�頝臬�嚗䔶���瓲敹��鈭匧���', time: '�典予 20:00', content: '�墧��券燵��漲餈��餈嗘�撟湛���糓銝��箄��擧揢撉函�������敶枏僑�𡁜��亥�����睃��Ｙ� P6 �箔��㚁��啣�隞羓𡠺敶㮖��Ｚ�韐�瓲敹���⊥沲��� P8 �嗆�撣���嗡葉����訾��嗉繮�曆誑閮�銵具��n\n餈䠷�蝏坔嘀憭扳��舐��𤑳��删�霂𡁏�撱箄悅嚗䨵n1. �怠蘨�见仍�嗘誨���隞���芣糓撌亙�嚗諹��嗅��祈絲憭渡�皜��韐蠘提����∠��𨅯�銝帋遠�潑�嘥銁�芷���n2. 蝏𤘪��𡝗�萘輕銝𤾸�銝羓恣����睲�蝞∠���𧋦韐冽糓憸��撖寥�銝𦒘蜓�典�敹改�瘙�𥁒�嗅�霈脩�霈綽��漤�餈啗��柴��n3. 靽脲��芷店�改��交��睃��臬虜������航翮隞�翰憒�蔭瘞湛��舀��嗅�靽脲�撘箇���末憟����笆摨訫���凃�𠉛�����滢�隡𡁜銁 35 撗�𧒄�剝�鋡怠𢆡��' },
+    { id: '3', cat: 'emo', author: '@����烐�', title: '30撗���擧��𡒊蒾�� 5 銝芷���', desc: '�喃��望����憪颯�������Ｘ��交�颲�翰��', time: '7��26��', content: '銝匧�撗�糓銝��枏�瘞游痍���撟嗡��航秩雿删�頨思�隡𡁶��游�撌殷��峕糓雿删�敹�惣隡𡁜銁餈蹱挾�園𡢿餈擧䔉銝�甈⊿�����n\n隞乩��舀��其����銋见�嚗�銁蝏誩�餈�郭�䀝��諹圾�𡡞��笔�������\n1. �Ｘ��伐��毺�瘥磰�敹恬��㰘捏�臬�蝟餌�蝖桃�嚗諹��臭�銝𡁶�餈偦𧫴嚗峕��堒𨭌�踹蘨隡𡁜蒂�交說�桃鱓�溻��n2. �见�銝滚�餈賣��圈�嚗𡁶移蝞�鈭文����鈭箇�銝剛��劐舅銝劐葵�臭誑�冽楛憭𨀣神�𣳇▽敹峕��菔��𥕦揑����页�撠勗歇�航緒憭抒�蝳誩���n3. 憍𡁜宏��𧋦韐冽糓�䀹��Ｗ�嚗𡁶���糓蝏帋蜇����梧�雿�憤�輻���暑��閬���寞𥅾�匧��𣬚�隞瑕�潸�銝𡒊�瘣餉�憟𧶏��𤩺��衤��瑕僎�拐��睃笆�烾��具��' },
+    { id: '4', cat: 'grow', author: '@撠𤩺說', title: '�𤑳鍂銝�撟湔𧒄�湛�隞擧���5k�啣�銝𡁏���2銝�', desc: '憭滨�餈嗘�撟游�撖寧�鈭衤�頦抵������', time: '7��24��', content: '霈詨�鈭箄�敺埈��� 5k �航��箔�靚瘀�雿��摰硺�嚗諹�甇�糓雿罱�𣈯��桃��踱�脲��祆�雿汿��𧒄�湔��������𤑳������n\n餈嗘�撟湔��航��琿�朞��臭�蝒�凒���\n1. �烐��臬��啁���凒���踝��煾�㗇𥋘鈭�䌊慦雴�餈鞱𨯫��抅蝖����蝑硋���n2. ����祉��扯��𨥈��典之摰園��𤘪虜�讐��抒�銝讠号�園𡢿嚗峕��𡁏�瘥誩予颲枏枂 3 撠𤩺𧒄嚗䔶��曆遙雿閧��晞��n3. �急�閧１憯������鐝VP嚗𡁶洵銝�銝芸�摮𣂼虾�賢蘨�� 200 ���雿��霂��鈭�����銝𡁻𡡒�舀糓頝穃��𡁶���蘨閬�佅鈭𦒘��剖��䀝��吔��芰�撠曹�頞𦠜�頞𠰴之��' }
   ];
 
   let blogList = getLocalData('admin_blogs_db', defaultBlogs);
-  // 如果缓存是空的，将默认的写入缓存
+  // 憒��蝻枏��舐征���撠��霈斤��坔�蝻枏�
   if (getLocalData('admin_blogs_db', []).length === 0) {
     setLocalData('admin_blogs_db', defaultBlogs);
   }
   let starred = getLocalData('starred_items', []);
   let activeNewsFilter = 'all';
-  let currentNews = [...newsList]; // 当前内存中渲染的新闻集
+  let currentNews = [...newsList]; // 敶枏����銝剜葡�梶��圈鉟��
 
-  // 获取文章阅读器 Modal DOM
+  // �瑕������粉�� Modal DOM
   const artModal = document.getElementById('modal-article-reader');
   const artModalClose = document.getElementById('btn-article-modal-close');
   const artModalTitle = document.getElementById('lbl-article-modal-title');
@@ -1091,8 +1091,8 @@ const initNewsArbitrageBlog = () => {
 
   const openArticleReader = (item) => {
     if (artModal && artModalTitle && artModalBody && artModalLink) {
-      artModalTitle.textContent = `[${item.source || '精选'}] ${item.title}`;
-      artModalBody.textContent = item.content || item.desc || "暂无详情内容";
+      artModalTitle.textContent = `[${item.source || '蝎暸��'}] ${item.title}`;
+      artModalBody.textContent = item.content || item.desc || "���霂行���捆";
       artModalLink.href = item.linkUrl || "#";
       artModal.classList.add('open');
     }
@@ -1107,7 +1107,7 @@ const initNewsArbitrageBlog = () => {
     });
   }
 
-  // 渲染实时或备用新闻列表
+  // 皜脫�摰墧𧒄�硋��冽鰵�餃�銵�
   const renderNews = (filter = 'all') => {
     activeNewsFilter = filter;
     const list = document.getElementById('list-news');
@@ -1122,22 +1122,22 @@ const initNewsArbitrageBlog = () => {
       el.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <span style="font-size:12px; color:var(--theme-accent); font-weight:700;">[${item.cat}] ${item.source}</span>
-          <span style="cursor:pointer;" class="star-btn" data-key="news-${item.id}">${isStarred ? '⭐' : '☆'}</span>
+          <span style="cursor:pointer;" class="star-btn" data-key="news-${item.id}">${isStarred ? '潃�' : '��'}</span>
         </div>
         <div style="font-size:15px; font-weight:700; margin-bottom:8px;">${item.title}</div>
         <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">${item.desc}</div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:10px; color:var(--text-secondary);">${item.time}</span>
-          <a class="read-article-btn" style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none; cursor:pointer;" data-id="${item.id}">查看详情 →</a>
+          <a class="read-article-btn" style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none; cursor:pointer;" data-id="${item.id}">�亦�霂行� ��</a>
         </div>
       `;
       list.appendChild(el);
     });
   };
 
-  // 异步获取实时热点新闻
+  // 撘�郊�瑕�摰墧𧒄�剔��圈鉟
   const fetchRealtimeNews = () => {
-    // 使用公开支持跨域的网易实时新闻 RSS-to-JSON
+    // 雿輻鍂�砍��舀�頝典�����枏��嗆鰵�� RSS-to-JSON
     const apiEndpoint = `https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.163.com%2Fspecial%2F00011K6L%2Frss_newstop.xml`;
 
     const controller = new AbortController();
@@ -1149,27 +1149,27 @@ const initNewsArbitrageBlog = () => {
         clearTimeout(timeoutId);
         if (data.status === 'ok' && data.items && data.items.length > 0) {
           currentNews = data.items.slice(0, 8).map((item, index) => {
-            const cleanDesc = (item.description || item.content || "点击查看详情").replace(/<\/?[^>]+(>|$)/g, "").slice(0, 80) + '...';
-            // 根据标题分发类别
-            let category = '时政';
-            if (item.title.includes('AI') || item.title.includes('科技') || item.title.includes('芯片') || item.title.includes('数码')) {
-              category = '科技';
-            } else if (item.title.includes('股') || item.title.includes('财') || item.title.includes('金') || item.title.includes('市')) {
-              category = '财经';
-            } else if (item.title.includes('娱') || item.title.includes('影') || item.title.includes('演') || item.title.includes('剧')) {
-              category = '娱乐';
-            } else if (item.title.includes('生活') || item.title.includes('健康') || item.title.includes('养')) {
-              category = '生活';
+            const cleanDesc = (item.description || item.content || "�孵稬�亦�霂行�").replace(/<\/?[^>]+(>|$)/g, "").slice(0, 80) + '...';
+            // �寞旿������蝐餃�
+            let category = '�嗆錇';
+            if (item.title.includes('AI') || item.title.includes('蝘烐�') || item.title.includes('�舐�') || item.title.includes('�啁�')) {
+              category = '蝘烐�';
+            } else if (item.title.includes('��') || item.title.includes('韐�') || item.title.includes('��') || item.title.includes('撣�')) {
+              category = '韐Ｙ�';
+            } else if (item.title.includes('憡�') || item.title.includes('敶�') || item.title.includes('瞍�') || item.title.includes('��')) {
+              category = '憡曹�';
+            } else if (item.title.includes('��暑') || item.title.includes('�亙熒') || item.title.includes('��')) {
+              category = '��暑';
             }
             
             return {
               id: `real-${index}`,
               cat: category,
-              source: item.author || '网易实时',
+              source: item.author || '蝵烐�摰墧𧒄',
               title: item.title,
               desc: cleanDesc,
-              time: '刚刚',
-              content: cleanDesc + '\n\n【网易热点】该实时热点新闻已成功接入。由于跨域与排版限制，若需研读深度图文与评论，请点击下方“阅读媒体原文”按钮直接跳转到官方报道页面进行阅读。',
+              time: '�𡁜�',
+              content: cleanDesc + '\n\n�鞟��梶��嫘�𤏸砲摰墧𧒄�剔��圈鉟撌脫���𦻖�乓��眏鈭舘楊�煺��垍��𣂼�嚗諹𥅾���磰粉瘛勗漲�暹�銝舘�霈綽�霂瑞��颱��嫖�𣈯�霂餃�雿枏����脲��桃凒�亥歲頧砍�摰䀹䲮�仿�憿菟𢒰餈𥡝���粉��',
               linkUrl: item.link
             };
           });
@@ -1180,8 +1180,8 @@ const initNewsArbitrageBlog = () => {
       })
       .catch(err => {
         clearTimeout(timeoutId);
-        console.warn('实时新闻网络请求失败，已无缝启用备用离线数据。', err);
-        // 使用默认离线数据
+        console.warn('摰墧𧒄�圈鉟蝵𤑳�霂瑟�憭梯揖嚗�歇�删��舐鍂憭�鍂蝳餌瑪�唳旿��', err);
+        // 雿輻鍂暺䁅恕蝳餌瑪�唳旿
         currentNews = [...newsList];
         renderNews(activeNewsFilter);
       });
@@ -1200,13 +1200,13 @@ const initNewsArbitrageBlog = () => {
       el.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <span style="font-size:12px; color:var(--theme-accent); font-weight:700;">[${item.cat}] ${item.source}</span>
-          <span style="cursor:pointer;" class="star-btn" data-key="arbitrage-${item.id}">${isStarred ? '⭐' : '☆'}</span>
+          <span style="cursor:pointer;" class="star-btn" data-key="arbitrage-${item.id}">${isStarred ? '潃�' : '��'}</span>
         </div>
         <div style="font-size:15px; font-weight:700; margin-bottom:8px;">${item.title}</div>
         <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">${item.desc}</div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:10px; color:var(--text-secondary);">${item.time}</span>
-          <a style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none;" href="#">查看详情 →</a>
+          <a style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none;" href="#">�亦�霂行� ��</a>
         </div>
       `;
       list.appendChild(el);
@@ -1219,10 +1219,10 @@ const initNewsArbitrageBlog = () => {
     list.innerHTML = '';
     const filtered = blogList.filter(item => {
       if (filter === 'all') return true;
-      if (filter === '生活') return item.cat === 'life';
-      if (filter === '职场') return item.cat === 'work';
-      if (filter === '情感') return item.cat === 'emo';
-      if (filter === '成长') return item.cat === 'grow';
+      if (filter === '��暑') return item.cat === 'life';
+      if (filter === '��㦤') return item.cat === 'work';
+      if (filter === '���') return item.cat === 'emo';
+      if (filter === '�鞾鵭') return item.cat === 'grow';
     });
     filtered.forEach(item => {
       const isStarred = starred.includes(`blog-${item.id}`);
@@ -1231,21 +1231,21 @@ const initNewsArbitrageBlog = () => {
       el.style.marginBottom = '12px';
       el.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-size:12px; color:var(--theme-accent); font-weight:700;">${item.author} · ${item.cat}</span>
-          <span style="cursor:pointer;" class="star-btn" data-key="blog-${item.id}">${isStarred ? '⭐' : '☆'}</span>
+          <span style="font-size:12px; color:var(--theme-accent); font-weight:700;">${item.author} 繚 ${item.cat}</span>
+          <span style="cursor:pointer;" class="star-btn" data-key="blog-${item.id}">${isStarred ? '潃�' : '��'}</span>
         </div>
         <div style="font-size:15px; font-weight:700; margin-bottom:8px;">${item.title}</div>
         <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">${item.desc}</div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:10px; color:var(--text-secondary);">${item.time}</span>
-          <a class="read-blog-btn" style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none; cursor:pointer;" data-id="${item.id}">阅读全文 →</a>
+          <a class="read-blog-btn" style="font-size:11px; color:#2F80ED; font-weight:700; text-decoration:none; cursor:pointer;" data-id="${item.id}">��粉�冽� ��</a>
         </div>
       `;
       list.appendChild(el);
     });
   };
 
-  // 绑定新闻点击阅读器事件 (委托)
+  // 蝏穃��圈鉟�孵稬��粉�其�隞� (憪娍�)
   const newsListContainer = document.getElementById('list-news');
   if (newsListContainer) {
     newsListContainer.addEventListener('click', (e) => {
@@ -1257,7 +1257,7 @@ const initNewsArbitrageBlog = () => {
     });
   }
 
-  // 绑定博客点击阅读器事件 (委托)
+  // 蝏穃��𡁜恥�孵稬��粉�其�隞� (憪娍�)
   const blogListContainer = document.getElementById('list-blog');
   if (blogListContainer) {
     blogListContainer.addEventListener('click', (e) => {
@@ -1269,7 +1269,7 @@ const initNewsArbitrageBlog = () => {
     });
   }
 
-  // 收藏点击委托
+  // �嗉��孵稬憪娍�
   document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('star-btn')) {
       const key = e.target.getAttribute('data-key');
@@ -1280,14 +1280,14 @@ const initNewsArbitrageBlog = () => {
       }
       setLocalData('starred_items', starred);
       
-      // 刷新列表
+      // �瑟鰵�𡑒”
       renderNews(activeNewsFilter);
       renderArbitrage();
       renderBlogs();
     }
   });
 
-  // Tabs 分类点击
+  // Tabs ��掩�孵稬
   document.getElementById('tabs-news').addEventListener('click', (e) => {
     if (e.target.classList.contains('pill-tab')) {
       document.querySelectorAll('#tabs-news .pill-tab').forEach(t => t.classList.remove('active'));
@@ -1320,66 +1320,79 @@ const initNewsArbitrageBlog = () => {
   renderBlogs();
 };
 
-// -------------------------------------------------------------
-// 7. 成长书籍推荐模块
-// -------------------------------------------------------------
-const initBooks = () => {
-  const defaultBooks = [
-    { 
-      title: '《荒漠甘泉》', 
-      author: '考门夫人', 
-      tags: ['每日灵修', '生命感悟'], 
-      progress: 80, 
-      month: '7月书单',
-      url: 'https://www.churchinmarboro.org/bible/devotion/Streams_in_the_Desert/index.html',
-      sample: '八月一日：\n“在干旱之地，我必使水流出...”——以赛亚书 48:21\n\n许多时候，上帝让我们经过荒漠，正是为了让我们体验到甘泉的清甜。干渴的旅程虽然难熬，但信心的泉源永不枯竭。当你觉得无路可走、精疲力竭的时候，神的水流往往正要从那看似坚硬的磐石中猛烈地涌出。\n\n不要害怕你面前荒凉的景象。在神的计划里，每一片荒漠都隐藏着一眼甘泉，每一处试炼都预备着一份丰盛的恩典。抬起头，用信心去宣告：在干旱之地，水必流出！'
+// ------------------  // 31 憭拇��乩��齿甅�穃蘂摨�
+  const bibleQuotes31 = [
+    { text: "蟡䂿���銝�����删��賜�憟賬����帋�嚗峕��拇膥嚗諹��舐洵�剜𠯫��", source: "�𥕢�霈� 1:31", tip: "�典��删�擃䀹蔭嚗𣬚�摰��銝�����条�憟賤�辷�Tov Meod嚗剹���隞�”��蟡𧼮笆蟡�����删�銝𣇉���妝摨譍誑�𦠜�隞砌犖蝐餅�������𨀣����蝢𡒊��冽���" },
+    { text: "�睲賑�梧��牐蛹蟡𧼮��望�隞研��", source: "蝥衣膩銝�銋� 4:19", tip: "撣諹�霂凋葉����劐��峕��嘅��臭誑�畝gape嚗���∩辣���嚗剹��hileo嚗�����蝑剹��鰵蝥血𧁋蝏譍葉蟡𧼮笆�睲賑����畝gape嚗�朖�䔶蜓�典縧�梧�銝齿��墧𥁒��𧁋�晞�溻��" },
+    { text: "�嗅��擧糓�𤑳��扯����穃�銝滩秐蝻箔���", source: "霂㛖� 23:1", tip: "�典�隡舀䔉���銝哨��䀹�敹���喟撩銋謿�蹱�銝算�䀹�銝��䭾�蝻算�踺���憭抒�鈭箔��睲賑�笔𦶢����頣��睲賑撠曹�敹�蛹�𤾸予蝻箔���縉�㻫��" },
+    { text: "�笔𦶢�其���仍嚗諹��笔𦶢撠望糓鈭箇��剹��", source: "蝥衣膩蝳誯𨺗 1:4", tip: "�条��賤�坔銁蝥衣膩蝳誯𨺗銝剜糓�詨�霂齿���抅��糓�笔𦶢���憭湛�銋�糓撽望袇敹��暺烐�����㚁��賜�鈭格�隞砌犖�毺�瘥譍��嗆挾��" },
+    { text: "�睲賑�枏�銝���賭��豢��𨥈��怎�蟡䂿�鈭箏��𠰴���", source: "蝵烾帕銋� 8:28", tip: "�䀝��豢��𥕞�坔銁���銝剜�銝��憒��蝎曉���蝙頧株��具��朖雿輸𢒰銝湧���嚗𣬚�銋蠘��冽�銝剛��剁�雿踵�隞祉��笔𦶢敺㛖���蝏��撅䂿��𠰴���" },
+    { text: "�煾������蝏蹱��偦�����∩��質��𠾼��", source: "�梶�瘥𥪯髡 4:13", tip: "餈䠷����睃𥣞鈭钅��賢��坔僎銝齿糓����芰�����𡄯��峕糓���蝵堒銁�∩�銝𠺪��㰘捏憭��雿踺����𤏸敢���擖梯雲�㚚孕擖選��賢郎隡帋��条䰻頞喇�嗵�蝘䁅���" },
+    { text: "雿㰘�銝枏�隞啗��嗅��𠬍�銝滚虾�𡁻��芸楛����汿��", source: "蝞渲� 3:5", tip: "�䀝趕韏砽�嗵����撣行��睃��刻澈�漤��䀝��嗡��嗵��𤩺�腈����誩㭠���睲賑閬���其縑隞餌����撖潘��䔶��臭��凋犖�厰�����冽��颱��喳���" },
+    { text: "雿��蝑匧�躰�嗅��𡒊�嚗��隞擧鰵敺堒����隞砍�憒�僭撅閧�銝𡃏���", source: "隞亥�鈭帋髡 40:31", tip: "�条��仮�坔銁撣䔶摩�交�銝剜�撣衣��毺垈�餉�蝏瓐��僭�賭��暹糓�牐蛹摰��敺烾◇摨娍�瘚��靽∪�����𥕢��其�憿箔�������撖潘��屸��㰘䌊撌梁�銵�瘞𢛵��" },
+    { text: "雿删�霂脲糓�𤏸��滨��荔��舀�頝臭������", source: "霂㛖� 119:105", tip: "�斗𧒄憭𣈯𡢿�箄�����臬��𧼮虜敺桀摹嚗�蘨�賜�鈭株��箇��䀝�銝�甇乒�踺����鞟內�睲賑嚗𣬚�����航�銝滢�銝�銝见��暹��亥���𧊋�伐�雿��撖嫣����敶㮖����銝�甇乓��" },
+    { text: "��隞伐�銝滩�銝箸�憭拙縉�𡢅��牐蛹�𤾸予�芣��𤾸予��縉�𡢅�銝�憭拍��曉�銝�憭拙�撠勗�鈭���", source: "撽砍云蝳誯𨺗 6:34", tip: "�嗥見�冽迨�坔紡�睲賑銝𤘪釣敶㮖����䀝�憭拙�撠勗�鈭��坔�撖潭�隞砌�閬�鍂隞𠰴予����詨縧�𤩺𣈲�𤾸予��縉�𡢅�瘥誩予�賣�銝駁��嗥�靘𥕦���" },
+    { text: "�望糓�雴�敹滩�琜�����拇�嚗𤤿��臭�憳匧�嚗𣬚��臭��芸元嚗䔶�撘删���", source: "�交�憭𡁜�銋� 13:4", tip: "�睃��鐥�坔銁���銝剖虜�其�撖嫣犖�屸�撖寧㴓憓����䀹����蹱��冽萱��������漲�餃�鈭箝����暹�鈭�抅����梁�摰鮋�鈭粹�銵函緵��" },
+    { text: "閬�虜撣詨�銋琜�銝滢��啁扑�𠺪��∩�靚Ｘ���", source: "撣𡝗�蝵堒側餈血�銋� 5:16-18", tip: "�䀝�雿誩𧑐蟡瑕��坔僎銝齿糓��㟲憭抵楫��銝滚僕瘣鳴��峕糓��銁敹�葉銝𦒘蜓靽脲��𤩺𧒄�函瑪����嗅鐤瘙��鈭脣��𠉛�����臭縑敺垍�瘣餃��𦦵�暺��瘜訫���" },
+    { text: "蟡墧糓�睲賑����暹�嚗峕糓�睲賑����𧶏��舀��曆葉�𤩺𧒄��葬�押��", source: "霂㛖� 46:1", tip: "�㗛��嗥�撣桀𨭌�坔銁���銝剜�銝算�䁅◤霂���舀�摰寞��曉���葬�抽�踺����睲賑�Ｖ葩憌擧答�塚�蟡𧼮僎銝齿糓�乩��臬�嚗諹�峕糓餈穃銁�怠偕����冽葛皝整��" },
+    { text: "蟡䂿�銝碶犖嚗𣬚��喳�隞𣇉��祉�摮鞱�蝏嗘�隞穿��思���縑隞𣇉�銝滩秐�凋滿嚗��敺埈偶�麄��", source: "蝥衣膩蝳誯𨺗 3:16", tip: "餈坔蘂鋡怎妍銝算�睃凝�讠��喇�踺���䀹偶�麨�嗘�隞���舀��園𡢿�𣳇��選��湔糓���蝘滢�蟡䂿㮾鈭斤���萼�𥕢��匧�韐函��冽鰵�笔𦶢�嗆����" },
+    { text: "�����蝏梶��𨅯�嚗�停�臭��晞���銋僐���撟喋����僐������������縑摰𠺶��", source: "�䭾�憭芯髡 5:22", tip: "�䀹�摮鐥�坔銁���銝剜糓�閙㺭嚗䔶誨銵刻�銋萘�蝢𤾸噸�臭�銝芣��箇��賭���㟲雿枏��堆�撠勗���𧁋�萄銁�睲賑�笔𦶢銝剝��餃枂��抅����瑕���" },
+    { text: "�穃�瘝⊥��拙�雿惩�嚗煺�敶枏�撘箏ㄝ���銝滩��扳�𤏪�銋煺�閬���嗚��", source: "蝥虫髡鈭朞扇 1:9", tip: "�睃�撘箏ㄝ���蹱糓�牐蛹�䁅�嗅��𦒘����銝𦒘���銁�踺���隞祉����銝齿糓皞𣂷��芾澈�偦���撩憭改��峕糓皞𣂷��諹����憭扯���" },
+    { text: "靽∪停�舀��𥕢�鈭讠�摰𧼮�嚗峕糓�芾�銋衤���＆�柴��", source: "撣䔶摩�乩髡 11:1", tip: "�睃�摨𨰝�坔銁���銝剜��睃𧑐憟爗�嗵��思���縑敹�停�𤩺糓蟡𧼮�霈貊��睲賑����萎漣銝𡁶��啣�嚗�朖雿輻尐�𥕦��芰�閫��銋�𨘥�劐�蝖桀���鐯�柴��" },
+    { text: "銝滩����餈嗘葵銝𣇉�嚗�蘨閬���𤩺凒�啗����吔��思�隞砍�撉䔶�銝箇�����胯��滲�具��虾�𨀣���秄�譌��", source: "蝵烾帕銋� 12:2", tip: "�睃��砽�坔銁���銝剜糓�䁅��覀�辷�頝��瘥𥡝臤�𤥁𧙕�諹�嚗剹���銵冽��箇边敺垍��笔𦶢�孵��舐眏���������朞��萘輕�滨�摰䂿緵敶餃�����賣凒�啜��" },
+    { text: "雿牐賑蟡��嚗�停蝏嗘�隞穿�撖餅𪄳嚗�停撖餉�嚗𥕦䕪�剁�撠梁�雿牐賑撘��具��", source: "撽砍云蝳誯𨺗 7:7", tip: "�典��𠰴���葉嚗𢞖�条�瘙��踺���睃粉�撾�踺���睃䕪�兩�䠷��舐緵�冽�蝏剜𧒄����譍蛹�䀹�蝏凋��剖𧑐蟡����粉�整��䕪�兩�辷��暹�鈭�扑�羓��鍦�銝𤾸�摰𠾼��" },
+    { text: "�𤑳�撣桀𨭌隞𡡞�惩予�啁��嗅��舘�峕䔉��", source: "霂㛖� 121:2", tip: "霂𦯀犖�嘥控銝曄𤌍嚗峕楛�亥�撌滚釣���撅曹�銝滩��𣂷�蝏������頣��舀�頝刻��烾�删�嚗䔶趕�偦�雿滩�頞𠰴予�啁�銝餃扇嚗峕��賢���瘞豢����蝔喋��" },
+    { text: "�∩��賣�摰𡁏�嚗�予銝衤��⊿��匧��嗚��", source: "隡𣳇�銋� 3:1", tip: "�睃��麨�坔��睃��嗯�蹱遬�𦒘�蟡墧��抒�銝����妝摨譌��銁�睲賑閫匧�餈笔辣�㚚�銋望𧒄嚗𣬚��厩���蝢𤾸末��𧒄�餉”嚗峕�隞砍蘨���其縑�牐葉蝑匧�踺��" },
+    { text: "蟡噼��血縧隞碶賑銝�����潭釭����齿�甇颱滿嚗䔶�銝滚��㗇�����揑�瑯��䲰�䜘��", source: "�舐內敶� 21:4", tip: "餈蹱糓�啣予�啣𧑐������霈詻���䀹𣑐�餌尐瘜芬�蹱遬�𦒘�蟡𧼮��嗡熔�祉���漲皜拇�嚗峕��匧銁銝碶���慾�� and �寞�嚗屸�撠�銁蟡䂿�����銝剛◤敶餃��餅祥��" },
+    { text: "雿㰘�靽嘥�雿惩�嚗諹�餈��摰������牐蛹銝��毺��𨀣��舐眏敹���箝��", source: "蝞渲� 4:23", tip: "�典�隡舀䔉���銝哨��睃��嗘誨銵冽�敹𨰜���脲��峕��毺��駁�嚗峕糓銝�����函�皞𣂼仍���隞祈�撠誩��脣�嚗屸俈甇Ｚ��Ｙ�敹��萘聦�譍��笔𦶢皞鞉���" },
+    { text: "摨𥪜�銝��䭾��𡢅��芾��∩��厩�蟡瑕����瘙���蠘陝嚗��雿牐賑��閬���𡃏�蟡𠺶��", source: "�梶�瘥𥪯髡 4:6", tip: "�䀝��䭾��爗�嗵�閫�晓�胼�睃𥣞鈭讠扑�𪙛�踺����睲賑撣衣��䀹�靚Ｔ�嗵�敹���齿�鈭斗��塚�撠曹誨銵冽�隞祉㮾靽∠�������頞𦠜�隞祆�憭���啣���" },
+    { text: "�嗥見霂湛��穃停�舫�頝胯���������踝��乩��厩��𡢅�瘝⊥�鈭箄��啁�����颯��", source: "蝥衣膩蝳誯𨺗 14:6", tip: "�嗥見銝滢��舀�頝臭犖嚗𣬚��芸楛撠望糓�栞楝嚗𤤿�銝滢��臭���䰻霂��蟡�𧋦頨怠停�舐����蟡��隞�蒂�亦�摮矋�蟡�䌊撌勗停�舀偶�垍��賜�摰硺���" },
+    { text: "雿牐賑��犖閬�翰敹怠𧑐�穿��Ｗ𧑐霂湛��Ｘ��啁�瘞𢛵��", source: "���銋� 1:19", tip: "�睃翰敹怠𧑐�砂�蹱�靽脲�靚血��䔶�瘜刻��祉���漲嚗𥕞�䀹��Ｗ𧑐����蹱��埝�隞穿�鈭箇��埝�銝滩��𣂼停蟡䂿�銋㚁��雴���仍�臬��菜�敹𨰜��" },
+    { text: "雿惩�撠���賜��栞楝��內�㻫��銁雿𣳇𢒰�齿�皛∟雲���銋琜��其��單�銝剜�瘞貉����銋僐��", source: "霂㛖� 16:11", tip: "�䀹說頞喟��靝��坔銁���銝剜�銝算�㗛弗頞喟��靝��踺��銁�烾�删�銝剖粉�曄�敹思��舐����嚗�蘨�匧銁�删�銝駁𢒰�㵪�敹����征蝻箸�隡朞◤摰��憛急說��" },
+    { text: "雿牐賑閬��銝����敹扯��貊�蟡痹��牐蛹隞㚚▽敹萎�隞研��", source: "敶澆��滢髡 5:7", tip: "�睃桊�坔銁���銝剜�銝算�条鍂�𥟇��猾�踺��停�𤩺��䔶�瘝厰������鍂�𥟇�蝏蹱�颲寞��偦��輯蝸��犖嚗��銝箇�甇�鍂��之����函溸憿曄�雿𨬭��" },
+    { text: "�梢�瘝⊥��扳�𤏪��望𠳿摰��嚗�停�𦠜��閖膄�颯��", source: "蝥衣膩銝�銋� 4:18", tip: "摰𣬚����嚗㇁gape嚗㕑�撽望袇�扳�𤏪��牐蛹�函��曹葉�睲賑蝖桐縑鋡急𦻖蝥喋��◤靽脲擪����訫�敺�撣行��𤑳���▽�𡢅��𣬚�撌脣銁����嗡��芸縧鈭��蝵𠾼��" },
+    { text: "�∩�靚西���萱�𢛵����琜��函�敹���詨捐摰嫘��", source: "隞亙���銋� 4:2", tip: "�睃捐摰嫖�坔銁���銝剜��睃蝦甇斗㗁���踺��銁�嗘���振摨剖𣪧憟睲葉嚗諹���閬��隞砍蒂���箇边��萱�䈑��餅𦻖蝥喳����敶潭迨��蔓撘勗�銝滚�蝢汿��" },
+    { text: "敶枏�雿删�鈭衤漱�䁅�嗅��𠬍�撟嗅�𡁻�隞吔�隞硋停敹���具��", source: "霂㛖� 37:5", tip: "�䀝漱�覀�坔銁撣䔶摩�亙���葉�胼�䀹�餈�縧�嗵��𤩺�腈��停�𤩺�銝��埈�隞祈�銝滚𢆡��楊�喉��典�皛𡁶�蟡𠺶����芾��暹��𡁻�嚗𣬚�敹��鈭脰䌊�冽��𣂼停��" },
+    { text: "雿牐賑敶枏�撘箏ㄝ���銝滩�摰單�𤏪��㰘�嗅��𦒘�����䔶���縧嚗䔶�敹��銝Ｗ�雿𨬭��", source: "�喳𦶢霈� 31:6", tip: "餈蹱糓蟡䂿��喳𦶢霈唬葉���韐萄�霈賂�撘訫紡�睲賑�∩�鈭斗����撘箏ㄝ����厩�雿𨅯��箇��𡒊㦛��" }
+  ];�葵�唳䲮頨箔��∟�嚗𥟇��∠�鈭���帋�銝�銝芣╪���璇西�銝�銝芯犖嚗諹澈銝𡃏﹝銵怨仍銴𨥈�������芸楛��振嚗峕��峕嚉��銝��砌髡嚗諹�銝𡃏���銝�銝芣��滨���２��n\n�𤑳�閫���枏�銋佗�霂颱�韏瑟䔉嚗䔶�颲寡粉銝�颲孵揑瘜���吔�隞硋��典��嗡�雿譍�嚗䔶噶�穃枂�脣���鐤�𡃏秩嚗尠�𨀣�霂交�𦒘��𧼮𢅛嚗麨�𩄼n�刻�銝芣憤�輯���皛⊿獈蝣滨����𥪯葉嚗�𣈲�㗇�����凝撘梁�蝒�秄銋见��滩�嚗峕��航�蝳餅��凋��𡒊��臭��栞楝��'
     },
     { 
-      title: '《天路历程》', 
-      author: '约翰·班扬', 
-      tags: ['灵性文学', '经典寓言'], 
-      progress: 30, 
-      month: '7月书单',
-      url: 'https://vreading.com/book/83',
-      sample: '第一章：入窄门\n\n当我走过这世界的荒野，来到一个地方，那里有一个洞，我就在那个地方躺下睡觉；我睡着了，做了一个梦。我梦见一个人，身上衣衫褴褛，背向着自己的家，手里拿着一本书，背上背着一个沉重的包袱。\n\n我看见他打开书，读了起来，一边读一边哭泣发抖；他实在克制不住了，便发出悲哀的呼喊说：“我该怎么办呢？”\n在这个漫长而充满阻碍的旅途中，唯有朝着那微弱的窄门之光前行，才是脱离毁灭之城的唯一道路。'
-    },
-    { 
-      title: '《返璞归真》', 
-      author: 'C.S.路易斯', 
-      tags: ['信仰护教', '核心教义'], 
+      title: '�𡃏��𧼮��麄��', 
+      author: 'C.S.頝舀���', 
+      tags: ['靽∩趕�斗�', '�詨��嗘�'], 
       progress: 90, 
-      month: '7月书单',
+      month: '7��髡��',
       url: 'https://vreading.com/book/64',
-      sample: '第一篇：是非之法\n\n大家都听过人吵架吧。有时候听起来挺好笑，有时候很不公道。但不管怎样，他们吵架时所说的话是值得注意的。他们会说：“如果有人这样对你，你会有什么感觉？”或者“那是我的座位，因为我先到。”或者“分给我一点，因为这很公平。”\n\n吵架的人说这些话，不仅仅是在表达对方的行为令自己不快，而是在诉诸一个他们期望对方也知道并且公认的行为标准。这个标准，就是深植于人类天性之中的“是非之法”或“自然法”。'
+      sample: '蝚砌�蝭���舫�銋𧢲�\n\n憭批振�賢𨯬餈�犖�菜沲�扼����嗅�坔𨯬韏瑟䔉�箏末蝚𡢅��㗇𧒄�坔�銝滚��瓐���銝滨恣�擧甅嚗䔶�隞砍閠�嗆𧒄��霂渡�霂脲糓�澆�瘜冽������隞砌�霂湛��𨅯��𨀣�鈭箄��瑕笆雿𩤃�雿牐��劐�銋��閫㚁��脲����𣈯��舀���漣雿㵪��牐蛹�穃��啜���脲����𨅯�蝏蹱�銝��對��牐蛹餈坔��砍像���𩄼n\n�菜沲��犖霂渲�鈭𥡝�嚗䔶�隞���臬銁銵刻噢撖寞䲮���銝箔誘�芸楛銝滚翰嚗諹�峕糓�刻�霂訾�銝芯�隞祆��𥕦笆�嫣��仿�撟嗡��祈恕���銝箸������銝芣����撠望糓瘛望�鈭𦒘犖蝐餃予�找�銝剔��𨀣糓�硺�瘜𨰝�脲��𡏭䌊�嗆��腈��'
     },
     { 
-      title: '《圣经导读：解经兵法》', 
-      author: '戈登·菲 / 道格拉斯·斯图尔特', 
-      tags: ['圣经工具', '解经指南'], 
+      title: '�𠰴𧁋蝏誩紡霂鳴�閫���菜���', 
+      author: '��蒈繚�� / �𤘪聢�㗇鱻繚�臬㦛撠𠉛鸌', 
+      tags: ['���撌亙�', '閫�����'], 
       progress: 20, 
-      month: '8月书单',
+      month: '8��髡��',
       url: 'https://vreading.com/book/125',
-      sample: '引言：读经的艺术与解经的必要\n\n圣经的每一卷书都是在特定的历史语境中，由特定的作者写给特定时代和背景的人群的。我们今天阅读它，就是在跨越时间、文化 and 语言的鸿沟。\n\n解经并不是系统神学家或牧师的专利，而是每一个渴望明白真理、活出信仰之人的日常功课。本书旨在帮助你建立起两项核心原则：首先，发现经文在当时的原本含义（释经）；其次，学会将这股古老的真理应用在当下多变的现代社会中。'
+      sample: '撘閗�嚗朞粉蝏讐��箸钟銝舘圾蝏讐�敹��\n\n������銝��瑚髡�賣糓�函鸌摰𡁶���蟮霂剖�銝哨��梁鸌摰𡁶�雿𡏭���蝏嗵鸌摰𡁏𧒄隞���峕艶��犖蝢斤����隞砌�憭拚�霂餃�嚗�停�臬銁頝刻��園𡢿����� and 霂剛���蛾瘝麄��n\n閫��撟嗡��舐頂蝏毺�摮血振�𣇉�撣��銝枏⏚嚗諹�峕糓瘥譍�銝芣葩�𥟇��賜�����暑�箔縑隞唬�鈭箇��亙虜�蠘紋��𧋦銋行秄�典葬�拐�撱箇�韏瑚舅憿寞瓲敹���辷�擐硋�嚗���啁���銁敶𤘪𧒄����砍鉄銋㚁��羓�嚗㚁��嗆活嚗�郎隡𡁜�餈躰��方����毺�摨𠉛鍂�典�銝见��条��唬誨蝷曆�銝准��'
     },
     { 
-      title: '《上帝的追寻》', 
-      author: '陶恕', 
-      tags: ['属灵经典', '心灵寻求'], 
+      title: '�𠹺�撣萘�餈賢粉��', 
+      author: '�嗆�', 
+      tags: ['撅䂿�蝏誩�', '敹��撖餅�'], 
       progress: 65, 
-      month: '8月书单',
+      month: '8��髡��',
       url: 'https://vreading.com/book/210',
-      sample: '第一章：紧紧地追随神\n\n在一个充满世俗噪音与物质诱惑的世界中，人灵魂最深处的饥渴，莫过于对造物主同在的真实体验。真正的信仰绝不应该仅仅停留在信条的认同与仪式的履行上，它本身就是一场心灵深处与永恒之神相遇的追寻之旅。\n\n神一直在等待着我们的回应，他的恩典无时无刻不在呼唤着我们。我们不需要跑到遥远的天际去寻找他，我们只需要转过头，安静自己的心，去寻求他的面，他就必向我们显现。'
+      sample: '蝚砌�蝡𩤃�蝝抒揮�啗蕭�讐�\n\n�其�銝芸�皛∩�靽堒臁�喃��抵捶霂望�����䔶葉嚗䔶犖�菟���瘛勗���孕皜湛��怨�鈭𤾸笆�删�銝餃��函��笔�雿㯄����甇��靽∩趕蝏苷�摨磰砲隞���𦦵��其縑�∠�霈文�銝𦒘貌撘讐�撅亥�銝𠺪�摰�𧋦頨怠停�臭��箏��菜楛憭��瘞豢�銋讠��賊���蕭撖颱�����n\n蟡硺��游銁蝑匧����睲賑���摨䈑�隞𣇉��拙��䭾𧒄�惩�銝滚銁�澆𤧅���睲賑���隞砌���閬���圈�餈𦦵�憭拚��餃粉�曆�嚗峕�隞砍蘨��閬�蓮餈�仍嚗���躰䌊撌梁�敹���餃粉瘙����𢒰嚗䔶�撠勗��烐�隞祆遬�啜��'
     }
   ];
 
   let books = getLocalData('book_list', defaultBooks);
-  // 确保书名变更时能够自动升级本地缓存
-  if (books.length > 0 && books.some(b => b.title.includes('把时间') || b.title.includes('金智英') || !b.sample)) {
+  // 蝖桐�銋血��䀹凒�嗉�憭蠘䌊�典�蝥扳𧋦�啁�摮�
+  if (books.length > 0 && books.some(b => b.title.includes('�𦠜𧒄��') || b.title.includes('�烐惣��') || !b.sample)) {
     books = defaultBooks;
     setLocalData('book_list', defaultBooks);
   }
 
-  // 获取阅读器 Modal DOM
+  // �瑕���粉�� Modal DOM
   const modal = document.getElementById('modal-book-reader');
   const modalClose = document.getElementById('btn-modal-close');
   const modalTitle = document.getElementById('lbl-modal-title');
@@ -1404,7 +1417,7 @@ const initBooks = () => {
     });
   }
 
-  // 绑定静态的大卡片 (本月精选《荒漠甘泉》) 点击事件
+  // 蝏穃��蹱���憭批㨃�� (�祆�蝎暸�剹�𡃏�瞍删�瘜剹��) �孵稬鈭衤辣
   const featuredCard = document.querySelector('#page-books .card[style*="background: linear-gradient"]');
   if (featuredCard) {
     featuredCard.style.cursor = 'pointer';
@@ -1418,11 +1431,11 @@ const initBooks = () => {
     if (!container) return;
     container.innerHTML = '';
 
-    const months = ['7月书单', '8月书单'];
+    const months = ['7��髡��', '8��髡��'];
     months.forEach(m => {
       const monthHeader = document.createElement('div');
       monthHeader.style.cssText = 'font-weight:700; font-size:13px; margin:12px 0 8px 0; display:flex; align-items:center; gap:6px; color:#D81B60;';
-      monthHeader.innerHTML = `<span>📅</span> <span>${m}</span>`;
+      monthHeader.innerHTML = `<span>��</span> <span>${m}</span>`;
       container.appendChild(monthHeader);
 
       const mBooks = books.filter(b => b.month === m);
@@ -1439,17 +1452,17 @@ const initBooks = () => {
             <div style="display:flex; gap:4px; margin-top:4px;">
               ${b.tags.map(t => `<span style="font-size:9px; background:#FDE8E9; color:#D81B60; padding:2px 6px; border-radius:10px;">${t}</span>`).join('')}
             </div>
-            <span class="read-ebook-btn" style="font-size:11px; color:#2F80ED; font-weight:700; cursor:pointer; margin-top:6px; display:inline-block;">📖 电子书试读</span>
+            <span class="read-ebook-btn" style="font-size:11px; color:#2F80ED; font-weight:700; cursor:pointer; margin-top:6px; display:inline-block;">�� �萄�銋西�霂�</span>
           </div>
           <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-            <div class="progress-bar-container" style="cursor:pointer;" title="点击修改进度">
+            <div class="progress-bar-container" style="cursor:pointer;" title="�孵稬靽格㺿餈𥕦漲">
               <div class="progress-bar-fill" style="width: ${b.progress}%"></div>
             </div>
             <span style="font-size:11px; font-weight:700; color:#D81B60;">${b.progress}%</span>
           </div>
         `;
         
-        // 点击进度条修改进度
+        // �孵稬餈𥕦漲�∩耨�寡�摨�
         el.querySelector('.progress-bar-container').addEventListener('click', (e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
@@ -1461,7 +1474,7 @@ const initBooks = () => {
           render();
         });
 
-        // 绑定电子书试读点击事件
+        // 蝏穃��萄�銋西�霂餌��颱�隞�
         el.querySelector('.read-ebook-btn').addEventListener('click', () => {
           openReader(b);
         });
@@ -1475,27 +1488,27 @@ const initBooks = () => {
 };
 
 // -------------------------------------------------------------
-// 8. 理财存钱模块 (设计补全)
+// 8. ��揣摮㗛兝璅∪� (霈曇恣銵亙�)
 // -------------------------------------------------------------
 const initFinance = () => {
-  let savedList = getLocalData('savings_list', [1, 2, 4, 7, 10, 11, 15, 18, 20]); // 存入的格数
+  let savedList = getLocalData('savings_list', [1, 2, 4, 7, 10, 11, 15, 18, 20]); // 摮睃���聢��
 
   const updateDashboard = () => {
-    // 设每格代表 50 元
+    // 霈暹��潔誨銵� 50 ��
     const totalSaved = savedList.length * 50;
     const progress = totalSaved / 3000;
     const percent = Math.round(progress * 100);
 
     document.getElementById('lbl-saving-percent').textContent = `${percent}%`;
-    document.getElementById('lbl-saving-total').textContent = `已存 ${totalSaved} 元`;
+    document.getElementById('lbl-saving-total').textContent = `撌脣� ${totalSaved} ��;
 
     const circle = document.getElementById('finance-circle');
     const circumference = 251.2;
     circle.style.strokeDashoffset = circumference - (Math.min(progress, 1) * circumference);
 
     document.getElementById('lbl-finance-summary').innerHTML = `
-      已存入: ${totalSaved} 元<br>
-      剩余目标: ${Math.max(3000 - totalSaved, 0)} 元
+      撌脣���: ${totalSaved} ��<br>
+      �拐��格�: ${Math.max(3000 - totalSaved, 0)} ��
     `;
   };
 
@@ -1503,15 +1516,15 @@ const initFinance = () => {
     const board = document.getElementById('board-savings');
     board.innerHTML = '';
 
-    // 生成 48 个小存钱格
+    // ��� 48 銝芸�摮㗛兝��
     for (let i = 1; i <= 48; i++) {
       const item = document.createElement('div');
       item.className = 'saving-item';
-      item.textContent = `￥50`;
+      item.textContent = `嚙�50`;
       
       if (savedList.includes(i)) {
         item.classList.add('saved');
-        item.textContent = `✔`;
+        item.textContent = `�𤩊;
       }
 
       item.addEventListener('click', () => {
@@ -1534,11 +1547,11 @@ const initFinance = () => {
 };
 
 // -------------------------------------------------------------
-// 9. 读经功课模块
+// 9. 霂餌��蠘紋璅∪�
 // -------------------------------------------------------------
 const initBible = () => {
-  let checkedDays = getLocalData('bible_checks', [1, 3, 5, 8, 12, 15, 18, 22]); // 默认已打卡天数
-  let testDate = new Date().getDate(); // 默认当前日期（天）
+  let checkedDays = getLocalData('bible_checks', [1, 3, 5, 8, 12, 15, 18, 22]); // 暺䁅恕撌脫��∪予��
+  let testDate = new Date().getDate(); // 暺䁅恕敶枏��交�嚗�予嚗�
   let currentFontSize = 14;
 
   const selectEl = document.getElementById('sel-bible-date-test');
@@ -1551,145 +1564,187 @@ const initBible = () => {
   const fontDecBtn = document.getElementById('btn-bible-font-dec');
   const fontIncBtn = document.getElementById('btn-bible-font-inc');
 
-  // 31 天每日不重样金句库
+  // 31 憭拇��乩��齿甅�穃蘂摨�
   const bibleQuotes31 = [
-    "神看着一切所造的都甚好。有晚上，有早晨，这是第六日。 (创世记 1:31)",
-    "耶和华是我的牧者，我必不至缺乏。 (诗篇 23:1)",
-    "生命在他里头，这生命就是人的光。 (约翰福音 1:4)",
-    "我们晓得万事都互相效力，叫爱神的人得益处。 (罗马书 8:28)",
-    "我靠着那加给我力量的，凡事都能做。 (腓立比书 4:13)",
-    "你要专心仰赖耶和华，不可倚靠自己的聪明。 (箴言 3:5)",
-    "但那等候耶和华的，必从新得力。他们必如鹰展翅上腾。 (以赛亚书 40:31)",
-    "你的话是我脚前的灯，是我路上的光。 (诗篇 119:105)",
-    "所以，不要为明天忧虑，因为明天自有明天的忧虑；一天的难处一天当就够了。 (马太福音 6:34)",
-    "爱是恒久忍耐，又有恩慈；爱是不嫉妒，爱是不自夸，不张狂。 (哥林多前书 13:4)",
-    "要常常喜乐，不住地祷告，凡事谢恩。 (帖撒罗尼迦前书 5:16-18)",
-    "神是我们的避难所，是我们的力量，是患难中随时的帮助。 (诗篇 46:1)",
-    "神爱世人，甚至将他的独生子赐给他们，叫一切信他的不至灭亡，反得永生。 (约翰福音 3:16)",
-    "圣灵所结的果子，就是仁爱、喜乐、和平、忍耐、恩慈、良善、信实。 (加拉太书 5:22)",
-    "我岂没有吩咐你吗？你当刚强壮胆！不要惧怕，也不要惊惶。 (约书亚记 1:9)",
-    "信就是所望之事的实底，是未见之事的确据。 (希伯来书 11:1)",
-    "不要效法这个世界，只要心意更新而变化，叫你们察验何为神的善良、纯全、可喜悦的旨意。 (罗马书 12:2)",
-    "你们祈求，就给你们；寻找，就寻见；叩门，就给你们开门。 (马太福音 7:7)",
-    "我的帮助从造天地的耶和华而来。 (诗篇 121:2)",
-    "凡事都有定期，天下万务都有定时。 (传道书 3:1)",
-    "神要擦去他们一切的眼泪。不再有死亡，也不再有悲哀、哭号、疼痛。 (启示录 21:4)",
-    "你要保守你心，胜过保守一切，因为一生的果效是由心发出。 (箴言 4:23)",
-    "应当一无挂虑，只要凡事藉着祷告、祈求和感谢，将你们所要的告诉神。 (腓立比书 4:6)",
-    "耶稣说：我就是道路、真理、生命；若不藉着我，没有人能到父那里去。 (约翰福音 14:6)",
-    "你们各人要快快地听，慢慢地说，慢慢地生气。 (雅各书 1:19)",
-    "你必将生命的道路指示我。在你面前有满足的喜乐，在你右手中有永远的福乐。 (诗篇 16:11)",
-    "你们要将一切的忧虑卸给神，因为他顾念你们。 (彼得前书 5:7)",
-    "爱里没有惧怕；爱既完全，就把惧怕除去。 (约翰一书 4:18)",
-    "凡事谦虚、温柔、忍耐，用爱心互相宽容。 (以弗所书 4:2)",
-    "当将你的事交托耶和华，并倚靠他，他就必成全。 (诗篇 37:5)",
-    "你们当刚强壮胆，不要害怕，因耶和华你的神和你同去，他必不丢弃你。 (申命记 31:6)"
+    "蟡䂿���銝�����删��賜�憟賬����帋�嚗峕��拇膥嚗諹��舐洵�剜𠯫�� (�𥕢�霈� 1:31)",
+    "�嗅��擧糓�𤑳��扯����穃�銝滩秐蝻箔��� (霂㛖� 23:1)",
+    "�笔𦶢�其���仍嚗諹��笔𦶢撠望糓鈭箇��剹�� (蝥衣膩蝳誯𨺗 1:4)",
+    "�睲賑�枏�銝���賭��豢��𨥈��怎�蟡䂿�鈭箏��𠰴��� (蝵烾帕銋� 8:28)",
+    "�煾������蝏蹱��偦�����∩��質��𠾼�� (�梶�瘥𥪯髡 4:13)",
+    "雿㰘�銝枏�隞啗��嗅��𠬍�銝滚虾�𡁻��芸楛����汿�� (蝞渲� 3:5)",
+    "雿��蝑匧�躰�嗅��𡒊�嚗��隞擧鰵敺堒����隞砍�憒�僭撅閧�銝𡃏��� (隞亥�鈭帋髡 40:31)",
+    "雿删�霂脲糓�𤏸��滨��荔��舀�頝臭������ (霂㛖� 119:105)",
+    "��隞伐�銝滩�銝箸�憭拙縉�𡢅��牐蛹�𤾸予�芣��𤾸予��縉�𡢅�銝�憭拍��曉�銝�憭拙�撠勗�鈭��� (撽砍云蝳誯𨺗 6:34)",
+    "�望糓�雴�敹滩�琜�����拇�嚗𤤿��臭�憳匧�嚗𣬚��臭��芸元嚗䔶�撘删��� (�交�憭𡁜�銋� 13:4)",
+    "閬�虜撣詨�銋琜�銝滢��啁扑�𠺪��∩�靚Ｘ��� (撣𡝗�蝵堒側餈血�銋� 5:16-18)",
+    "蟡墧糓�睲賑����暹�嚗峕糓�睲賑����𧶏��舀��曆葉�𤩺𧒄��葬�押�� (霂㛖� 46:1)",
+    "蟡䂿�銝碶犖嚗𣬚��喳�隞𣇉��祉�摮鞱�蝏嗘�隞穿��思���縑隞𣇉�銝滩秐�凋滿嚗��敺埈偶�麄�� (蝥衣膩蝳誯𨺗 3:16)",
+    "�����蝏梶��𨅯�嚗�停�臭��晞���銋僐���撟喋����僐������������縑摰𠺶�� (�䭾�憭芯髡 5:22)",
+    "�穃�瘝⊥��拙�雿惩�嚗煺�敶枏�撘箏ㄝ���銝滩��扳�𤏪�銋煺�閬���嗚�� (蝥虫髡鈭朞扇 1:9)",
+    "靽∪停�舀��𥕢�鈭讠�摰𧼮�嚗峕糓�芾�銋衤���＆�柴�� (撣䔶摩�乩髡 11:1)",
+    "銝滩����餈嗘葵銝𣇉�嚗�蘨閬���𤩺凒�啗����吔��思�隞砍�撉䔶�銝箇�����胯��滲�具��虾�𨀣���秄�譌�� (蝵烾帕銋� 12:2)",
+    "雿牐賑蟡��嚗�停蝏嗘�隞穿�撖餅𪄳嚗�停撖餉�嚗𥕦䕪�剁�撠梁�雿牐賑撘��具�� (撽砍云蝳誯𨺗 7:7)",
+    "�𤑳�撣桀𨭌隞𡡞�惩予�啁��嗅��舘�峕䔉�� (霂㛖� 121:2)",
+    "�∩��賣�摰𡁏�嚗�予銝衤��⊿��匧��嗚�� (隡𣳇�銋� 3:1)",
+    "蟡噼��血縧隞碶賑銝�����潭釭����齿�甇颱滿嚗䔶�銝滚��㗇�����揑�瑯��䲰�䜘�� (�舐內敶� 21:4)",
+    "雿㰘�靽嘥�雿惩�嚗諹�餈��摰������牐蛹銝��毺��𨀣��舐眏敹���箝�� (蝞渲� 4:23)",
+    "摨𥪜�銝��䭾��𡢅��芾��∩��厩�蟡瑕����瘙���蠘陝嚗��雿牐賑��閬���𡃏�蟡𠺶�� (�梶�瘥𥪯髡 4:6)",
+    "�嗥見霂湛��穃停�舫�頝胯���������踝��乩��厩��𡢅�瘝⊥�鈭箄��啁�����颯�� (蝥衣膩蝳誯𨺗 14:6)",
+    "雿牐賑��犖閬�翰敹怠𧑐�穿��Ｘ��啗秩嚗峕��Ｗ𧑐����� (���銋� 1:19)",
+    "雿惩�撠���賜��栞楝��內�㻫��銁雿𣳇𢒰�齿�皛∟雲���銋琜��其��單�銝剜�瘞貉����銋僐�� (霂㛖� 16:11)",
+    "雿牐賑閬��銝����敹扯��貊�蟡痹��牐蛹隞㚚▽敹萎�隞研�� (敶澆��滢髡 5:7)",
+    "�梢�瘝⊥��扳�𤏪��望𠳿摰��嚗�停�𦠜��閖膄�颯�� (蝥衣膩銝�銋� 4:18)",
+    "�∩�靚西���萱�𢛵����琜��函�敹���詨捐摰嫘�� (隞亙���銋� 4:2)",
+    "敶枏�雿删�鈭衤漱�䁅�嗅��𠬍�撟嗅�𡁻�隞吔�隞硋停敹���具�� (霂㛖� 37:5)",
+    "雿牐賑敶枏�撘箏ㄝ���銝滩�摰單�𤏪��㰘�嗅��𦒘�����䔶���縧嚗䔶�敹��銝Ｗ�雿𨬭�� (�喳𦶢霈� 31:6)"
   ];
 
-  // 新旧约简称、全称及章节映射关系数据库
+  // �唳唂蝥衣�蝘啜���蝘啣�蝡㰘��惩��喟頂�唳旿摨�
   const oldBooks = [
-    { short: "创", full: "创世记", key: "genesis", chapters: 50 },
-    { short: "出", full: "出埃及记", key: "exodus", chapters: 40 },
-    { short: "利", full: "利未记", key: "leviticus", chapters: 27 },
-    { short: "民", full: "民数记", key: "numbers", chapters: 36 },
-    { short: "申", full: "申命记", key: "deuteronomy", chapters: 34 },
-    { short: "约", full: "约书亚记", key: "joshua", chapters: 24 },
-    { short: "士", full: "士师记", key: "judges", chapters: 21 },
-    { short: "得", full: "路得记", key: "ruth", chapters: 4 },
-    { short: "撒上", full: "撒母耳记上", key: "samuel1", chapters: 31 },
-    { short: "诗", full: "诗篇", key: "psalms", chapters: 150 }
+    { short: "��", full: "�𥕢�霈�", key: "genesis", chapters: 50 },
+    { short: "��", full: "�箏��𡃏扇", key: "exodus", chapters: 40 },
+    { short: "��", full: "�拇𧊋霈�", key: "leviticus", chapters: 27 },
+    { short: "瘞�", full: "瘞烐㺭霈�", key: "numbers", chapters: 36 },
+    { short: "��", full: "�喳𦶢霈�", key: "deuteronomy", chapters: 34 },
+    { short: "蝥�", full: "蝥虫髡鈭朞扇", key: "joshua", chapters: 24 },
+    { short: "憯�", full: "憯怠�霈�", key: "judges", chapters: 21 },
+    { short: "敺�", full: "頝臬�霈�", key: "ruth", chapters: 4 },
+    { short: "�雴�", full: "�埝��唾扇銝�", key: "samuel1", chapters: 31 },
+    { short: "霂�", full: "霂㛖�", key: "psalms", chapters: 150 }
   ];
 
   const newBooks = [
-    { short: "太", full: "马太福音", key: "matthew", chapters: 28 },
-    { short: "可", full: "马可福音", key: "mark", chapters: 16 },
-    { short: "路", full: "路加福音", key: "luke", chapters: 24 },
-    { short: "约", full: "约翰福音", key: "john", chapters: 21 },
-    { short: "徒", full: "使徒行传", key: "acts", chapters: 28 },
-    { short: "罗", full: "罗马书", key: "romans", chapters: 16 },
-    { short: "启", full: "启示录", key: "revelation", chapters: 22 }
+    { short: "憭�", full: "撽砍云蝳誯𨺗", key: "matthew", chapters: 28 },
+    { short: "��", full: "撽砍虾蝳誯𨺗", key: "mark", chapters: 16 },
+    { short: "頝�", full: "頝臬�蝳誯𨺗", key: "luke", chapters: 24 },
+    { short: "蝥�", full: "蝥衣膩蝳誯𨺗", key: "john", chapters: 21 },
+    { short: "敺�", full: "雿踹�銵䔶�", key: "acts", chapters: 28 },
+    { short: "蝵�", full: "蝵烾帕銋�", key: "romans", chapters: 16 },
+    { short: "��", full: "�舐內敶�", key: "revelation", chapters: 22 }
   ];
 
   let selectedBook = null;
   let selectedChapterNum = null;
 
-  // 更新今日读经任务
+  // �湔鰵隞𦠜𠯫霂餌�隞餃𦛚
   const updateTodayTask = () => {
-    const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '创世记 第 1 章' };
+    const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '�𥕢�霈� 蝚� 1 蝡�' };
     
-    // 如果没有手动选书，展示当天的读经任务
+    // 憒��瘝⊥��见𢆡�劐髡嚗��蝷箏�憭拍�霂餌�隞餃𦛚
     if (!selectedBook) {
-      taskLabel.textContent = `读经范围: ${todayPlan.task}`;
+      taskLabel.textContent = `霂餌���凒: ${todayPlan.task}`;
     } else {
-      taskLabel.textContent = `读经范围: ${selectedBook.full} 第 ${selectedChapterNum} 章`;
+      taskLabel.textContent = `霂餌���凒: ${selectedBook.full} 蝚� ${selectedChapterNum} 蝡鮏;
     }
 
-    // 更新打卡按钮状态
+    // �湔鰵�枏㨃�厰僼�嗆��
     const isDone = checkedDays.includes(testDate);
     if (isDone) {
-      checkinBtn.textContent = '已打卡完成 ✔';
+      checkinBtn.textContent = '撌脫��∪��� ��';
       checkinBtn.style.background = '#E5E5EA';
       checkinBtn.style.color = '#8E8E93';
     } else {
-      checkinBtn.textContent = '打卡完成';
+      checkinBtn.textContent = '�枏㨃摰峕�';
       checkinBtn.style.background = 'var(--theme-light-bg)';
       checkinBtn.style.color = 'var(--theme-accent)';
     }
 
-    // 动态同步更新底部的分享金句 (跟当前日期 testDate 挂钩，实现每天不同)
+    // �冽���甇交凒�啣��函���澈�穃蘂 (頝笔��齿𠯫�� testDate ��偬嚗���唳�憭拐���)
     const quoteText = document.getElementById('bible-quote-text');
     if (quoteText) {
       const customQuotes = getLocalData('custom_bible_quotes', []);
-      let dayQuote = '';
+      let activeQuoteObj = null;
       if (customQuotes.length > 0) {
-        const q = customQuotes[(testDate - 1) % customQuotes.length];
-        dayQuote = `${q.text} (${q.source})`;
+        activeQuoteObj = customQuotes[(testDate - 1) % customQuotes.length];
       } else {
-        dayQuote = bibleQuotes31[(testDate - 1) % 31];
+        activeQuoteObj = bibleQuotes31[(testDate - 1) % 31];
       }
-      quoteText.textContent = `"${dayQuote}"`;
+
+      quoteText.textContent = `"${activeQuoteObj.text}"`;
+      const quoteSource = document.getElementById('bible-quote-source');
+      if (quoteSource) {
+        quoteSource.textContent = activeQuoteObj.source;
+      }
+      
+      const quoteTip = document.getElementById('bible-quote-tip');
+      if (quoteTip) {
+        quoteTip.textContent = activeQuoteObj.tip || "每日神的话语，是我们脚前的灯，路上的光。";
+      }
+
+      const calYear = document.getElementById('calendar-header-year');
+      const calMonth = document.getElementById('calendar-header-month');
+      const calDay = document.getElementById('calendar-day-num');
+      const calLunarWeek = document.getElementById('calendar-lunar-week');
+
+      if (calYear && calMonth && calDay) {
+        const today = new Date();
+        const dObj = new Date(today.getFullYear(), today.getMonth(), testDate);
+        
+        calYear.textContent = dObj.getFullYear();
+        
+        const monthsZh = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+        const monthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        calMonth.textContent = `${monthsEn[dObj.getMonth()]} ${monthsZh[dObj.getMonth()]}`;
+        
+        calDay.textContent = testDate;
+
+        const weeksZh = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        const weeksEn = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const weekStr = `${weeksZh[dObj.getDay()]} ${weeksEn[dObj.getDay()]}`;
+
+        const lunarListAug2026 = [
+          '六月十九', '六月二十', '六月廿一', '六月廿二', '六月廿三', '六月廿四', '六月廿五', '六月廿六', '六月廿七', '六月廿八', 
+          '六月廿九', '六月三十', '七月初一', '七月初二', '七月初三', '七月初四', '七月初五', '七月初六', '七月初七', '七月初八', 
+          '七月初九', '七月初十', '七月十一', '七月十二', '七月十三', '七月十四', '七月十五', '七月十六', '七月十七', '七月十八', '七月十九'
+        ];
+        const lunarDayStr = lunarListAug2026[(testDate - 1) % 30];
+        
+        if (calLunarWeek) {
+          calLunarWeek.textContent = `丙午马年 · ${weekStr} · ${lunarDayStr}`;
+        }
+      }
     }
   };
 
-  // 初始化测试日期下拉菜单
+  // �嘥��𡝗�霂閙𠯫�煺��㕑���
   if (selectEl) {
     selectEl.innerHTML = '';
     for (let i = 1; i <= 31; i++) {
       const opt = document.createElement('option');
       opt.value = i;
-      opt.textContent = `8月${i}日`;
+      opt.textContent = `8��${i}�匝;
       if (i === testDate) opt.selected = true;
       selectEl.appendChild(opt);
     }
 
     selectEl.addEventListener('change', (e) => {
       testDate = parseInt(e.target.value);
-      selectedBook = null; // 切回日期时自动恢复默认今日任务
+      selectedBook = null; // ����交��嗉䌊�冽�憭漤�霈支��乩遙��
       selectedChapterNum = null;
       updateTodayTask();
       renderCalendar();
       if (readerCard) readerCard.style.display = 'none';
       
-      // 更新章节选中高亮
+      // �湔鰵蝡㰘��劐葉擃䀝漁
       document.querySelectorAll('.bible-book-btn').forEach(btn => btn.classList.remove('active'));
       const chGrid = document.getElementById('bible-chapters-grid');
       if (chGrid) chGrid.style.display = 'none';
     });
   }
 
-  // --- 查经阅读渲染引擎 ---
+  // --- �亦���粉皜脫�撘閙� ---
   const loadBibleVerses = (bookName, bookKey, chapterNum) => {
     if (!readerCard || !textContainer || !readerTitle) return;
 
-    readerTitle.textContent = `${bookName} 第 ${chapterNum} 章`;
+    readerTitle.textContent = `${bookName} 蝚� ${chapterNum} 蝡鮏;
     textContainer.innerHTML = '';
 
-    // 从 bible_data.js 中寻找特定的内置段落 (例如: genesis_1, john_1, matthew_1)
+    // 隞� bible_data.js 銝剖粉�曄鸌摰𡁶���蔭畾菔氜 (靘见�: genesis_1, john_1, matthew_1)
     const targetKey = `${bookKey}_${chapterNum}`;
     const bookData = window.BIBLE_DATA.books[targetKey];
 
     if (bookData) {
-      // 1. 如果内置了该章，直接渲染
+      // 1. 憒����蔭鈭�砲蝡𩤃��湔𦻖皜脫�
       bookData.verses.forEach(v => {
         const row = document.createElement('div');
         row.className = 'bible-verse-row';
@@ -1700,20 +1755,20 @@ const initBible = () => {
         textContainer.appendChild(row);
       });
     } else {
-      // 2. 如果未录入，开启高保真模拟降级渲染（显示该卷第一章通用祝福经文，保障演示完美）
+      // 2. 憒���芸��伐�撘��舫�靽萘�璅⊥��滨漣皜脫�嚗�遬蝷箄砲�瑞洵銝�蝡𣳇�𡁶鍂蟡萘�蝏𤩺�嚗䔶��𨀣�蝷箏�蝢𠬍�
       const mockVerses = [
-        { num: 1, text: "太初有道，道与神同在，道就是神。这道太初与神同在。" },
-        { num: 2, text: "万物是藉着他造的；凡被造的，没有一样不是藉着他造的。" },
-        { num: 3, text: "生命在他里头，这生命就是人的光。光照在黑暗里，黑暗却不接受光。" },
-        { num: 4, text: "律法本是藉着摩西传的；恩典和真理都是由耶稣基督来的。" },
-        { num: 5, text: "我们晓得万事都互相效力，叫爱神的人得益处，就是按他旨意被召的人。" }
+        { num: 1, text: "憭芸��厰�嚗屸�銝𡒊���銁嚗屸�撠望糓蟡𠺶����枏云�苷�蟡𧼮��具��" },
+        { num: 2, text: "銝���航���隞㚚�删�嚗𥕦𥣞鋡恍�删�嚗峕瓷�劐��瑚��航���隞㚚�删���" },
+        { num: 3, text: "�笔𦶢�其���仍嚗諹��笔𦶢撠望糓鈭箇��剹����批銁暺烐��䕘�暺烐��港��亙��剹��" },
+        { num: 4, text: "敺𧢲��祆糓�厩��抵正隡删�嚗𥟇��詨��毺��賣糓�梯�嗥見�箇边�亦���" },
+        { num: 5, text: "�睲賑�枏�銝���賭��豢��𨥈��怎�蟡䂿�鈭箏��𠰴�嚗�停�舀�隞𡝗秄�讛◤�祉�鈭箝��" }
       ];
       mockVerses.forEach(v => {
         const row = document.createElement('div');
         row.className = 'bible-verse-row';
         row.innerHTML = `
           <span class="bible-verse-num">${v.num}</span>
-          <span class="bible-verse-text">[${bookName}${chapterNum}章] ${v.text}</span>
+          <span class="bible-verse-text">[${bookName}${chapterNum}蝡髗 ${v.text}</span>
         `;
         textContainer.appendChild(row);
       });
@@ -1723,26 +1778,26 @@ const initBible = () => {
     textContainer.scrollTop = 0;
   };
 
-  // 开始阅读（今日任务）
+  // 撘�憪钅�霂鳴�隞𦠜𠯫隞餃𦛚嚗�
   if (readStartBtn) {
     readStartBtn.addEventListener('click', () => {
       if (selectedBook && selectedChapterNum) {
         loadBibleVerses(selectedBook.full, selectedBook.key, selectedChapterNum);
       } else {
-        const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '创世记 第 1 章' };
-        // 解析 bookKey 如 genesis_1
+        const todayPlan = window.BIBLE_DATA.plan[testDate] || { bookKey: 'genesis_1', task: '�𥕢�霈� 蝚� 1 蝡�' };
+        // 閫�� bookKey 憒� genesis_1
         const parts = todayPlan.bookKey.split('_');
         const bKey = parts[0];
         const cNum = parts[1] || '1';
         const bookData = window.BIBLE_DATA.books[todayPlan.bookKey];
-        const bName = bookData ? bookData.title.split(' ')[0] : '创世记';
+        const bName = bookData ? bookData.title.split(' ')[0] : '�𥕢�霈�';
 
         loadBibleVerses(bName, bKey, cNum);
       }
     });
   }
 
-  // --- 查经选择器风琴面板折叠交互 ---
+  // --- �亦��㗇𥋘�券��湧𢒰�踵��牐漱鈭� ---
   const accordionToggle = document.getElementById('btn-bible-selector-toggle');
   const selectorContent = document.getElementById('bible-selector-content-area');
   const selectorArrow = document.getElementById('lbl-bible-selector-arrow');
@@ -1760,7 +1815,7 @@ const initBible = () => {
     });
   }
 
-  // 新旧约大药丸 Tab 切换与简称网格渲染
+  // �唳唂蝥血之�臭虜 Tab ��揢銝𡒊�蝘啁��潭葡��
   const renderBooksGrid = (testamentType = 'old') => {
     const grid = document.getElementById('bible-books-grid');
     const chGrid = document.getElementById('bible-chapters-grid');
@@ -1788,14 +1843,14 @@ const initBible = () => {
     });
   };
 
-  // 渲染章节列表网格
+  // 皜脫�蝡㰘��𡑒”蝵烐聢
   const renderChaptersGrid = (book) => {
     const chGrid = document.getElementById('bible-chapters-grid');
     if (!chGrid) return;
     chGrid.innerHTML = '';
     chGrid.style.display = 'grid';
 
-    // 为了排版，把大卷书的章节限制在最常用的前 12 章展示，避免超长横向拉伸
+    // 銝箔��垍�嚗峕�憭批㭘銋衣�蝡㰘��𣂼��冽�撣貊鍂��� 12 蝡惩�蝷綽��踹�頞�鵭璅芸��劐撓
     const totalChs = Math.min(book.chapters, 12);
 
     for (let c = 1; c <= totalChs; c++) {
@@ -1810,7 +1865,7 @@ const initBible = () => {
         selectedChapterNum = c;
         updateTodayTask();
 
-        // 自动拉起阅读器加载经文
+        // �芸𢆡�㕑絲��粉�典�頧賜���
         loadBibleVerses(book.full, book.key, c);
       });
 
@@ -1818,7 +1873,7 @@ const initBible = () => {
     }
   };
 
-  // 初始化绑定新旧约 Tabs 切换
+  // �嘥��𣇉�摰𡁏鰵�抒漲 Tabs ��揢
   const testamentTabs = document.getElementById('tabs-bible-testament');
   if (testamentTabs) {
     testamentTabs.addEventListener('click', (e) => {
@@ -1831,10 +1886,10 @@ const initBible = () => {
     });
   }
 
-  // 默认渲染旧约
+  // 暺䁅恕皜脫��抒漲
   renderBooksGrid('old');
 
-  // 字号大小调节
+  // 摮堒噡憭批�靚��
   if (fontDecBtn && fontIncBtn && textContainer) {
     fontDecBtn.addEventListener('click', () => {
       if (currentFontSize > 12) {
@@ -1850,7 +1905,7 @@ const initBible = () => {
     });
   }
 
-  // 打卡完成按钮
+  // �枏㨃摰峕��厰僼
   if (checkinBtn) {
     checkinBtn.addEventListener('click', () => {
       const index = checkedDays.indexOf(testDate);
@@ -1865,13 +1920,13 @@ const initBible = () => {
     });
   }
 
-  // 渲染读经月历记录
+  // 皜脫�霂餌����霈啣�
   const renderCalendar = () => {
     const grid = document.getElementById('grid-bible-calendar');
     if (!grid) return;
     grid.innerHTML = '';
 
-    const daysName = ['日', '一', '二', '三', '四', '五', '六'];
+    const daysName = ['��', '銝�', '鈭�', '銝�', '��', '鈭�', '��'];
     daysName.forEach(name => {
       const el = document.createElement('div');
       el.className = 'calendar-header-day';
@@ -1911,10 +1966,10 @@ const initBible = () => {
     }
 
     const lblDays = document.getElementById('lbl-bible-days');
-    if (lblDays) lblDays.textContent = `本月已完成 ${checkedDays.length} 天`;
+    if (lblDays) lblDays.textContent = `�祆�撌脣��� ${checkedDays.length} 憭奈;
   };
 
-  // 分享金句按钮 (跟日期 testDate 哈希绑定，实现每天不同)
+  // ��澈�穃蘂�厰僼 (頝�𠯫�� testDate ���蝏穃�嚗���唳�憭拐���)
   const shareQuoteBtn = document.getElementById('btn-share-bible-quote');
   if (shareQuoteBtn) {
     shareQuoteBtn.addEventListener('click', () => {
@@ -1926,12 +1981,12 @@ const initBible = () => {
       } else {
         dayQuote = bibleQuotes31[(testDate - 1) % 31];
       }
-      // 写入系统剪切板
+      // �坔�蝟餌��芸���
       navigator.clipboard.writeText(dayQuote).then(() => {
-        alert(`✨ 每日金句已成功复制至剪贴板，愿主的话语常伴随你！\n\n"${dayQuote}"`);
+        alert(`�� 瘥𤩺𠯫�穃蘂撌脫��笔��嗉秐�芾斐�選��蹂蜓���霂剖虜隡湧�雿𩤃�\n\n"${dayQuote}"`);
       }).catch(err => {
-        console.warn('剪切板写入失败，降级弹框展示：', err);
-        alert(`✨ 每日金句：\n"${dayQuote}"`);
+        console.warn('�芸��踹��亙仃韐伐��滨漣撘寞�撅閧內嚗�', err);
+        alert(`�� 瘥𤩺𠯫�穃蘂嚗䨵n"${dayQuote}"`);
       });
     });
   }
@@ -1941,11 +1996,11 @@ const initBible = () => {
 };
 const initWellness = () => {
   const defaultItems = [
-    { title: '💧 喝够 8 杯水', done: false },
-    { title: '👣 睡前泡脚 15 分钟', done: false },
-    { title: '😴 23:00 前入睡', done: false },
-    { title: '🍵 一杯红枣枸杞茶', done: false },
-    { title: '☀️ 晒太阳 15 分钟', done: false }
+    { title: '�佂 �嘥� 8 �舀偌', done: false },
+    { title: '�𪆓 �∪�瘜∟� 15 ���', done: false },
+    { title: '�狍 23:00 �滚���', done: false },
+    { title: '�枤 銝��舐滯��㚬�噼薗', done: false },
+    { title: '��儭� �鍦云�� 15 ���', done: false }
   ];
 
   let items = getLocalData('wellness_items', defaultItems);
@@ -1975,31 +2030,31 @@ const initWellness = () => {
     });
 
     const percent = Math.round((completed / items.length) * 100);
-    document.getElementById('lbl-wellness-percent').textContent = `${percent}% 已完成`;
+    document.getElementById('lbl-wellness-percent').textContent = `${percent}% 撌脣��㦀;
   };
 
   render();
 };
 
 // -------------------------------------------------------------
-// 11. 我的树洞模块
+// 11. �𤑳��烐�璅∪�
 // -------------------------------------------------------------
 const initTreehole = () => {
   let list = getLocalData('treehole_notes', [
-    { id: '1', emotion: '开心', content: '今天完成了一个大项目，心情超好！', time: '今天 18:00' },
-    { id: '2', emotion: '平静', content: '周末一个人去公园散步，听听风的声音。', time: '昨天 16:00' }
+    { id: '1', emotion: '撘�敹�', content: '隞𠰴予摰峕�鈭��銝芸之憿寧𤌍嚗�����憟踝�', time: '隞𠰴予 18:00' },
+    { id: '2', emotion: '撟喲�', content: '�冽錰銝�銝芯犖�餃��剜袇甇伐��砍𨯬憌𡒊�憯圈𨺗��', time: '�典予 16:00' }
   ]);
 
-  let selectedEmotion = '开心';
+  let selectedEmotion = '撘�敹�';
 
-  // 情绪精灵回复文案
+  // ��貌蝎曄��𧼮����
   const replies = {
-    '开心': '太为你高兴了！美好的事情值得细细品味，把这份喜悦好好留存，今天也是为你点赞的一天！💗',
-    '难过': '允许自己难过一会儿吧。没关系，眼泪是给心灵洗澡。无论发生什么，树洞都会在这里默默陪着你。🌲',
-    '焦虑': '深呼吸... 轻轻地拍拍胸口。别担心，我们不需要把所有事情都立刻做完，一次只走一步，好吗？🍃',
-    '生气': '哼！真的太让人气愤了！把所有的委屈和愤怒都丢在树洞里吧，树洞精灵帮你把它们埋在泥土里。🔥',
-    '平静': '平静是心灵最美的湖水。能在平淡的日子里感受到安宁，也是一种非常棒的超能力。✨',
-    '疲惫': '今天真的辛苦啦。你已经做得非常好了，现在把包袱放下，闭上眼睛好好睡一觉吧。晚安，做个好梦。🌙'
+    '撘�敹�': '憭芯蛹雿𣳇��港�嚗��憟賜�鈭𧢲��澆�蝏����㭠嚗峕�餈嗘遢�𨀣�憟賢末�坔�嚗䔶�憭拐��臭蛹雿删�韏䂿�銝�憭抬���',
+    '�曇�': '��捂�芸楛�曇�銝�隡𡁜��扼��瓷�喟頂嚗𣬚尐瘜芣糓蝏坔��菜�瞉～���霈箏��煺�銋���烐��賭��刻��屸�暺㗛臁��雿𨬭����',
+    '�西�': '瘛勗鐤��... 頧餉蝠�唳��滩���������嚗峕�隞砌���閬�����劐����蝡见��𡁜�嚗䔶�甈∪蘨韏唬�甇伐�憟賢�嚗跔��',
+    '���': '�潘��毺�憭芾悟鈭箸��支�嚗�����厩�憪𥪜��峕��㘾�銝Ｗ銁�烐���嫃嚗峕�瘣䂿移�萄葬雿䭾�摰�賑�见銁瘜亙��䎚����',
+    '撟喲�': '撟喲��臬��菜�蝢𡒊�皝𡝗偌����典像瘛∠��亙��峕��堒�摰匧�嚗䔶��臭�蝘漤�撣豢�����賢���銁',
+    '�脫�': '隞𠰴予�毺�颲𥡝㜃�艾���撌脩��𡁜��𧼮虜憟賭�嚗𣬚緵�冽���２�曆�嚗屸𡡒銝羓尐�𥕦末憟賜辺銝�閫匧嫃���摰㚁��帋葵憟賣╪����'
   };
 
   const render = () => {
@@ -2007,7 +2062,7 @@ const initTreehole = () => {
     const count = document.getElementById('lbl-treehole-count');
     container.innerHTML = '';
 
-    count.textContent = `${list.length} 条`;
+    count.textContent = `${list.length} �︶;
 
     list.forEach(item => {
       const el = document.createElement('div');
@@ -2019,16 +2074,16 @@ const initTreehole = () => {
         <div style="flex:1;">
           <div style="font-size:14px; font-weight:500;">${item.content}</div>
           <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">
-            ${item.emotion} · ${item.time}
+            ${item.emotion} 繚 ${item.time}
           </div>
         </div>
-        <button class="btn-pill btn-delete" data-id="${item.id}">删除</button>
+        <button class="btn-pill btn-delete" data-id="${item.id}">�𣳇膄</button>
       `;
       container.appendChild(el);
     });
   };
 
-  // 选择情绪
+  // �㗇𥋘��貌
   document.getElementById('emotions-treehole').addEventListener('click', (e) => {
     if (e.target.classList.contains('emotion-bubble')) {
       document.querySelectorAll('#emotions-treehole .emotion-bubble').forEach(b => b.classList.remove('active'));
@@ -2037,23 +2092,23 @@ const initTreehole = () => {
     }
   });
 
-  // 投递心事
+  // �閖�鍦�鈭�
   document.getElementById('btn-treehole-submit').addEventListener('click', () => {
     const input = document.getElementById('txt-treehole');
     const text = input.value.trim();
-    if (!text) return alert('心事不可以为空哦～');
+    if (!text) return alert('敹��銝滚虾隞乩蛹蝛箏𣑐嚚�');
 
     const newItem = {
       id: Date.now().toString(),
       emotion: selectedEmotion,
       content: text,
-      time: '今天 ' + new Date().toTimeString().slice(0, 5)
+      time: '隞𠰴予 ' + new Date().toTimeString().slice(0, 5)
     };
 
     list.unshift(newItem);
     setLocalData('treehole_notes', list);
 
-    // 精灵回复
+    // 蝎曄��𧼮�
     document.getElementById('lbl-treehole-reply-content').textContent = replies[selectedEmotion];
     document.getElementById('card-treehole-reply').style.display = 'block';
 
@@ -2061,7 +2116,7 @@ const initTreehole = () => {
     render();
   });
 
-  // 删除单条
+  // �𣳇膄�閙辺
   document.getElementById('list-treehole').addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-delete')) {
       const id = e.target.getAttribute('data-id');
@@ -2071,9 +2126,9 @@ const initTreehole = () => {
     }
   });
 
-  // 清空
+  // 皜�征
   document.getElementById('fab-treehole-clear').addEventListener('click', () => {
-    if (confirm('确定要清空所有的心事记录吗？')) {
+    if (confirm('蝖桀�閬��蝛箸��厩�敹��霈啣��梹�')) {
       list = [];
       setLocalData('treehole_notes', list);
       document.getElementById('card-treehole-reply').style.display = 'none';
@@ -2085,7 +2140,7 @@ const initTreehole = () => {
 };
 
 // -------------------------------------------------------------
-// 12. 圣徒诗歌模块
+// 12. ���霂埈�璅∪�
 // -------------------------------------------------------------
 const initHymns = () => {
   let hymnData = [];
@@ -2114,7 +2169,7 @@ const initHymns = () => {
     });
 
     if (filtered.length === 0) {
-      listContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary); font-size:13px;">没有找到相关诗歌</div>`;
+      listContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary); font-size:13px;">瘝⊥��曉��詨�霂埈�</div>`;
       return;
     }
 
@@ -2123,10 +2178,10 @@ const initHymns = () => {
       el.className = 'hymn-item';
       el.innerHTML = `
         <div class="hymn-meta">
-          <span class="hymn-number">第 ${h.num} 首</span>
+          <span class="hymn-number">蝚� ${h.num} 擐�</span>
           <span class="hymn-title">${h.title}</span>
         </div>
-        <span class="hymn-arrow">→</span>
+        <span class="hymn-arrow">��</span>
       `;
       el.addEventListener('click', () => {
         showDetail(h);
@@ -2138,7 +2193,7 @@ const initHymns = () => {
   const showDetail = (hymn) => {
     if (dirView && detailView && detailTitle && detailInfo && lyricsContainer) {
       detailTitle.textContent = hymn.title;
-      detailInfo.textContent = `${hymn.author || '圣徒精选'} · 圣徒诗歌第 ${hymn.num} 首`;
+      detailInfo.textContent = `${hymn.author || '���蝎暸��'} 繚 ���霂埈�蝚� ${hymn.num} 擐飜;
       lyricsContainer.textContent = hymn.lyrics;
       
       dirView.style.display = 'none';
@@ -2146,7 +2201,7 @@ const initHymns = () => {
     }
   };
 
-  // 异步获取外部 JSON 全本诗歌数据库
+  // 撘�郊�瑕�憭㚚� JSON �冽𧋦霂埈��唳旿摨�
   const fetchHymnDatabase = () => {
     if (isLoaded) return;
     const cachedHymns = getLocalData('admin_hymns_db', []);
@@ -2157,20 +2212,20 @@ const initHymns = () => {
       return;
     }
     
-    // 如果缓存没有，再发起拉取并存入本地缓存
+    // 憒��蝻枏�瘝⊥�嚗���𤏸絲�匧�撟嗅��交𧋦�啁�摮�
 
     if (listContainer) {
       listContainer.innerHTML = `
         <div style="text-align:center; padding:30px 10px; color:var(--text-secondary);">
           <div style="display:inline-block; width:24px; height:24px; border:3px solid var(--theme-light-bg); border-top-color:var(--theme-accent); border-radius:50%; animation: spin 1s linear infinite; margin-bottom:10px;"></div>
-          <div style="font-size:12px; font-weight:700;">正在加载全本圣徒诗歌数据库...</div>
+          <div style="font-size:12px; font-weight:700;">甇�銁�㰘蝸�冽𧋦���霂埈��唳旿摨�...</div>
         </div>
       `;
     }
 
     fetch('./hymns_db.json')
       .then(response => {
-        if (!response.ok) throw new Error('网络错误');
+        if (!response.ok) throw new Error('蝵𤑳��躰秤');
         return response.json();
       })
       .then(data => {
@@ -2180,19 +2235,19 @@ const initHymns = () => {
         renderList(searchInput ? searchInput.value : '');
       })
       .catch(err => {
-        console.warn('诗歌全书异步加载失败，已自动降级启用离线数据。', err);
+        console.warn('霂埈��其髡撘�郊�㰘蝸憭梯揖嚗�歇�芸𢆡�滨漣�舐鍂蝳餌瑪�唳旿��', err);
         hymnData = [
           {
             num: 32,
-            title: "大能手 (耶稣领我) [离线缓存]",
-            author: "吉尔摩",
-            lyrics: "1. 耶稣领我，我真欢喜！此言满有天上安慰！\n不论何处，不论何事，属主大能手领我归。\n\n(副歌)\n主领我，主领我，主用大能手领我；\n我愿忠心跟随我主，因主大能手领我。"
+            title: "憭扯��� (�嗥見憸��) [蝳餌瑪蝻枏�]",
+            author: "�匧���",
+            lyrics: "1. �嗥見憸��嚗峕���洽�頣�甇方�皛⊥�憭拐�摰㗇�嚗�n銝滩捏雿訫�嚗䔶�霈箔�鈭页�撅硺蜓憭扯��钅��穃���n\n(�舀�)\n銝駁��𡢅�銝駁��𡢅�銝餌鍂憭扯��钅��𡢅�\n�烐�敹惩�頝罸��睲蜓嚗��銝餃之�賣�憸����"
           },
           {
             num: 120,
-            title: "奇异恩典 (Amazing Grace) [离线缓存]",
-            author: "约翰·牛顿",
-            lyrics: "1. 奇异恩典，何等甘甜，我罪已得赦免；\n前我失丧，今被寻回，瞎眼今得看见。"
+            title: "憟���拙� (Amazing Grace) [蝳餌瑪蝻枏�]",
+            author: "蝥衣膩繚�偦▼",
+            lyrics: "1. 憟���拙�嚗䔶�蝑厩��頣��𤑳蔽撌脣�韏血�嚗鞸n�齿�憭曹葷嚗䔶�鋡怠粉�痹��𡒊尐隞𠰴��贝���"
           }
         ];
         isLoaded = true;
@@ -2200,7 +2255,7 @@ const initHymns = () => {
       });
   };
 
-  // 绑定路由切换时首次点击加载
+  // 蝏穃�頝舐眏��揢�園�甈∠��餃�頧�
   const navHymnsBtn = document.getElementById('nav-hymns');
   if (navHymnsBtn) {
     navHymnsBtn.addEventListener('click', () => {
@@ -2227,14 +2282,14 @@ const initHymns = () => {
     });
   }
 
-  // 刷新时防丢：如果是当前的初始模块，自动拉取
+  // �瑟鰵�園俈銝ｇ�憒���臬��滨��嘥�璅∪�嚗諹䌊�冽���
   if (localStorage.getItem('activeModule') === 'hymns') {
     fetchHymnDatabase();
   }
 };
 
 // -------------------------------------------------------------
-// 初始化入口
+// �嘥��硋���
 // -------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
@@ -2250,10 +2305,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initTreehole();
 
 // -------------------------------------------------------------
-// 13. 全局后台管理模块 (PC 专属)
+// 13. �典��𤾸蝱蝞∠�璅∪� (PC 銝枏�)
 // -------------------------------------------------------------
 const initAdmin = () => {
-  // 管理后台 TAB 切换
+  // 蝞∠��𤾸蝱 TAB ��揢
   const tabs = document.querySelectorAll('#page-admin .admin-tab-btn');
   const panels = document.querySelectorAll('#page-admin .admin-panel');
   if (tabs) {
@@ -2275,7 +2330,7 @@ const initAdmin = () => {
 
 
 
-  // 1. 圣徒诗歌管理
+  // 1. ���霂埈�蝞∠�
   const listAdminHymns = document.getElementById('list-admin-hymns');
   const lblAdminHymnCount = document.getElementById('lbl-admin-hymn-count');
   
@@ -2289,8 +2344,8 @@ const initAdmin = () => {
       const el = document.createElement('div');
       el.className = 'admin-list-item';
       el.innerHTML = `
-        <span class="admin-list-item-title">第 ${h.num} 首 - ${h.title} (${h.author})</span>
-        <span class="admin-list-item-action" data-index="${index}">×</span>
+        <span class="admin-list-item-title">蝚� ${h.num} 擐� - ${h.title} (${h.author})</span>
+        <span class="admin-list-item-action" data-index="${index}">�</span>
       `;
       el.querySelector('.admin-list-item-action').addEventListener('click', () => {
         const updated = hymns.filter((_, idx) => idx !== index);
@@ -2318,15 +2373,15 @@ const initAdmin = () => {
       const lyrics = lyricsInput.value.trim();
 
       if (!num || !title || !lyrics) {
-        return alert('请完整填写诗歌编号、标题和歌词正文！');
+        return alert('霂瑕��游‵�躰�甇𣬚��瑯���憸睃�甇諹�甇��嚗�');
       }
 
       const hymns = getLocalData('admin_hymns_db', []);
       if (hymns.some(h => h.num === num)) {
-        return alert('已存在该编号 of 诗歌！');
+        return alert('撌脣��刻砲蝻硋噡 of 霂埈�嚗�');
       }
 
-      hymns.push({ num, title, author: author || '圣徒精选', lyrics });
+      hymns.push({ num, title, author: author || '���蝎暸��', lyrics });
       hymns.sort((a, b) => a.num - b.num);
       setLocalData('admin_hymns_db', hymns);
 
@@ -2336,11 +2391,11 @@ const initAdmin = () => {
       lyricsInput.value = '';
 
       refreshAdminHymns();
-      alert('诗歌录入成功！本地已保存，去“圣徒诗歌”菜单即可直接预览！');
+      alert('霂埈�敶訫��𣂼�嚗�𧋦�啣歇靽嘥�嚗�縧�𨅯𧁋敺坿�甇𢞖�肽��訫朖�舐凒�仿�閫��');
     });
   }
 
-  // 2. 书籍管理
+  // 2. 銋衣�蝞∠�
   const listAdminBooks = document.getElementById('list-admin-books');
   const refreshAdminBooks = () => {
     if (!listAdminBooks) return;
@@ -2352,7 +2407,7 @@ const initAdmin = () => {
       el.className = 'admin-list-item';
       el.innerHTML = `
         <span class="admin-list-item-title">${b.title} (${b.author})</span>
-        <span class="admin-list-item-action" data-index="${index}">×</span>
+        <span class="admin-list-item-action" data-index="${index}">�</span>
       `;
       el.querySelector('.admin-list-item-action').addEventListener('click', () => {
         const updated = books.filter((_, idx) => idx !== index);
@@ -2380,16 +2435,16 @@ const initAdmin = () => {
       const preview = previewInput.value.trim();
 
       if (!title || !author || !desc || !preview) {
-        return alert('请完整填写书籍信息与试读正文！');
+        return alert('霂瑕��游‵�嗘髡蝐滢縑�臭�霂閗粉甇��嚗�');
       }
 
       const books = getLocalData('book_list', []);
       books.push({
-        title: `《${title.replace(/[《》]/g, '')}》`,
+        title: `��${title.replace(/[�𨳍�尜/g, '')}�㞗,
         author,
-        tags: ['经典灵修', '用户推荐'],
+        tags: ['蝏誩��萎耨', '�冽��刻�'],
         progress: 0,
-        month: '用户专属',
+        month: '�冽�銝枏�',
         url: '#',
         sample: preview
       });
@@ -2402,11 +2457,11 @@ const initAdmin = () => {
       previewInput.value = '';
 
       refreshAdminBooks();
-      alert('书籍推荐成功！');
+      alert('銋衣��刻��𣂼�嚗�');
     });
   }
 
-  // 3. RSS & 博客管理
+  // 3. RSS & �𡁜恥蝞∠�
   const rssInput = document.getElementById('txt-admin-rss-url');
   const btnSaveRss = document.getElementById('btn-admin-save-rss');
   const cachedRss = localStorage.getItem('admin_rss_url') || 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.un.org%2Ffeed%2Fsubscribe%2Fzh%2Fnews%2Fregion%2Fasia-pacific%2Frss.xml';
@@ -2420,7 +2475,7 @@ const initAdmin = () => {
       const val = rssInput.value.trim();
       if (val) {
         localStorage.setItem('admin_rss_url', val);
-        alert('RSS 订阅源地址更新成功！');
+        alert('RSS 霈ａ�皞𣂼𧑐���湔鰵�𣂼�嚗�');
       }
     });
   }
@@ -2433,12 +2488,12 @@ const initAdmin = () => {
     newBtn.addEventListener('click', () => {
       const title = document.getElementById('txt-admin-blog-title').value.trim();
       const cat = document.getElementById('txt-admin-blog-cat').value.trim() || 'grow';
-      const source = document.getElementById('txt-admin-blog-source').value.trim() || '管理员';
+      const source = document.getElementById('txt-admin-blog-source').value.trim() || '蝞∠���';
       const desc = document.getElementById('txt-admin-blog-desc').value.trim();
       const content = document.getElementById('txt-admin-blog-content').value.trim();
 
       if (!title || !desc || !content) {
-        return alert('请完整填写博客文章标题、摘要和正文内容！');
+        return alert('霂瑕��游‵�坔�摰Ｘ�蝡䭾�憸塩���閬��甇����捆嚗�');
       }
 
       const blogs = getLocalData('admin_blogs_db', []);
@@ -2448,7 +2503,7 @@ const initAdmin = () => {
         author: `@${source}`,
         title,
         desc,
-        time: '刚刚',
+        time: '�𡁜�',
         content
       });
 
@@ -2460,25 +2515,25 @@ const initAdmin = () => {
       document.getElementById('txt-admin-blog-desc').value = '';
       document.getElementById('txt-admin-blog-content').value = '';
 
-      alert('博客录入成功！切换到热点新闻 ➔ 博客分类 即可直接阅读！');
+      alert('�𡁜恥敶訫��𣂼�嚗���Ｗ��剔��圈鉟 �� �𡁜恥��掩 �喳虾�湔𦻖��粉嚗�');
     });
   }
 
-  // 4. 个人信息设置
+  // 4. 銝芯犖靽⊥�霈曄蔭
   const profileNameInput = document.getElementById('txt-admin-profile-name');
   const fileAvatarUpload = document.getElementById('file-admin-avatar-upload');
   const avatarPreview = document.getElementById('admin-profile-avatar-preview');
   const btnSaveProfile = document.getElementById('btn-admin-save-profile');
 
-  // 初始化个人资料数值
-  if (profileNameInput) profileNameInput.value = localStorage.getItem('admin_profile_name') || '同工';
+  // �嘥��碶葵鈭箄��蹱㺭��
+  if (profileNameInput) profileNameInput.value = localStorage.getItem('admin_profile_name') || '��極';
   
   let selectedAvatarUrl = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
   if (avatarPreview) {
     avatarPreview.style.backgroundImage = `url('${selectedAvatarUrl}')`;
   }
 
-  // 监听本地头像文件上传，并使用 Canvas 在前端强剪裁压缩为 128x128 像素
+  // �穃𨯬�砍𧑐憭游���辣銝𠹺�嚗�僎雿輻鍂 Canvas �典�蝡臬撩�芾��讠憬銝� 128x128 �讐�
   if (fileAvatarUpload) {
     fileAvatarUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -2488,23 +2543,23 @@ const initAdmin = () => {
       reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
-          // 利用 Canvas 裁剪为固定的 128x128 圆形头像数据
+          // �拍鍂 Canvas 鋆��銝箏𤐄摰𡁶� 128x128 ��耦憭游��唳旿
           const canvas = document.createElement('canvas');
           canvas.width = 128;
           canvas.height = 128;
           const ctx = canvas.getContext('2d');
 
-          // 计算等比居中正方形
+          // 霈∠�蝑㗇�撅�葉甇�䲮敶�
           const size = Math.min(img.width, img.height);
           const sx = (img.width - size) / 2;
           const sy = (img.height - size) / 2;
 
           ctx.drawImage(img, sx, sy, size, size, 0, 0, 128, 128);
 
-          // 压缩为 JPEG base64 (品质设置为 0.85)
+          // �讠憬銝� JPEG base64 (��捶霈曄蔭銝� 0.85)
           const compressedData = canvas.toDataURL('image/jpeg', 0.85);
 
-          // 更新状态与界面
+          // �湔鰵�嗆����屸𢒰
           selectedAvatarUrl = compressedData;
           if (avatarPreview) {
             avatarPreview.style.backgroundImage = `url('${compressedData}')`;
@@ -2524,25 +2579,25 @@ const initAdmin = () => {
       const nameVal = profileNameInput.value.trim();
 
       if (!nameVal) {
-        return alert('展示昵称不能为空！');
+        return alert('撅閧內�萇妍銝滩�銝箇征嚗�');
       }
 
       localStorage.setItem('admin_profile_name', nameVal);
       localStorage.setItem('admin_profile_avatar', selectedAvatarUrl);
 
       updateProfileUI();
-      alert('个人信息配置更新成功！请刷新网页，随后即可在手机端「添加到主屏幕」时自动显示你的专属头像。');
+      alert('銝芯犖靽⊥��滨蔭�湔鰵�𣂼�嚗�窈�瑟鰵蝵煾△嚗屸��𤾸朖�臬銁�𧢲㦤蝡胯�峕溶�惩�銝餃�撟𨰻�齿𧒄�芸𢆡�曄內雿删�銝枏�憭游���');
     });
   }
 
-  // 💾 数据口令备份导出与恢复导入
+  // �𠒣 �唳旿��誘憭�遢撖澆枂銝擧�憭滚紡��
   const btnExportData = document.getElementById('btn-admin-export-data');
   const btnImportData = document.getElementById('btn-admin-import-data');
   const txtImportCode = document.getElementById('txt-admin-import-code');
 
   if (btnExportData) {
     btnExportData.addEventListener('click', () => {
-      // 收集 localStorage 里的所有相关配置
+      // �園� localStorage �𣬚����厩㮾�喲�蝵�
       const keysToBackup = [
         'admin_profile_name',
         'admin_profile_avatar',
@@ -2574,23 +2629,23 @@ const initAdmin = () => {
       });
 
       try {
-        // 转为 Base64 口令代码
+        // 頧砌蛹 Base64 ��誘隞��
         const jsonStr = JSON.stringify(backupObj);
-        // 使用 encodeURIComponent 配合 btoa 处理中文及 Base64 宽字符问题
+        // 雿輻鍂 encodeURIComponent �滚� btoa 憭��銝剜��� Base64 摰賢�蝚阡䔮憸�
         const base64Code = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => {
           return String.fromCharCode(parseInt(p1, 16));
         }));
 
-        // 写入剪贴板
+        // �坔��芾斐��
         navigator.clipboard.writeText(base64Code).then(() => {
-          alert('🎉 备份成功！已将你所有的打卡和资料数据口令成功复制到剪贴板。请前往桌面 App 的设置页粘贴并恢复。');
+          alert('�� 憭�遢�𣂼�嚗�歇撠�����厩��枏㨃�諹��蹱㺭�桀藁隞斗��笔��嗅��芾斐�踴��窈�滚�獢屸𢒰 App ��挽蝵桅△蝎䁅斐撟嗆�憭溻��');
         }).catch(err => {
-          // 如果剪贴板限制，直接填入恢复文本框让用户手动拷贝
+          // 憒���芾斐�輸��塚��湔𦻖憛怠��Ｗ���𧋦獢�悟�冽��见𢆡�瑁�
           if (txtImportCode) txtImportCode.value = base64Code;
-          alert('数据打包成功！因为手机权限限制未能自动复制，已将口令填入下方的输入框中，请手动复制它！');
+          alert('�唳旿�枏��𣂼�嚗��銝箸��箸��鞾��嗆𧊋�質䌊�典��塚�撌脣���誘憛怠�銝𧢲䲮����交�銝哨�霂瑟��典��嗅�嚗�');
         });
       } catch (e) {
-        alert('备份数据打包失败，请重试！');
+        alert('憭�遢�唳旿�枏�憭梯揖嚗諹窈�滩�嚗�');
       }
     });
   }
@@ -2599,31 +2654,31 @@ const initAdmin = () => {
     btnImportData.addEventListener('click', () => {
       const codeVal = txtImportCode.value.trim();
       if (!codeVal) {
-        return alert('请先粘贴你的数据备份口令代码！');
+        return alert('霂瑕�蝎䁅斐雿删��唳旿憭�遢��誘隞��嚗�');
       }
 
       try {
-        // 解码 Base64
+        // 閫�� Base64
         const jsonStr = decodeURIComponent(atob(codeVal).split('').map(c => {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         
         const backupObj = JSON.parse(jsonStr);
 
-        // 遍历还原写入 localStorage
+        // �滚�餈睃��坔� localStorage
         Object.keys(backupObj).forEach(key => {
           localStorage.setItem(key, backupObj[key]);
         });
 
-        alert('🎉 恭喜！你的所有打卡、计步和历史记录已成功恢复并满血复活！页面即将重新加载以应用配置。');
+        alert('�� �剖�嚗������㗇��～��恣甇亙���蟮霈啣�撌脫����憭滚僎皛∟�憭齿暑嚗�△�Ｗ朖撠���啣�頧賭誑摨𠉛鍂�滨蔭��');
         window.location.reload();
       } catch (e) {
-        alert('❌ 恢复失败！你粘贴的可能不是有效的数据口令，或者口令代码有损坏。请确保完整复制了备份代码。');
+        alert('�� �Ｗ�憭梯揖嚗��蝎䁅斐��虾�賭��舀�����唳旿��誘嚗峕���藁隞支誨����笔���窈蝖桐�摰峕㟲憭滚�鈭��隞賭誨����');
       }
     });
   }
 
-  // 一键导出 hymns_db.json
+  // 銝��桀紡�� hymns_db.json
   const btnExportHymns = document.getElementById('btn-admin-export-hymns');
   if (btnExportHymns) {
     const newBtn = btnExportHymns.cloneNode(true);
@@ -2632,7 +2687,7 @@ const initAdmin = () => {
     newBtn.addEventListener('click', () => {
       const hymns = getLocalData('admin_hymns_db', []);
       if (hymns.length === 0) {
-        return alert('本地暂无圣徒诗歌数据，请先进入“圣徒诗歌”拉取初始数据或手工录入诗歌！');
+        return alert('�砍𧑐������霂埈��唳旿嚗諹窈����乒�𨅯𧁋敺坿�甇𢞖�脲��硋�憪𧢲㺭�格��见極敶訫�霂埈�嚗�');
       }
 
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hymns, null, 2));
@@ -2645,19 +2700,19 @@ const initAdmin = () => {
     });
   }
 
-  // 5. 零散资源添加与管理 (添加+管理)
+  // 5. �嗆袇韏��瘛餃�銝𡒊恣�� (瘛餃�+蝞∠�)
   const listAdminQuotes = document.getElementById('list-admin-quotes');
   const listAdminSpeech = document.getElementById('list-admin-speech');
   const btnAddQuote = document.getElementById('btn-admin-add-quote');
   const btnAddSpeech = document.getElementById('btn-admin-add-speech');
 
-  // 刷新自定义金句列表
+  // �瑟鰵�芸�銋厰��亙�銵�
   const refreshAdminQuotes = () => {
     if (!listAdminQuotes) return;
     listAdminQuotes.innerHTML = '';
     const customQuotes = getLocalData('custom_bible_quotes', []);
     if (customQuotes.length === 0) {
-      listAdminQuotes.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">暂无自定义灵修金句，可在上方录入。</div>';
+      listAdminQuotes.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">����芸�銋厩�靽桅��伐��臬銁銝𦠜䲮敶訫���</div>';
       return;
     }
     customQuotes.forEach((q, index) => {
@@ -2669,16 +2724,16 @@ const initAdmin = () => {
       item.innerHTML = `
         <div style="flex:1; padding-right:10px;">
           <div style="font-size:12px; font-weight:700; color:var(--text-primary); line-height:1.5;">"${q.text}"</div>
-          <div style="font-size:10px; color:var(--theme-accent); margin-top:2px;">— ${q.source}</div>
+          <div style="font-size:10px; color:var(--theme-accent); margin-top:2px;">�� ${q.source}</div>
         </div>
-        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">删除</button>
+        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">�𣳇膄</button>
       `;
       item.querySelector('button').addEventListener('click', () => {
-        if (confirm('确定要删除这句灵修金句吗？')) {
+        if (confirm('蝖桀�閬���方��亦�靽桅��亙�嚗�')) {
           customQuotes.splice(index, 1);
           setLocalData('custom_bible_quotes', customQuotes);
           refreshAdminQuotes();
-          // 同步刷新读经打卡卡片上的今日金句
+          // �峕郊�瑟鰵霂餌��枏㨃�∠�銝羓�隞𦠜𠯫�穃蘂
           const quoteText = document.getElementById('bible-quote-text');
           if (quoteText) {
             let testDate = new Date().getDate();
@@ -2697,16 +2752,16 @@ const initAdmin = () => {
     });
   };
 
-  // 刷新自定义口语句子列表
+  // �瑟鰵�芸�銋匧藁霂剖蘂摮𣂼�銵�
   const refreshAdminSpeech = () => {
     if (!listAdminSpeech) return;
     listAdminSpeech.innerHTML = '';
     const customSpeech = getLocalData('custom_speech_phrases', []);
     if (customSpeech.length === 0) {
-      listAdminSpeech.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">暂无自定义口语，可在上方录入。</div>';
+      listAdminSpeech.innerHTML = '<div style="font-size:11px; color:var(--text-secondary); text-align:center; padding:10px;">����芸�銋匧藁霂哨��臬銁銝𦠜䲮敶訫���</div>';
       return;
     }
-    const langNames = { en: '英语', es: '西语', ja: '日语', fr: '法语' };
+    const langNames = { en: '�梯祗', es: '镼輯祗', ja: '�亥祗', fr: '瘜閗祗' };
     customSpeech.forEach((s, index) => {
       const item = document.createElement('div');
       item.className = 'list-item';
@@ -2717,12 +2772,12 @@ const initAdmin = () => {
         <div style="flex:1; padding-right:10px;">
           <div style="font-size:12px; font-weight:700; color:#2F80ED;">${s.text}</div>
           <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${s.cn}</div>
-          <div style="font-size:9px; color:var(--theme-accent); margin-top:2px; font-weight:700; text-transform:uppercase;">语种: ${langNames[s.lang] || s.lang}</div>
+          <div style="font-size:9px; color:var(--theme-accent); margin-top:2px; font-weight:700; text-transform:uppercase;">霂剔�: ${langNames[s.lang] || s.lang}</div>
         </div>
-        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">删除</button>
+        <button class="btn-pill" style="background:#FFEbee; color:#D32F2F; border:none; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:700; border-radius:4px;">�𣳇膄</button>
       `;
       item.querySelector('button').addEventListener('click', () => {
-        if (confirm('确定要删除这句口语练习句吗？')) {
+        if (confirm('蝖桀�閬���方��亙藁霂剔�銋惩蘂�梹�')) {
           customSpeech.splice(index, 1);
           setLocalData('custom_speech_phrases', customSpeech);
           refreshAdminSpeech();
@@ -2733,16 +2788,16 @@ const initAdmin = () => {
     });
   };
 
-  // 绑定金句录入保存
+  // 蝏穃��穃蘂敶訫�靽嘥�
   if (btnAddQuote) {
     const newBtn = btnAddQuote.cloneNode(true);
     btnAddQuote.parentNode.replaceChild(newBtn, btnAddQuote);
     newBtn.addEventListener('click', () => {
       const quoteTextVal = document.getElementById('txt-admin-quote-text').value.trim();
-      const quoteSourceVal = document.getElementById('txt-admin-quote-source').value.trim() || '佚名';
+      const quoteSourceVal = document.getElementById('txt-admin-quote-source').value.trim() || '雿𡁜�';
 
       if (!quoteTextVal) {
-        return alert('金句正文不能为空！');
+        return alert('�穃蘂甇��銝滩�銝箇征嚗�');
       }
 
       const customQuotes = getLocalData('custom_bible_quotes', []);
@@ -2753,9 +2808,9 @@ const initAdmin = () => {
       document.getElementById('txt-admin-quote-source').value = '';
 
       refreshAdminQuotes();
-      alert('🎉 灵修金句保存成功！已存入你的金句资料库。');
+      alert('�� �萎耨�穃蘂靽嘥��𣂼�嚗�歇摮睃�雿删��穃蘂韏��摨瓐��');
       
-      // 同步刷新读经打卡卡片上的今日金句
+      // �峕郊�瑟鰵霂餌��枏㨃�∠�銝羓�隞𦠜𠯫�穃蘂
       const quoteText = document.getElementById('bible-quote-text');
       if (quoteText) {
         let testDate = new Date().getDate();
@@ -2771,7 +2826,7 @@ const initAdmin = () => {
     });
   }
 
-  // 绑定口语录入保存
+  // 蝏穃���祗敶訫�靽嘥�
   if (btnAddSpeech) {
     const newBtn = btnAddSpeech.cloneNode(true);
     btnAddSpeech.parentNode.replaceChild(newBtn, btnAddSpeech);
@@ -2781,7 +2836,7 @@ const initAdmin = () => {
       const speechCnVal = document.getElementById('txt-admin-speech-cn').value.trim();
 
       if (!speechTextVal || !speechCnVal) {
-        return alert('口语原文和中文翻译不能为空！');
+        return alert('��祗����䔶葉��蕃霂睲��賭蛹蝛綽�');
       }
 
       const customSpeech = getLocalData('custom_speech_phrases', []);
@@ -2793,11 +2848,11 @@ const initAdmin = () => {
 
       refreshAdminSpeech();
       renderSpeechModule();
-      alert('🎉 口语练习句保存成功！已存入对应语言学习库。');
+      alert('�� ��祗蝏���乩�摮䀹����撌脣��亙笆摨磰祗閮�摮虫�摨瓐��');
     });
   }
 
-  // 首次运行
+  // 擐𡝗活餈鞱�
   refreshAdminHymns();
   refreshAdminBooks();
   refreshAdminQuotes();
