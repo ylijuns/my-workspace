@@ -2256,26 +2256,7 @@ const initAdmin = () => {
     });
   }
 
-  // 手机端自适应判定：如果是手机端，自动切到个人信息 Tab
-  const isMobile = window.innerWidth <= 768;
-  if (isMobile && tabs) {
-    tabs.forEach(t => {
-      if (t.getAttribute('data-tab') === 'profile') {
-        t.classList.add('active');
-      } else {
-        t.classList.remove('active');
-      }
-    });
-    if (panels) {
-      panels.forEach(panel => {
-        if (panel.id === 'admin-panel-profile') {
-          panel.style.display = 'block';
-        } else {
-          panel.style.display = 'none';
-        }
-      });
-    }
-  }
+
 
   // 1. 圣徒诗歌管理
   const listAdminHymns = document.getElementById('list-admin-hymns');

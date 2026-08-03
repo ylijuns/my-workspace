@@ -802,22 +802,21 @@ body {
     display: none !important;
   }
 
-  /* 手机端隐藏除个人信息外的后台选项 */
-  #page-admin .admin-tab-btn:not([data-tab="profile"]),
-  #page-admin .admin-panel:not(#admin-panel-profile),
-  #page-admin div[style*="background: linear-gradient(135deg, #FFF3CD, #FFEBAA);"] {
-    display: none !important;
+  /* 允许移动端后台管理页面的 Tab 栏横向滑动，防止挤压 */
+  #page-admin .admin-tab-btns {
+    display: flex !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    padding-bottom: 8px !important;
+    overflow-x: auto !important; /* 横向平滑滚动 */
+    white-space: nowrap !important; /* 禁止换行 */
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
   }
-
-  #page-admin .admin-tab-btn[data-tab="profile"] {
-    display: block !important;
-    width: 100%;
-    text-align: center;
-    border-bottom: 2px solid var(--theme-accent);
-  }
-
-  #page-admin #admin-panel-profile {
-    display: block !important;
+  
+  #page-admin .admin-tab-btn {
+    flex-shrink: 0 !important; /* 防止按钮变窄被挤压 */
   }
 }
 
