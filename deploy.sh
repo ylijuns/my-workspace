@@ -1,4 +1,4 @@
 #!/bin/bash
-git add index.html styles.css app.js bible_data.js hymns_db.json
-git commit -m "update presentation"
+git add -A
+git commit -m "update presentation and custom assets"
 git push origin main
