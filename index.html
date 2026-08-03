@@ -806,7 +806,17 @@
             </div>
           </div>
 
-          <button id="btn-idphoto-download-single" class="btn-pill" style="width: 100%; padding: 14px; background: #10B981; color: #FFFFFF; font-size: 14px; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);" disabled>📥 下载保存到相册</button>
+          <button id="btn-idphoto-download-single" class="btn-pill" style="width: 100%; padding: 14px; background: #10B981; color: #FFFFFF; font-size: 14px; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);" disabled>📥 保存到相册</button>
+        </div>
+      </div>
+
+      <!-- 📱 手机端专属直接保存手机相册 Modal 弹窗 -->
+      <div id="modal-idphoto-save" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+        <div style="background: #FFFFFF; border-radius: 16px; width: 100%; max-width: 340px; padding: 20px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="font-size: 15px; font-weight: 700; color: #1E293B;">📱 提示：长按下方图片保存至手机相册</div>
+          <img id="img-idphoto-modal-save" style="max-width: 220px; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border: 1px solid #E2E8F0;">
+          <div style="font-size: 11px; color: #64748B; background: #F1F5F9; padding: 6px 12px; border-radius: 6px;">👆 长按照片调出系统菜单选择【保存图像】</div>
+          <button id="btn-idphoto-close-modal" class="btn-pill" style="width: 100%; padding: 10px; background: #64748B; color: #FFFFFF; font-size: 13px; font-weight: 700; border-radius: 8px; margin-top: 4px;">关闭页面</button>
         </div>
       </div>
     </section>

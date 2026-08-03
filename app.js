@@ -2000,6 +2000,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. 📷 智能证件照生成器 (极简工作流 + 唯一“下载保存到相册”按钮)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (手机直接入库相册 Web Share + 长按存图 Modal)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   // 模式切换按钮
   const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
@@ -2028,10 +2031,15 @@ const initIdPhoto = () => {
   const selSize = document.getElementById('sel-idphoto-size');
   const lblSpec = document.getElementById('lbl-idphoto-spec');
 
-  // 结果预览与唯一保存按钮
+  // 结果预览与保存相册相关组件
   const imgResult = document.getElementById('img-idphoto-result');
   const placeholder = document.getElementById('placeholder-idphoto');
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
+
+  // 手机端保存 Modal
+  const modalSave = document.getElementById('modal-idphoto-save');
+  const imgModalSave = document.getElementById('img-idphoto-modal-save');
+  const btnCloseModal = document.getElementById('btn-idphoto-close-modal');
 
   let stream = null;
   let currentImageSrc = './apple-touch-icon.png';
@@ -2092,7 +2100,6 @@ const initIdPhoto = () => {
     avgBgG /= bgSamples.length;
     avgBgB /= bgSamples.length;
 
-    // 人体肤色保护判断
     const isSkinColor = (r, g, b) => {
       return (r > 60 && g > 40 && b > 20 && (r - g > 10) && r > b && (Math.max(r, g, b) - Math.min(r, g, b) > 15));
     };
@@ -2153,11 +2160,9 @@ const initIdPhoto = () => {
 
     tCtx.putImageData(imgData, 0, 0);
 
-    // 绘制全新底色
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, w, h);
 
-    // 叠加人像
     ctx.drawImage(tempCanvas, 0, 0);
   };
 
@@ -2352,17 +2357,53 @@ const initIdPhoto = () => {
     });
   }
 
-  // 9. 唯一的【📥 下载保存到相册】按钮
+  // 📱 9. 【保存到相册】核心保存逻辑 (原生 Web Share + 长按入库 Modal)
   if (btnDownloadSingle) {
-    btnDownloadSingle.addEventListener('click', () => {
+    btnDownloadSingle.addEventListener('click', async () => {
       if (!processedSingleCanvas) return;
+
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const dataUrl = processedSingleCanvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `id_photo_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+
+      // A. 尝试使用 iOS / Android 系统的 Web Share API 直接写入系统相册
+      if (isMobile && navigator.share && navigator.canShare) {
+        try {
+          const blob = await new Promise(resolve => processedSingleCanvas.toBlob(resolve, 'image/png'));
+          const file = new File([blob], `idphoto_${Date.now()}.png`, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: '证件照保存',
+              text: '保存证件照至手机相册'
+            });
+            return; // 唤起成功，用户在系统面板点击“保存图像”直接入库！
+          }
+        } catch (e) {
+          // 用户取消或被拦截，继续执行降级长按 Modal 逻辑
+        }
+      }
+
+      // B. 降级方案：若在手机端，弹窗展示图像，指尖长按 0.5 秒即可选择【保存图像 / 保存至相册】！
+      if (isMobile) {
+        if (imgModalSave && modalSave) {
+          imgModalSave.src = dataUrl;
+          modalSave.style.display = 'flex';
+        }
+      } else {
+        // C. 电脑端：触发浏览器标准的极速保存
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `idphoto_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    });
+  }
+
+  if (btnCloseModal && modalSave) {
+    btnCloseModal.addEventListener('click', () => {
+      modalSave.style.display = 'none';
     });
   }
 
