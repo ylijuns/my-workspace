@@ -1340,3 +1340,12 @@ body {
   min-height: 280px;
 }
 
+/* 📷 智能证件照移动端长按直接存手机相册保证 */
+#img-idphoto-result,
+#img-idphoto-modal-save {
+  -webkit-touch-callout: default !important;
+  -webkit-user-select: auto !important;
+  user-select: auto !important;
+  cursor: pointer;
+}
+

@@ -2003,6 +2003,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. 📷 智能证件照生成器 (手机直接入库相册 Web Share + 长按存图 Modal)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (手机长按直接存入【照片/相册】- 彻底告别下载弹窗)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   // 模式切换按钮
   const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
@@ -2010,7 +2013,7 @@ const initIdPhoto = () => {
   const viewCam = document.getElementById('view-idphoto-cam');
   const viewUpload = document.getElementById('view-idphoto-upload');
 
-  // 摄像头相关组件
+  // 摄像头组件
   const videoCam = document.getElementById('video-idphoto-camera');
   const svgGuide = document.getElementById('svg-idphoto-guide');
   const placeholderCam = document.getElementById('placeholder-idphoto-cam');
@@ -2020,10 +2023,10 @@ const initIdPhoto = () => {
   const btnCapture = document.getElementById('btn-idphoto-capture');
   const btnStopCam = document.getElementById('btn-idphoto-stop-cam');
 
-  // 本地上传相关组件
+  // 本地上传组件
   const fileInput = document.getElementById('file-idphoto-input');
 
-  // 底色、灵敏度与规格组件
+  // 色彩与规格组件
   const colorBtns = document.querySelectorAll('.idphoto-color-btn');
   const pickerColor = document.getElementById('picker-idphoto-color');
   const rangeTolerance = document.getElementById('range-idphoto-tolerance');
@@ -2031,12 +2034,12 @@ const initIdPhoto = () => {
   const selSize = document.getElementById('sel-idphoto-size');
   const lblSpec = document.getElementById('lbl-idphoto-spec');
 
-  // 结果预览与保存相册相关组件
+  // 预览与保存组件
   const imgResult = document.getElementById('img-idphoto-result');
   const placeholder = document.getElementById('placeholder-idphoto');
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
 
-  // 手机端保存 Modal
+  // 手机端长按存相册 Modal
   const modalSave = document.getElementById('modal-idphoto-save');
   const imgModalSave = document.getElementById('img-idphoto-modal-save');
   const btnCloseModal = document.getElementById('btn-idphoto-close-modal');
@@ -2047,7 +2050,7 @@ const initIdPhoto = () => {
   let tolerance = 45;
   let processedSingleCanvas = null;
 
-  // 尺寸映射 (300DPI 标准)
+  // 尺寸规格
   const sizeSpecs = {
     '1in': { name: '一寸 (295×413px)', w: 295, h: 413 },
     '2in': { name: '二寸 (413×579px)', w: 413, h: 579 },
@@ -2055,7 +2058,7 @@ const initIdPhoto = () => {
     'small2in': { name: '小二寸 / 签证 (35 × 45 mm)', w: 413, h: 531 }
   };
 
-  // 🧠 连通广度优先搜索 (BFS) + 肤色防误伤抠图引擎
+  // 🧠 BFS 连通域抠图引擎
   const processConnectedMattingAndRender = (img, targetCanvas, bgColor, mattingTolerance) => {
     const w = targetCanvas.width;
     const h = targetCanvas.height;
@@ -2357,43 +2360,25 @@ const initIdPhoto = () => {
     });
   }
 
-  // 📱 9. 【保存到相册】核心保存逻辑 (原生 Web Share + 长按入库 Modal)
+  // 📱 9. 【保存到相册】核心交互 (移动端长按直接进系统相册，彻底告别“保存到文件”弹窗)
   if (btnDownloadSingle) {
-    btnDownloadSingle.addEventListener('click', async () => {
+    btnDownloadSingle.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
 
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
       const dataUrl = processedSingleCanvas.toDataURL('image/png');
 
-      // A. 尝试使用 iOS / Android 系统的 Web Share API 直接写入系统相册
-      if (isMobile && navigator.share && navigator.canShare) {
-        try {
-          const blob = await new Promise(resolve => processedSingleCanvas.toBlob(resolve, 'image/png'));
-          const file = new File([blob], `idphoto_${Date.now()}.png`, { type: 'image/png' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: '证件照保存',
-              text: '保存证件照至手机相册'
-            });
-            return; // 唤起成功，用户在系统面板点击“保存图像”直接入库！
-          }
-        } catch (e) {
-          // 用户取消或被拦截，继续执行降级长按 Modal 逻辑
-        }
-      }
-
-      // B. 降级方案：若在手机端，弹窗展示图像，指尖长按 0.5 秒即可选择【保存图像 / 保存至相册】！
       if (isMobile) {
+        // 手机端：直接弹出长按存图 Modal，绝不触发 a.click()，彻底阻止 iOS “你要下载吗”弹窗！
         if (imgModalSave && modalSave) {
           imgModalSave.src = dataUrl;
           modalSave.style.display = 'flex';
         }
       } else {
-        // C. 电脑端：触发浏览器标准的极速保存
+        // 电脑端：标准极速保存
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = `idphoto_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
+        a.download = `id_photo_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
