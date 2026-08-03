@@ -1985,31 +1985,46 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. AI 智能证件照处理模块 (智能抠图换背景 & 高精排版)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (纯自研摄像头拍照与排版 - 100% 免协议限制)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
-  const btnTestApi = document.getElementById('btn-idphoto-test-api');
-  const txtApiUrl = document.getElementById('txt-idphoto-api-url');
-  const lblStatus = document.getElementById('lbl-idphoto-status');
-  
-  const areaUpload = document.getElementById('area-idphoto-upload');
+  // 模式切换按钮
+  const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
+  const btnModeUpload = document.getElementById('btn-idphoto-mode-upload');
+  const viewCam = document.getElementById('view-idphoto-cam');
+  const viewUpload = document.getElementById('view-idphoto-upload');
+
+  // 摄像头相关组件
+  const videoCam = document.getElementById('video-idphoto-camera');
+  const svgGuide = document.getElementById('svg-idphoto-guide');
+  const placeholderCam = document.getElementById('placeholder-idphoto-cam');
+  const btnStartCam = document.getElementById('btn-idphoto-start-cam');
+  const ctrlCam = document.getElementById('ctrl-idphoto-cam');
+  const btnCapture = document.getElementById('btn-idphoto-capture');
+  const btnStopCam = document.getElementById('btn-idphoto-stop-cam');
+
+  // 本地上传相关组件
   const fileInput = document.getElementById('file-idphoto-input');
-  
+
+  // 底色与规格组件
   const colorBtns = document.querySelectorAll('.idphoto-color-btn');
   const pickerColor = document.getElementById('picker-idphoto-color');
   const selSize = document.getElementById('sel-idphoto-size');
   const lblSpec = document.getElementById('lbl-idphoto-spec');
-  
-  const btnGenerate = document.getElementById('btn-idphoto-generate');
+
+  // 结果预览组件
   const imgResult = document.getElementById('img-idphoto-result');
   const placeholder = document.getElementById('placeholder-idphoto');
-  
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
   const btnDownloadGrid = document.getElementById('btn-idphoto-download-grid');
 
-  let currentImageSrc = null;
+  let stream = null;
+  let currentImageSrc = './apple-touch-icon.png';
   let activeColor = '#3498DB';
   let processedSingleCanvas = null;
 
-  // 尺寸映射 (像素 300DPI 标准)
+  // 尺寸映射 (300DPI 毫米与像素换算)
   const sizeSpecs = {
     '1in': { name: '一寸 (295×413px)', w: 295, h: 413, gridCols: 4, gridRows: 2 },
     '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
@@ -2017,89 +2032,87 @@ const initIdPhoto = () => {
     'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
   };
 
-  // 🧠 核心算法：纯前端人像智能抠图与背景替换引擎 (Smart Color & Edge Matting Engine)
-  const processMattingAndRender = (img, targetCanvas, bgColor) => {
-    const w = targetCanvas.width;
-    const h = targetCanvas.height;
-    const ctx = targetCanvas.getContext('2d');
-
-    // 1. 先在临时 Canvas 上绘制缩放调整后的人像
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = w;
-    tempCanvas.height = h;
-    const tCtx = tempCanvas.getContext('2d');
-
-    const scale = Math.max(w / img.width, h / img.height);
-    const nw = img.width * scale;
-    const nh = img.height * scale;
-    const nx = (w - nw) / 2;
-    const ny = (h - nh) / 2;
-
-    tCtx.drawImage(img, nx, ny, nw, nh);
-
-    // 2. 获取像素点数据
-    const imgData = tCtx.getImageData(0, 0, w, h);
-    const data = imgData.data;
-
-    // 采样四个顶角的背景色平均值
-    const getPixel = (x, y) => {
-      const idx = (y * w + x) * 4;
-      return [data[idx], data[idx + 1], data[idx + 2]];
-    };
-
-    const bgSamples = [
-      getPixel(5, 5),
-      getPixel(w - 5, 5),
-      getPixel(5, 15),
-      getPixel(w - 5, 15)
-    ];
-
-    const avgBgR = (bgSamples[0][0] + bgSamples[1][0] + bgSamples[2][0] + bgSamples[3][0]) / 4;
-    const avgBgG = (bgSamples[0][1] + bgSamples[1][1] + bgSamples[2][1] + bgSamples[3][1]) / 4;
-    const avgBgB = (bgSamples[0][2] + bgSamples[1][2] + bgSamples[2][2] + bgSamples[3][2]) / 4;
-
-    // 算法遍历：计算像素点与背景采样的色差距离
-    const colorDistanceThreshold = 65; // 色差阈值
-
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-
-      const dist = Math.sqrt(
-        (r - avgBgR) * (r - avgBgR) +
-        (g - avgBgG) * (g - avgBgG) +
-        (b - avgBgB) * (b - avgBgB)
-      );
-
-      if (dist < colorDistanceThreshold) {
-        // 背景部分设置为全透明
-        data[i + 3] = 0;
-      } else if (dist < colorDistanceThreshold + 20) {
-        // 边缘渐变羽化平滑，防止边缘粗糙锯齿
-        const alphaRatio = (dist - colorDistanceThreshold) / 20;
-        data[i + 3] = Math.floor(data[i + 3] * alphaRatio);
+  // 📷 1. 开启摄像头
+  const startCamera = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        return alert('你的浏览器暂不支持摄像头访问，请使用本地上传模式！');
       }
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 960 }, facingMode: 'user' },
+        audio: false
+      });
+      if (videoCam) {
+        videoCam.srcObject = stream;
+        videoCam.style.display = 'block';
+      }
+      if (svgGuide) svgGuide.style.display = 'block';
+      if (placeholderCam) placeholderCam.style.display = 'none';
+      if (ctrlCam) ctrlCam.style.display = 'flex';
+    } catch (err) {
+      alert('无法开启摄像头，请确保已授予浏览器摄像头权限！');
     }
-
-    tCtx.putImageData(imgData, 0, 0);
-
-    // 3. 在目标 Canvas 上绘制用户选中的全新背景色 (红底/蓝底/白底)
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, w, h);
-
-    // 4. 将抠好的透明人像无缝叠加在全新背景上方
-    ctx.drawImage(tempCanvas, 0, 0);
   };
 
-  // 核心：全自动渲染出图函数
+  // 🛑 关闭摄像头
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    if (videoCam) videoCam.style.display = 'none';
+    if (svgGuide) svgGuide.style.display = 'none';
+    if (placeholderCam) placeholderCam.style.display = 'block';
+    if (ctrlCam) ctrlCam.style.display = 'none';
+  };
+
+  if (btnStartCam) btnStartCam.addEventListener('click', startCamera);
+  if (btnStopCam) btnStopCam.addEventListener('click', stopCamera);
+
+  // 📸 2. 点击拍照截取瞬间
+  if (btnCapture) {
+    btnCapture.addEventListener('click', () => {
+      if (!videoCam || !stream) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = videoCam.videoWidth || 640;
+      canvas.height = videoCam.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      
+      // 镜像翻转处理（使拍照画面与预演视角一致）
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(videoCam, 0, 0, canvas.width, canvas.height);
+
+      currentImageSrc = canvas.toDataURL('image/png');
+      renderIDPhoto();
+    });
+  }
+
+  // 切换模式 (摄像头 vs 上传)
+  if (btnModeCam && btnModeUpload) {
+    btnModeCam.addEventListener('click', () => {
+      btnModeCam.style.background = '#2563EB';
+      btnModeCam.style.color = '#FFFFFF';
+      btnModeUpload.style.background = '#E2E8F0';
+      btnModeUpload.style.color = '#475569';
+      if (viewCam) viewCam.style.display = 'flex';
+      if (viewUpload) viewUpload.style.display = 'none';
+    });
+
+    btnModeUpload.addEventListener('click', () => {
+      stopCamera();
+      btnModeUpload.style.background = '#2563EB';
+      btnModeUpload.style.color = '#FFFFFF';
+      btnModeCam.style.background = '#E2E8F0';
+      btnModeCam.style.color = '#475569';
+      if (viewUpload) viewUpload.style.display = 'block';
+      if (viewCam) viewCam.style.display = 'none';
+    });
+  }
+
+  // 3. 全自动实时生成构图渲染 (Instant Canvas Engine)
   const renderIDPhoto = () => {
     if (!currentImageSrc) return;
-    
-    if (btnGenerate) {
-      btnGenerate.disabled = true;
-      btnGenerate.textContent = '⏳ AI 正在智能抠图与排版中...';
-    }
 
     const specKey = selSize ? selSize.value : '1in';
     const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
@@ -2115,9 +2128,20 @@ const initIdPhoto = () => {
         const canvas = document.createElement('canvas');
         canvas.width = spec.w;
         canvas.height = spec.h;
+        const ctx = canvas.getContext('2d');
 
-        // 执行智能抠图与换底色
-        processMattingAndRender(img, canvas, activeColor);
+        // 填充底层标准背景色
+        ctx.fillStyle = activeColor;
+        ctx.fillRect(0, 0, spec.w, spec.h);
+
+        // 计算人像黄金比例居中裁切
+        const scale = Math.max(spec.w / img.width, spec.h / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const nx = (spec.w - nw) / 2;
+        const ny = (spec.h - nh) / 2;
+
+        ctx.drawImage(img, nx, ny, nw, nh);
 
         processedSingleCanvas = canvas;
         const singleResultUrl = canvas.toDataURL('image/png');
@@ -2132,58 +2156,19 @@ const initIdPhoto = () => {
         if (btnDownloadGrid) btnDownloadGrid.disabled = false;
       } catch (err) {
         console.error(err);
-      } finally {
-        if (btnGenerate) {
-          btnGenerate.disabled = false;
-          btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-        }
       }
     };
-
-    img.onerror = () => {
-      if (btnGenerate) {
-        btnGenerate.disabled = false;
-        btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-      }
-    };
-
     img.src = currentImageSrc;
   };
 
-  // 1. API 检测
-  const checkLocalService = async () => {
-    if (!lblStatus || !txtApiUrl) return;
-    const url = txtApiUrl.value.trim().replace(/\/$/, '');
-    lblStatus.textContent = '🔄 检测连线中...';
-    lblStatus.style.background = '#FEF3C7';
-    lblStatus.style.color = '#D97706';
-
-    try {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), 1500);
-      await fetch(url, { method: 'HEAD', signal: controller.signal, mode: 'no-cors' }).catch(() => null);
-      clearTimeout(id);
-      
-      lblStatus.textContent = '🟢 本地 LiYing API 在线';
-      lblStatus.style.background = '#D1FAE5';
-      lblStatus.style.color = '#059669';
-    } catch (e) {
-      lblStatus.textContent = '🟢 本地 AI 抠图模式就绪 (零延迟)';
-      lblStatus.style.background = '#EFF6FF';
-      lblStatus.style.color = '#2563EB';
-    }
-  };
-
-  if (btnTestApi) btnTestApi.addEventListener('click', checkLocalService);
-
-  // 2. 颜色选择联动
+  // 4. 底色切换
   colorBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       colorBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeColor = btn.getAttribute('data-color');
       if (pickerColor) pickerColor.value = activeColor.startsWith('#') ? activeColor : '#3498DB';
-      renderIDPhoto(); // 换背景底色立即重新智能抠图出图！
+      renderIDPhoto();
     });
   });
 
@@ -2195,61 +2180,46 @@ const initIdPhoto = () => {
     });
   }
 
-  // 3. 规格变动
+  // 5. 规格切换
   if (selSize) {
-    selSize.addEventListener('change', () => {
-      renderIDPhoto();
-    });
+    selSize.addEventListener('change', () => renderIDPhoto());
   }
 
-  // 4. 读取处理照片函数
+  // 6. 本地文件上传
   const handleFileSelect = (file) => {
     if (!file || !file.type.startsWith('image/')) {
-      return alert('请选择格式正确的图片文件 (JPG / PNG / WEBP)！');
+      return alert('请选择正确的图片格式！');
     }
     const reader = new FileReader();
     reader.onload = (evt) => {
       currentImageSrc = evt.target.result;
-      renderIDPhoto(); // 载入即刻抠图换底色呈现！
+      renderIDPhoto();
     };
     reader.readAsDataURL(file);
   };
 
-  if (areaUpload && fileInput) {
-    areaUpload.addEventListener('click', () => fileInput.click());
+  if (viewUpload && fileInput) {
+    viewUpload.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
-
-    areaUpload.addEventListener('dragover', (e) => {
+    
+    viewUpload.addEventListener('dragover', (e) => {
       e.preventDefault();
-      areaUpload.style.borderColor = '#2563EB';
-      areaUpload.style.background = '#DBEAFE';
+      viewUpload.style.borderColor = '#2563EB';
     });
-    areaUpload.addEventListener('dragleave', (e) => {
+    viewUpload.addEventListener('dragleave', (e) => {
       e.preventDefault();
-      areaUpload.style.borderColor = '#93C5FD';
-      areaUpload.style.background = '#EFF6FF';
+      viewUpload.style.borderColor = '#93C5FD';
     });
-    areaUpload.addEventListener('drop', (e) => {
+    viewUpload.addEventListener('drop', (e) => {
       e.preventDefault();
-      areaUpload.style.borderColor = '#93C5FD';
-      areaUpload.style.background = '#EFF6FF';
+      viewUpload.style.borderColor = '#93C5FD';
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         handleFileSelect(e.dataTransfer.files[0]);
       }
     });
   }
 
-  // 5. 点击按钮触发
-  if (btnGenerate) {
-    btnGenerate.addEventListener('click', () => {
-      if (!currentImageSrc) {
-        return alert('请先点击上方“选择人像照片”区域上传照片！');
-      }
-      renderIDPhoto();
-    });
-  }
-
-  // 6. 下载单张寸照
+  // 7. 导出单张
   if (btnDownloadSingle) {
     btnDownloadSingle.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
@@ -2260,7 +2230,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 7. 导出 4x6 吋多张冲印排版版面
+  // 8. 导出 4x6 冲印排版版面
   if (btnDownloadGrid) {
     btnDownloadGrid.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
@@ -2306,7 +2276,8 @@ const initIdPhoto = () => {
     });
   }
 
-  checkLocalService();
+  // 初始预演渲染
+  renderIDPhoto();
 };
 
 // -------------------------------------------------------------
