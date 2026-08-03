@@ -7,6 +7,19 @@ const setLocalData = (key, val) => {
   localStorage.setItem(key, JSON.stringify(val));
 };
 
+const updateProfileUI = () => {
+  const cachedName = localStorage.getItem('admin_profile_name') || '同工';
+  const cachedAvatar = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
+
+  const sidebarName = document.getElementById('lbl-sidebar-name');
+  const sidebarAvatar = document.getElementById('lbl-sidebar-avatar');
+
+  if (sidebarName) sidebarName.textContent = cachedName;
+  if (sidebarAvatar) {
+    sidebarAvatar.style.backgroundImage = `url('${cachedAvatar}')`;
+  }
+};
+
 // -------------------------------------------------------------
 // 1. 路由与主题切换
 // -------------------------------------------------------------
@@ -2271,7 +2284,6 @@ const initAdmin = () => {
 
   const btnAddHymn = document.getElementById('btn-admin-add-hymn');
   if (btnAddHymn) {
-    // 移除原有绑定防止重复注册
     const newBtn = btnAddHymn.cloneNode(true);
     btnAddHymn.parentNode.replaceChild(newBtn, btnAddHymn);
 
@@ -2292,7 +2304,7 @@ const initAdmin = () => {
 
       const hymns = getLocalData('admin_hymns_db', []);
       if (hymns.some(h => h.num === num)) {
-        return alert('已存在该编号的诗歌！');
+        return alert('已存在该编号 of 诗歌！');
       }
 
       hymns.push({ num, title, author: author || '圣徒精选', lyrics });
@@ -2433,6 +2445,57 @@ const initAdmin = () => {
     });
   }
 
+  // 4. 个人信息设置
+  const profileNameInput = document.getElementById('txt-admin-profile-name');
+  const profileAvatarInput = document.getElementById('txt-admin-profile-avatar');
+  const btnSaveProfile = document.getElementById('btn-admin-save-profile');
+
+  // 初始化个人资料输入框数值
+  if (profileNameInput) profileNameInput.value = localStorage.getItem('admin_profile_name') || '同工';
+  
+  let selectedAvatarUrl = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
+  if (profileAvatarInput) profileAvatarInput.value = selectedAvatarUrl;
+
+  // 绑定预设头像的高亮点击
+  const presetAvatarImgs = document.querySelectorAll('#page-admin .preset-avatar-img');
+  presetAvatarImgs.forEach(img => {
+    const avatarUrl = img.getAttribute('data-avatar');
+    if (avatarUrl === selectedAvatarUrl) {
+      img.classList.add('active');
+    } else {
+      img.classList.remove('active');
+    }
+
+    img.addEventListener('click', () => {
+      presetAvatarImgs.forEach(i => i.classList.remove('active'));
+      img.classList.add('active');
+      selectedAvatarUrl = avatarUrl;
+      if (profileAvatarInput) profileAvatarInput.value = avatarUrl;
+    });
+  });
+
+  if (btnSaveProfile) {
+    const newBtn = btnSaveProfile.cloneNode(true);
+    btnSaveProfile.parentNode.replaceChild(newBtn, btnSaveProfile);
+
+    newBtn.addEventListener('click', () => {
+      const nameVal = profileNameInput.value.trim();
+      const customAvatarUrl = profileAvatarInput.value.trim();
+
+      if (!nameVal) {
+        return alert('展示昵称不能为空！');
+      }
+
+      const finalAvatar = customAvatarUrl || selectedAvatarUrl;
+
+      localStorage.setItem('admin_profile_name', nameVal);
+      localStorage.setItem('admin_profile_avatar', finalAvatar);
+
+      updateProfileUI();
+      alert('个人信息配置更新成功！多端同步已生效。');
+    });
+  }
+
   // 一键导出 hymns_db.json
   const btnExportHymns = document.getElementById('btn-admin-export-hymns');
   if (btnExportHymns) {
@@ -2460,6 +2523,8 @@ const initAdmin = () => {
   refreshAdminBooks();
 };
 
+
   initHymns();
   initAdmin();
+  updateProfileUI();
 });

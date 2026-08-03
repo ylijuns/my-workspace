@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>个人工作台 | 灵感、健康与成长管理</title>
+  <title>个人工作台 | 灵修、健康与成长管理</title>
   <meta name="description" content="一个集成了灵感管理、英语口语、减脂饮食、运动计划、新闻阅读、修心修行等功能的个人成长与工作空间。">
   <link rel="stylesheet" href="styles.css">
   
@@ -22,6 +22,11 @@
 
   <!-- 左侧固定侧边栏 -->
   <aside class="sidebar" id="sidebar">
+    <!-- 侧栏个人头像资料 -->
+    <div class="sidebar-profile" id="sidebar-profile">
+      <div class="sidebar-profile-avatar" id="lbl-sidebar-avatar"></div>
+      <div class="sidebar-profile-name" id="lbl-sidebar-name">同工</div>
+    </div>
     <nav class="sidebar-menu">
       <div class="menu-item active" data-target="inspiration" id="nav-inspiration">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -801,6 +806,7 @@
           <div class="admin-tab-btn active" data-tab="hymns">圣徒诗歌管理</div>
           <div class="admin-tab-btn" data-tab="books">书籍推荐管理</div>
           <div class="admin-tab-btn" data-tab="rss">新闻与博客源</div>
+          <div class="admin-tab-btn" data-tab="profile">个人信息设置</div>
         </div>
 
         <!-- 1. 诗歌管理表单 -->
@@ -892,6 +898,28 @@
             <textarea id="txt-admin-blog-content" class="admin-textarea" placeholder="文章详细正文..."></textarea>
           </div>
           <button class="btn-pill btn-accent" id="btn-admin-add-blog" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存文章到本地数据库 ＋</button>
+        </div>
+
+        <!-- 4. 个人信息设置表单 -->
+        <div id="admin-panel-profile" class="admin-panel" style="display:none;">
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">👤 个人资料设置</div>
+          
+          <div class="admin-form-group">
+            <label>展示昵称</label>
+            <input type="text" id="txt-admin-profile-name" class="admin-input" placeholder="例如：以诺 / 灵修同工">
+          </div>
+          <div class="admin-form-group">
+            <label>头像选择</label>
+            <div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:11px; color:var(--text-secondary);">快捷预设:</span>
+              <img src="https://img.icons8.com/color/512/user-male-circle.png" class="preset-avatar-img active" data-avatar="https://img.icons8.com/color/512/user-male-circle.png">
+              <img src="https://img.icons8.com/color/512/user-female-circle.png" class="preset-avatar-img" data-avatar="https://img.icons8.com/color/512/user-female-circle.png">
+              <img src="https://img.icons8.com/color/512/monk.png" class="preset-avatar-img" data-avatar="https://img.icons8.com/color/512/monk.png">
+            </div>
+            <label>或输入自定义头像图片 URL 地址</label>
+            <input type="text" id="txt-admin-profile-avatar" class="admin-input" placeholder="https://...">
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-save-profile" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存资料到本地缓存 ＋</button>
         </div>
       </div>
     </section>
