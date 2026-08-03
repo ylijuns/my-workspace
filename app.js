@@ -1979,6 +1979,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. AI 智能证件照处理模块 (高精抠图与排版)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. AI 智能证件照处理模块 (自动实时渲染 & 高精排版)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   const btnTestApi = document.getElementById('btn-idphoto-test-api');
   const txtApiUrl = document.getElementById('txt-idphoto-api-url');
@@ -1999,7 +2002,7 @@ const initIdPhoto = () => {
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
   const btnDownloadGrid = document.getElementById('btn-idphoto-download-grid');
 
-  let currentImageSrc = null;
+  let currentImageSrc = './apple-touch-icon.png'; // 默认内置示例人像
   let activeColor = '#3498DB';
   let processedSingleCanvas = null;
 
@@ -2009,6 +2012,75 @@ const initIdPhoto = () => {
     '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
     'small1in': { name: '小一寸 (260×378px)', w: 260, h: 378, gridCols: 4, gridRows: 2 },
     'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
+  };
+
+  // 核心：全自动实时渲染绘制函数 (Instant Render)
+  const renderIDPhoto = () => {
+    if (!currentImageSrc) return;
+    
+    if (btnGenerate) {
+      btnGenerate.disabled = true;
+      btnGenerate.textContent = '⏳ 正在实时渲染...';
+    }
+
+    const specKey = selSize ? selSize.value : '1in';
+    const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
+    if (lblSpec) lblSpec.textContent = spec.name;
+
+    const img = new Image();
+    if (!currentImageSrc.startsWith('data:')) {
+      img.crossOrigin = 'anonymous';
+    }
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = spec.w;
+        canvas.height = spec.h;
+        const ctx = canvas.getContext('2d');
+
+        // 1. 填充底色
+        ctx.fillStyle = activeColor;
+        ctx.fillRect(0, 0, spec.w, spec.h);
+
+        // 2. 计算居中对齐与绘制
+        const scale = Math.max(spec.w / img.width, spec.h / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const nx = (spec.w - nw) / 2;
+        const ny = (spec.h - nh) / 2;
+
+        ctx.drawImage(img, nx, ny, nw, nh);
+
+        processedSingleCanvas = canvas;
+        const singleResultUrl = canvas.toDataURL('image/png');
+
+        if (imgResult) {
+          imgResult.src = singleResultUrl;
+          imgResult.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+
+        if (btnDownloadSingle) btnDownloadSingle.disabled = false;
+        if (btnDownloadGrid) btnDownloadGrid.disabled = false;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (btnGenerate) {
+          btnGenerate.disabled = false;
+          btnGenerate.textContent = '🚀 开始 AI 生成证件照';
+        }
+      }
+    };
+
+    img.onerror = () => {
+      if (btnGenerate) {
+        btnGenerate.disabled = false;
+        btnGenerate.textContent = '🚀 开始 AI 生成证件照';
+      }
+    };
+
+    img.src = currentImageSrc;
   };
 
   // 1. API 检测
@@ -2037,13 +2109,14 @@ const initIdPhoto = () => {
 
   if (btnTestApi) btnTestApi.addEventListener('click', checkLocalService);
 
-  // 2. 颜色选择逻辑
+  // 2. 颜色选择联动
   colorBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       colorBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeColor = btn.getAttribute('data-color');
       if (pickerColor) pickerColor.value = activeColor.startsWith('#') ? activeColor : '#3498DB';
+      renderIDPhoto(); // 底色变动即刻自动出图！
     });
   });
 
@@ -2051,14 +2124,14 @@ const initIdPhoto = () => {
     pickerColor.addEventListener('input', (e) => {
       activeColor = e.target.value;
       colorBtns.forEach(b => b.classList.remove('active'));
+      renderIDPhoto(); // 底色变动即刻自动出图！
     });
   }
 
   // 3. 规格变动
-  if (selSize && lblSpec) {
-    selSize.addEventListener('change', (e) => {
-      const spec = sizeSpecs[e.target.value] || sizeSpecs['1in'];
-      lblSpec.textContent = spec.name;
+  if (selSize) {
+    selSize.addEventListener('change', () => {
+      renderIDPhoto(); // 规格变动即刻自动出图！
     });
   }
 
@@ -2070,11 +2143,7 @@ const initIdPhoto = () => {
     const reader = new FileReader();
     reader.onload = (evt) => {
       currentImageSrc = evt.target.result;
-      if (placeholder) {
-        placeholder.style.display = 'block';
-        placeholder.innerHTML = `<div style="font-size:36px; margin-bottom:6px;">📸</div><div style="font-size:13px; font-weight:700; color:#059669;">已成功载入照片: ${file.name}</div><div style="font-size:11px; color:#2563EB; margin-top:4px;">👇 点击下方【开始 AI 生成证件照】即可出图</div>`;
-      }
-      if (imgResult) imgResult.style.display = 'none';
+      renderIDPhoto(); // 选择照片即刻全自动绘图呈现！
     };
     reader.readAsDataURL(file);
   };
@@ -2083,7 +2152,6 @@ const initIdPhoto = () => {
     areaUpload.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
 
-    // 支持拖拽上传
     areaUpload.addEventListener('dragover', (e) => {
       e.preventDefault();
       areaUpload.style.borderColor = '#2563EB';
@@ -2104,79 +2172,10 @@ const initIdPhoto = () => {
     });
   }
 
-  // 5. 生成证件照与冲印版
+  // 5. 点击按钮触发
   if (btnGenerate) {
     btnGenerate.addEventListener('click', () => {
-      if (!currentImageSrc) {
-        return alert('请先点击上方“选择人像照片”区域上传照片！');
-      }
-
-      btnGenerate.disabled = true;
-      btnGenerate.textContent = '⏳ AI 正在智能抠图与排版中...';
-
-      try {
-        const specKey = selSize ? selSize.value : '1in';
-        const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
-
-        const img = new Image();
-        // 关键点：如果是 data: Base64 图片，严禁赋值 crossOrigin，防止触发 CORS 拦截！
-        if (!currentImageSrc.startsWith('data:')) {
-          img.crossOrigin = 'anonymous';
-        }
-
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.width = spec.w;
-            canvas.height = spec.h;
-            const ctx = canvas.getContext('2d');
-
-            // 填充底色
-            ctx.fillStyle = activeColor;
-            ctx.fillRect(0, 0, spec.w, spec.h);
-
-            // 计算缩放与居中裁切
-            const scale = Math.max(spec.w / img.width, spec.h / img.height);
-            const nw = img.width * scale;
-            const nh = img.height * scale;
-            const nx = (spec.w - nw) / 2;
-            const ny = (spec.h - nh) / 2;
-
-            ctx.drawImage(img, nx, ny, nw, nh);
-
-            processedSingleCanvas = canvas;
-            const singleResultUrl = canvas.toDataURL('image/png');
-
-            if (imgResult) {
-              imgResult.src = singleResultUrl;
-              imgResult.style.display = 'block';
-            }
-            if (placeholder) placeholder.style.display = 'none';
-
-            if (btnDownloadSingle) btnDownloadSingle.disabled = false;
-            if (btnDownloadGrid) btnDownloadGrid.disabled = false;
-
-            btnGenerate.disabled = false;
-            btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-          } catch (err) {
-            alert('生成失败: ' + err.message);
-            btnGenerate.disabled = false;
-            btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-          }
-        };
-
-        img.onerror = () => {
-          alert('无法加载该图片，请尝试重新选择一张图片！');
-          btnGenerate.disabled = false;
-          btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-        };
-
-        img.src = currentImageSrc;
-      } catch (err) {
-        alert('处理失败，请重试！');
-        btnGenerate.disabled = false;
-        btnGenerate.textContent = '🚀 开始 AI 生成证件照';
-      }
+      renderIDPhoto();
     });
   }
 
@@ -2237,8 +2236,9 @@ const initIdPhoto = () => {
     });
   }
 
-  // 初始化
+  // 初始化即刻呈现预设效果
   checkLocalService();
+  renderIDPhoto();
 };
 
 // -------------------------------------------------------------
