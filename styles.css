@@ -659,6 +659,11 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* 手机端彻底隐藏管理后台入口 */
+  .admin-only {
+    display: none !important;
+  }
+
   /* 强制横屏禁用与隐藏移动端顶栏 */
   html, body {
     overflow-x: hidden !important;
@@ -1096,6 +1101,104 @@ body {
 }
 
 .bible-chapter-btn.active {
+  background: var(--theme-accent);
+  color: #FFFFFF;
+  border-color: var(--theme-accent);
+}
+
+/* -------------------------------------------------------------
+ * 管理后台专属表单样式
+ * ------------------------------------------------------------- */
+.admin-form-group {
+  margin-bottom: 16px;
+}
+
+.admin-form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.admin-input {
+  width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  background: #FFFFFF;
+  transition: border-color 0.2s ease;
+}
+
+.admin-input:focus {
+  border-color: var(--theme-accent);
+}
+
+.admin-textarea {
+  width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  background: #FFFFFF;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-textarea:focus {
+  border-color: var(--theme-accent);
+}
+
+.admin-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.admin-list-item-title {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-list-item-action {
+  color: #EB5757;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.admin-tab-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 8px;
+}
+
+.admin-tab-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--bg-app);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.admin-tab-btn.active {
   background: var(--theme-accent);
   color: #FFFFFF;
   border-color: var(--theme-accent);

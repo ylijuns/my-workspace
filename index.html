@@ -101,6 +101,13 @@
         </svg>
         <span>我的树洞</span>
       </div>
+      <div class="menu-item admin-only" data-target="admin" id="nav-admin">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.645-.869l.214-1.28z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>⚙️ 后台管理</span>
+      </div>
     </nav>
   </aside>
 
@@ -766,6 +773,127 @@
       <button class="fab-btn" id="fab-treehole-clear" style="border-color:#7F8C8D; color:#7F8C8D; background:#F2F4F4;">
         <span>🗑️ 清空</span>
       </button>
+    </section>
+
+    <!-- ⚙️ 后台管理（PC 专属） -->
+    <section class="page" id="page-admin">
+      <div class="module-header">
+        <h1>全局后台管理</h1>
+        <p>信息源与资料库配置后台 (PC 专属，手机端自动隐藏)</p>
+      </div>
+
+      <!-- 数据导出与一键发布 -->
+      <div class="card" style="background: linear-gradient(135deg, #FFF3CD, #FFEBAA); border:1px solid #FFE082;">
+        <div class="card-title" style="color: #856404; font-size:13px;">💾 发布与同步控制台</div>
+        <div style="font-size:11px; line-height:1.6; color:#856404; margin-bottom:14px;">
+          网页上修改的内容会自动保存在你本地电脑的浏览器缓存中。<br>
+          如果需要<strong>同步到手机端</strong>或分享给其他人，请点击下方按钮导出最新的 <strong>hymns_db.json</strong> 并用它替换项目文件夹下的同名文件，最后在终端执行 <strong>./deploy.sh</strong> 即可！
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-pill btn-accent" id="btn-admin-export-hymns" style="border-radius:15px; padding:8px 16px; font-size:12px;">💾 导出圣徒诗歌 (hymns_db.json)</button>
+        </div>
+      </div>
+
+      <!-- 可视化管理卡片 -->
+      <div class="card">
+        <!-- 表单标签页 -->
+        <div class="admin-tab-btns">
+          <div class="admin-tab-btn active" data-tab="hymns">圣徒诗歌管理</div>
+          <div class="admin-tab-btn" data-tab="books">书籍推荐管理</div>
+          <div class="admin-tab-btn" data-tab="rss">新闻与博客源</div>
+        </div>
+
+        <!-- 1. 诗歌管理表单 -->
+        <div id="admin-panel-hymns" class="admin-panel">
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入新诗歌</div>
+          
+          <div class="admin-form-group">
+            <label>诗歌编号 (必须为数字)</label>
+            <input type="number" id="txt-admin-hymn-num" class="admin-input" placeholder="例如：210">
+          </div>
+          <div class="admin-form-group">
+            <label>诗歌标题</label>
+            <input type="text" id="txt-admin-hymn-title" class="admin-input" placeholder="例如：万民赞美救主">
+          </div>
+          <div class="admin-form-group">
+            <label>作者/出处</label>
+            <input type="text" id="txt-admin-hymn-author" class="admin-input" placeholder="例如：圣徒精选">
+          </div>
+          <div class="admin-form-group">
+            <label>歌词正文 (使用回车换行)</label>
+            <textarea id="txt-admin-hymn-lyrics" class="admin-textarea" placeholder="第一节...&#10;(副歌)...&#10;第二节..."></textarea>
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-add-hymn" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存诗歌到本地数据库 ＋</button>
+
+          <div style="font-size:13px; font-weight:700; margin-top:20px; margin-bottom:10px; border-left:3px solid var(--theme-accent); padding-left:8px;">📋 已录入诗歌列表 (共 <span id="lbl-admin-hymn-count">0</span> 首)</div>
+          <div id="list-admin-hymns" style="max-height: 250px; overflow-y: auto;">
+            <!-- 动态 -->
+          </div>
+        </div>
+
+        <!-- 2. 书籍管理表单 -->
+        <div id="admin-panel-books" class="admin-panel" style="display:none;">
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">＋ 录入新推荐书籍</div>
+          
+          <div class="admin-form-group">
+            <label>书籍名称</label>
+            <input type="text" id="txt-admin-book-title" class="admin-input" placeholder="例如：忏悔录">
+          </div>
+          <div class="admin-form-group">
+            <label>作者</label>
+            <input type="text" id="txt-admin-book-author" class="admin-input" placeholder="例如：奥古斯丁">
+          </div>
+          <div class="admin-form-group">
+            <label>书籍简介</label>
+            <input type="text" id="txt-admin-book-desc" class="admin-input" placeholder="简短的一两句话介绍...">
+          </div>
+          <div class="admin-form-group">
+            <label>精彩章节试读 (使用回车换行)</label>
+            <textarea id="txt-admin-book-preview" class="admin-textarea" placeholder="第一章..."></textarea>
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-add-book" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存书籍到本地数据库 ＋</button>
+
+          <div style="font-size:13px; font-weight:700; margin-top:20px; margin-bottom:10px; border-left:3px solid var(--theme-accent); padding-left:8px;">📚 已录入书籍列表</div>
+          <div id="list-admin-books" style="max-height: 250px; overflow-y: auto;">
+            <!-- 动态 -->
+          </div>
+        </div>
+
+        <!-- 3. 新闻与博客源管理 -->
+        <div id="admin-panel-rss" class="admin-panel" style="display:none;">
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">📡 实时 RSS 订阅源网址</div>
+          
+          <div class="admin-form-group">
+            <label>当前 RSS 新闻源 API 链接</label>
+            <input type="text" id="txt-admin-rss-url" class="admin-input" placeholder="https://api.rss2json.com/...">
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-save-rss" style="width:100%; border-radius:15px; padding:10px; font-size:12px; margin-bottom: 20px;">保存 RSS 配置 ＋</button>
+
+          <div style="font-size:13px; font-weight:700; margin-bottom:12px; border-left:3px solid var(--theme-accent); padding-left:8px;">✍️ 录入博客精选文章</div>
+          
+          <div class="admin-form-group">
+            <label>文章标题</label>
+            <input type="text" id="txt-admin-blog-title" class="admin-input" placeholder="文章标题...">
+          </div>
+          <div class="admin-form-group">
+            <label>文章分类</label>
+            <input type="text" id="txt-admin-blog-cat" class="admin-input" placeholder="例如：生活 / 科技 / 灵修">
+          </div>
+          <div class="admin-form-group">
+            <label>来源作者</label>
+            <input type="text" id="txt-admin-blog-source" class="admin-input" placeholder="例如：福音时报 / 36氪">
+          </div>
+          <div class="admin-form-group">
+            <label>文章摘要</label>
+            <input type="text" id="txt-admin-blog-desc" class="admin-input" placeholder="一句话文章概要...">
+          </div>
+          <div class="admin-form-group">
+            <label>文章正文全文 (使用回车换行)</label>
+            <textarea id="txt-admin-blog-content" class="admin-textarea" placeholder="文章详细正文..."></textarea>
+          </div>
+          <button class="btn-pill btn-accent" id="btn-admin-add-blog" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存文章到本地数据库 ＋</button>
+        </div>
+      </div>
     </section>
 
   </main>

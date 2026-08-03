@@ -44,6 +44,11 @@ const setupNavigation = () => {
       
       // 保存当前路由
       localStorage.setItem('activeModule', target);
+      // 数据联动重载
+      if (target === 'hymns') initHymns();
+      if (target === 'books') initBooks();
+      if (target === 'news') initNewsArbitrageBlog();
+      if (target === 'admin') initAdmin();
     });
   });
 
@@ -1045,13 +1050,18 @@ const initNewsArbitrageBlog = () => {
   ];
 
   // 博客精选数据
-  const blogList = [
+  const defaultBlogs = [
     { id: '1', cat: 'life', author: '@林小溪', title: '一个人住第三年，我学会了这些事', desc: '从一开始的孤独感，到现在的自在。分享独居生活的实用技巧。', time: '今天 14:00', content: '在搬进这个单身公寓的第三个年头里，我逐渐从最开始的手足无措和半夜孤独感，过渡到了一种极度自洽的生活状态。\n\n独居让我学会的几件大事：\n1. 学会了做一手好菜：为自己做饭是一场极佳的精神治愈过程，食材的香气可以填满空间。\n2. 建立了属于自己的每日固定流程（Daily Routine）：比如晨起的第一杯水和夜间的拉伸，它们让你的生活在无人约束时依然井井有条。\n3. 学会了和孤独握手言和：当你真正享受自己独处的时光时，你会发现世界突然变得格外安静和干净。' },
     { id: '2', cat: 'work', author: '@职场阿May', title: '从 P6 到 P8，我的阿里五年', desc: '技术人如何规划职业路径，保持核心竞争力。', time: '昨天 20:00', content: '回望在阿里度过的这五年，真是一场脱胎换骨的旅行。从当年刚刚入职、战战兢兢的 P6 螺丝钉，到如今独当一面负责核心业务架构的 P8 架构师，其中的辛酸与收获难以言表。\n\n这里给广大技术研发的几点诚恳建议：\n1. 别只埋头写代码：代码只是工具，要时刻抬起头看清你负责的业务的“商业价值”在哪里。\n2. 结构化思维与向上管理：向上管理的本质是预期对齐与主动分忧，汇报时先讲结论，再陈述证据。\n3. 保持自驱性：拥抱变化是常态，技术迭代快如潮水，唯有时刻保持强烈的好奇心和对底层的钻研热情，才不会在 35 岁时遭遇被动。' },
     { id: '3', cat: 'emo', author: '@情感树洞', title: '30岁之后才明白的 5 个道理', desc: '关于爱情、婚姻、友情，慢慢来比较快。', time: '7月26日', content: '三十岁是一道分水岭。这并不是说你的身体会瞬间变差，而是你的心智会在这段时间迎来一次重构。\n\n以下是我在三十岁之后，在经历过波折与和解后领悟到的道理：\n1. 慢慢来，真的比较快：无论是关系的确立，还是事业的进阶，揠苗助长只会带来满目疮痍。\n2. 朋友不再追求数量：精简交友圈，人生中能有两三个可以在深夜毫无顾忌打电话痛哭的挚友，就已是莫大的福分。\n3. 婚姻的本质是战战兢兢：爱情是绚丽的烟花，但漫长的生活需要双方拥有共同的价值观与生活节奏，像战友一样并肩作战对抗风雨。' },
     { id: '4', cat: 'grow', author: '@小满', title: '我用一年时间，从月薪5k到副业月入2万', desc: '复盘这一年做对的事与踩过的坑。', time: '7月24日', content: '许多人觉得月薪 5k 是职场低谷，但事实上，这正是你“野蛮生长”成本最低、时间最充裕的黄金窗口期。\n\n这一年我是这样通过副业突围的：\n1. 发掘可变现的垂直技能：我选择了自媒体运营和基础文案策划。\n2. 铁律般的执行力：在大家都打游戏看剧的下班时间，我坚持每天输出 3 小时，不找任何理由。\n3. 别怕碰壁，先跑通MVP：第一个单子可能只有 200 元，但它证明了你的商业闭环是跑得通的。只要敢于不断复盘优化，雪球就会越滚越大。' }
   ];
 
+  let blogList = getLocalData('admin_blogs_db', defaultBlogs);
+  // 如果缓存是空的，将默认的写入缓存
+  if (getLocalData('admin_blogs_db', []).length === 0) {
+    setLocalData('admin_blogs_db', defaultBlogs);
+  }
   let starred = getLocalData('starred_items', []);
   let activeNewsFilter = 'all';
   let currentNews = [...newsList]; // 当前内存中渲染的新闻集
@@ -2109,6 +2119,15 @@ const initHymns = () => {
   // 异步获取外部 JSON 全本诗歌数据库
   const fetchHymnDatabase = () => {
     if (isLoaded) return;
+    const cachedHymns = getLocalData('admin_hymns_db', []);
+    if (cachedHymns.length > 0) {
+      hymnData = cachedHymns;
+      isLoaded = true;
+      renderList(searchInput ? searchInput.value : '');
+      return;
+    }
+    
+    // 如果缓存没有，再发起拉取并存入本地缓存
 
     if (listContainer) {
       listContainer.innerHTML = `
@@ -2126,6 +2145,7 @@ const initHymns = () => {
       })
       .then(data => {
         hymnData = data;
+        setLocalData('admin_hymns_db', data);
         isLoaded = true;
         renderList(searchInput ? searchInput.value : '');
       })
@@ -2198,5 +2218,248 @@ document.addEventListener('DOMContentLoaded', () => {
   initBible();
   initWellness();
   initTreehole();
+
+// -------------------------------------------------------------
+// 13. 全局后台管理模块 (PC 专属)
+// -------------------------------------------------------------
+const initAdmin = () => {
+  // 管理后台 TAB 切换
+  const tabs = document.querySelectorAll('#page-admin .admin-tab-btn');
+  const panels = document.querySelectorAll('#page-admin .admin-panel');
+  if (tabs) {
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const activeTab = tab.getAttribute('data-tab');
+        panels.forEach(panel => {
+          if (panel.id === `admin-panel-${activeTab}`) {
+            panel.style.display = 'block';
+          } else {
+            panel.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  // 1. 圣徒诗歌管理
+  const listAdminHymns = document.getElementById('list-admin-hymns');
+  const lblAdminHymnCount = document.getElementById('lbl-admin-hymn-count');
+  
+  const refreshAdminHymns = () => {
+    if (!listAdminHymns) return;
+    listAdminHymns.innerHTML = '';
+    const hymns = getLocalData('admin_hymns_db', []);
+    if (lblAdminHymnCount) lblAdminHymnCount.textContent = hymns.length;
+
+    hymns.forEach((h, index) => {
+      const el = document.createElement('div');
+      el.className = 'admin-list-item';
+      el.innerHTML = `
+        <span class="admin-list-item-title">第 ${h.num} 首 - ${h.title} (${h.author})</span>
+        <span class="admin-list-item-action" data-index="${index}">×</span>
+      `;
+      el.querySelector('.admin-list-item-action').addEventListener('click', () => {
+        const updated = hymns.filter((_, idx) => idx !== index);
+        setLocalData('admin_hymns_db', updated);
+        refreshAdminHymns();
+      });
+      listAdminHymns.appendChild(el);
+    });
+  };
+
+  const btnAddHymn = document.getElementById('btn-admin-add-hymn');
+  if (btnAddHymn) {
+    // 移除原有绑定防止重复注册
+    const newBtn = btnAddHymn.cloneNode(true);
+    btnAddHymn.parentNode.replaceChild(newBtn, btnAddHymn);
+
+    newBtn.addEventListener('click', () => {
+      const numInput = document.getElementById('txt-admin-hymn-num');
+      const titleInput = document.getElementById('txt-admin-hymn-title');
+      const authorInput = document.getElementById('txt-admin-hymn-author');
+      const lyricsInput = document.getElementById('txt-admin-hymn-lyrics');
+
+      const num = parseInt(numInput.value);
+      const title = titleInput.value.trim();
+      const author = authorInput.value.trim();
+      const lyrics = lyricsInput.value.trim();
+
+      if (!num || !title || !lyrics) {
+        return alert('请完整填写诗歌编号、标题和歌词正文！');
+      }
+
+      const hymns = getLocalData('admin_hymns_db', []);
+      if (hymns.some(h => h.num === num)) {
+        return alert('已存在该编号的诗歌！');
+      }
+
+      hymns.push({ num, title, author: author || '圣徒精选', lyrics });
+      hymns.sort((a, b) => a.num - b.num);
+      setLocalData('admin_hymns_db', hymns);
+
+      numInput.value = '';
+      titleInput.value = '';
+      authorInput.value = '';
+      lyricsInput.value = '';
+
+      refreshAdminHymns();
+      alert('诗歌录入成功！本地已保存，去“圣徒诗歌”菜单即可直接预览！');
+    });
+  }
+
+  // 2. 书籍管理
+  const listAdminBooks = document.getElementById('list-admin-books');
+  const refreshAdminBooks = () => {
+    if (!listAdminBooks) return;
+    listAdminBooks.innerHTML = '';
+    const books = getLocalData('book_list', []);
+
+    books.forEach((b, index) => {
+      const el = document.createElement('div');
+      el.className = 'admin-list-item';
+      el.innerHTML = `
+        <span class="admin-list-item-title">${b.title} (${b.author})</span>
+        <span class="admin-list-item-action" data-index="${index}">×</span>
+      `;
+      el.querySelector('.admin-list-item-action').addEventListener('click', () => {
+        const updated = books.filter((_, idx) => idx !== index);
+        setLocalData('book_list', updated);
+        refreshAdminBooks();
+      });
+      listAdminBooks.appendChild(el);
+    });
+  };
+
+  const btnAddBook = document.getElementById('btn-admin-add-book');
+  if (btnAddBook) {
+    const newBtn = btnAddBook.cloneNode(true);
+    btnAddBook.parentNode.replaceChild(newBtn, btnAddBook);
+
+    newBtn.addEventListener('click', () => {
+      const titleInput = document.getElementById('txt-admin-book-title');
+      const authorInput = document.getElementById('txt-admin-book-author');
+      const descInput = document.getElementById('txt-admin-book-desc');
+      const previewInput = document.getElementById('txt-admin-book-preview');
+
+      const title = titleInput.value.trim();
+      const author = authorInput.value.trim();
+      const desc = descInput.value.trim();
+      const preview = previewInput.value.trim();
+
+      if (!title || !author || !desc || !preview) {
+        return alert('请完整填写书籍信息与试读正文！');
+      }
+
+      const books = getLocalData('book_list', []);
+      books.push({
+        title: `《${title.replace(/[《》]/g, '')}》`,
+        author,
+        tags: ['经典灵修', '用户推荐'],
+        progress: 0,
+        month: '用户专属',
+        url: '#',
+        sample: preview
+      });
+
+      setLocalData('book_list', books);
+
+      titleInput.value = '';
+      authorInput.value = '';
+      descInput.value = '';
+      previewInput.value = '';
+
+      refreshAdminBooks();
+      alert('书籍推荐成功！');
+    });
+  }
+
+  // 3. RSS & 博客管理
+  const rssInput = document.getElementById('txt-admin-rss-url');
+  const btnSaveRss = document.getElementById('btn-admin-save-rss');
+  const cachedRss = localStorage.getItem('admin_rss_url') || 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.un.org%2Ffeed%2Fsubscribe%2Fzh%2Fnews%2Fregion%2Fasia-pacific%2Frss.xml';
+  if (rssInput) rssInput.value = cachedRss;
+
+  if (btnSaveRss && rssInput) {
+    const newBtn = btnSaveRss.cloneNode(true);
+    btnSaveRss.parentNode.replaceChild(newBtn, btnSaveRss);
+
+    newBtn.addEventListener('click', () => {
+      const val = rssInput.value.trim();
+      if (val) {
+        localStorage.setItem('admin_rss_url', val);
+        alert('RSS 订阅源地址更新成功！');
+      }
+    });
+  }
+
+  const btnAddBlog = document.getElementById('btn-admin-add-blog');
+  if (btnAddBlog) {
+    const newBtn = btnAddBlog.cloneNode(true);
+    btnAddBlog.parentNode.replaceChild(newBtn, btnAddBlog);
+
+    newBtn.addEventListener('click', () => {
+      const title = document.getElementById('txt-admin-blog-title').value.trim();
+      const cat = document.getElementById('txt-admin-blog-cat').value.trim() || 'grow';
+      const source = document.getElementById('txt-admin-blog-source').value.trim() || '管理员';
+      const desc = document.getElementById('txt-admin-blog-desc').value.trim();
+      const content = document.getElementById('txt-admin-blog-content').value.trim();
+
+      if (!title || !desc || !content) {
+        return alert('请完整填写博客文章标题、摘要和正文内容！');
+      }
+
+      const blogs = getLocalData('admin_blogs_db', []);
+      blogs.unshift({
+        id: Date.now().toString(),
+        cat,
+        author: `@${source}`,
+        title,
+        desc,
+        time: '刚刚',
+        content
+      });
+
+      setLocalData('admin_blogs_db', blogs);
+
+      document.getElementById('txt-admin-blog-title').value = '';
+      document.getElementById('txt-admin-blog-cat').value = '';
+      document.getElementById('txt-admin-blog-source').value = '';
+      document.getElementById('txt-admin-blog-desc').value = '';
+      document.getElementById('txt-admin-blog-content').value = '';
+
+      alert('博客录入成功！切换到热点新闻 ➔ 博客分类 即可直接阅读！');
+    });
+  }
+
+  // 一键导出 hymns_db.json
+  const btnExportHymns = document.getElementById('btn-admin-export-hymns');
+  if (btnExportHymns) {
+    const newBtn = btnExportHymns.cloneNode(true);
+    btnExportHymns.parentNode.replaceChild(newBtn, btnExportHymns);
+
+    newBtn.addEventListener('click', () => {
+      const hymns = getLocalData('admin_hymns_db', []);
+      if (hymns.length === 0) {
+        return alert('本地暂无圣徒诗歌数据，请先进入“圣徒诗歌”拉取初始数据或手工录入诗歌！');
+      }
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hymns, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href",     dataStr);
+      downloadAnchor.setAttribute("download", "hymns_db.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    });
+  }
+
+  // 首次运行
+  refreshAdminHymns();
+  refreshAdminBooks();
+};
+
   initHymns();
+  initAdmin();
 });
