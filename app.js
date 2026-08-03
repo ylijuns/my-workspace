@@ -1997,6 +1997,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. 📷 智能证件照生成器 (边缘连通泛洪 BFS + 肤色安全防护抠图引擎)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. 📷 智能证件照生成器 (极简工作流 + 唯一“下载保存到相册”按钮)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   // 模式切换按钮
   const btnModeCam = document.getElementById('btn-idphoto-mode-cam');
@@ -2025,27 +2028,26 @@ const initIdPhoto = () => {
   const selSize = document.getElementById('sel-idphoto-size');
   const lblSpec = document.getElementById('lbl-idphoto-spec');
 
-  // 结果预览组件
+  // 结果预览与唯一保存按钮
   const imgResult = document.getElementById('img-idphoto-result');
   const placeholder = document.getElementById('placeholder-idphoto');
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
-  const btnDownloadGrid = document.getElementById('btn-idphoto-download-grid');
 
   let stream = null;
   let currentImageSrc = './apple-touch-icon.png';
   let activeColor = '#3498DB';
-  let tolerance = 45; // 优化后的默认抠背景灵敏度
+  let tolerance = 45;
   let processedSingleCanvas = null;
 
   // 尺寸映射 (300DPI 标准)
   const sizeSpecs = {
-    '1in': { name: '一寸 (295×413px)', w: 295, h: 413, gridCols: 4, gridRows: 2 },
-    '2in': { name: '二寸 (413×579px)', w: 413, h: 579, gridCols: 2, gridRows: 2 },
-    'small1in': { name: '小一寸 (260×378px)', w: 260, h: 378, gridCols: 4, gridRows: 2 },
-    'small2in': { name: '小二寸 / 签证 (35 × 45 mm)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
+    '1in': { name: '一寸 (295×413px)', w: 295, h: 413 },
+    '2in': { name: '二寸 (413×579px)', w: 413, h: 579 },
+    'small1in': { name: '小一寸 (260×378px)', w: 260, h: 378 },
+    'small2in': { name: '小二寸 / 签证 (35 × 45 mm)', w: 413, h: 531 }
   };
 
-  // 🧠 计算机图形学算法：边缘连通广度优先搜索 (Connected BFS Matting) + 肤色人脸安全保护
+  // 🧠 连通广度优先搜索 (BFS) + 肤色防误伤抠图引擎
   const processConnectedMattingAndRender = (img, targetCanvas, bgColor, mattingTolerance) => {
     const w = targetCanvas.width;
     const h = targetCanvas.height;
@@ -2067,7 +2069,6 @@ const initIdPhoto = () => {
     const imgData = tCtx.getImageData(0, 0, w, h);
     const data = imgData.data;
 
-    // 1. 采样四周边缘背景色
     const getPixel = (x, y) => {
       const idx = (y * w + x) * 4;
       return [data[idx], data[idx + 1], data[idx + 2]];
@@ -2091,30 +2092,27 @@ const initIdPhoto = () => {
     avgBgG /= bgSamples.length;
     avgBgB /= bgSamples.length;
 
-    // 判断是否为人体肤色 (Skin Detection Protection Model)
+    // 人体肤色保护判断
     const isSkinColor = (r, g, b) => {
       return (r > 60 && g > 40 && b > 20 && (r - g > 10) && r > b && (Math.max(r, g, b) - Math.min(r, g, b) > 15));
     };
 
-    // 2. 广度优先搜索 (BFS) 队列：仅从四条外边界向内部连通漫延
     const visited = new Uint8Array(w * h);
     const queue = [];
 
-    // 将图像四周 4 条外边缘全部注入初始 BFS 队列
     for (let x = 0; x < w; x++) {
-      queue.push(x, 0); // 上边缘
-      queue.push(x, h - 1); // 下边缘
+      queue.push(x, 0);
+      queue.push(x, h - 1);
       visited[x] = 1;
       visited[(h - 1) * w + x] = 1;
     }
     for (let y = 0; y < h; y++) {
-      queue.push(0, y); // 左边缘
-      queue.push(w - 1, y); // 右边缘
+      queue.push(0, y);
+      queue.push(w - 1, y);
       visited[y * w] = 1;
       visited[y * w + (w - 1)] = 1;
     }
 
-    // BFS 遍历向内剥离背景
     let head = 0;
     while (head < queue.length) {
       const cx = queue[head++];
@@ -2125,18 +2123,15 @@ const initIdPhoto = () => {
       const g = data[idx + 1];
       const b = data[idx + 2];
 
-      // 计算与采样背景色的色差距离
       const dist = Math.sqrt(
         (r - avgBgR) * (r - avgBgR) +
         (g - avgBgG) * (g - avgBgG) +
         (b - avgBgB) * (b - avgBgB)
       );
 
-      // 如果属于连通背景区，且不是五官肤色：设为透明
       if (dist < mattingTolerance && !isSkinColor(r, g, b)) {
-        data[idx + 3] = 0; // 透明
+        data[idx + 3] = 0;
 
-        // 向四周 4 邻域继续漫延
         const neighbors = [
           [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
         ];
@@ -2158,11 +2153,11 @@ const initIdPhoto = () => {
 
     tCtx.putImageData(imgData, 0, 0);
 
-    // 3. 在目标 Canvas 上绘制选中的纯正底色 (红底/蓝底/白底)
+    // 绘制全新底色
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, w, h);
 
-    // 4. 叠加经过连通防误伤剥离后的人像
+    // 叠加人像
     ctx.drawImage(tempCanvas, 0, 0);
   };
 
@@ -2203,7 +2198,7 @@ const initIdPhoto = () => {
   if (btnStartCam) btnStartCam.addEventListener('click', startCamera);
   if (btnStopCam) btnStopCam.addEventListener('click', stopCamera);
 
-  // 📸 2. 点击拍照截取瞬间
+  // 📸 2. 点击拍照
   if (btnCapture) {
     btnCapture.addEventListener('click', () => {
       if (!videoCam || !stream) return;
@@ -2252,7 +2247,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 4. 实时渲染生成引擎
+  // 4. 实时渲染引擎
   const renderIDPhoto = () => {
     if (!currentImageSrc) return;
 
@@ -2271,7 +2266,6 @@ const initIdPhoto = () => {
         canvas.width = spec.w;
         canvas.height = spec.h;
 
-        // 执行连通防误伤抠图与底色融合
         processConnectedMattingAndRender(img, canvas, activeColor, tolerance);
 
         processedSingleCanvas = canvas;
@@ -2284,7 +2278,6 @@ const initIdPhoto = () => {
         if (placeholder) placeholder.style.display = 'none';
 
         if (btnDownloadSingle) btnDownloadSingle.disabled = false;
-        if (btnDownloadGrid) btnDownloadGrid.disabled = false;
       } catch (err) {
         console.error(err);
       }
@@ -2359,60 +2352,17 @@ const initIdPhoto = () => {
     });
   }
 
-  // 9. 导出单张
+  // 9. 唯一的【📥 下载保存到相册】按钮
   if (btnDownloadSingle) {
     btnDownloadSingle.addEventListener('click', () => {
       if (!processedSingleCanvas) return;
+      const dataUrl = processedSingleCanvas.toDataURL('image/png');
       const a = document.createElement('a');
-      a.href = processedSingleCanvas.toDataURL('image/png');
-      a.download = `idphoto_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
+      a.href = dataUrl;
+      a.download = `id_photo_${selSize ? selSize.value : '1in'}_${Date.now()}.png`;
+      document.body.appendChild(a);
       a.click();
-    });
-  }
-
-  // 10. 导出 4x6 冲印排版版面
-  if (btnDownloadGrid) {
-    btnDownloadGrid.addEventListener('click', () => {
-      if (!processedSingleCanvas) return;
-      const specKey = selSize ? selSize.value : '1in';
-      const spec = sizeSpecs[specKey] || sizeSpecs['1in'];
-
-      const gridCanvas = document.createElement('canvas');
-      gridCanvas.width = 1200;
-      gridCanvas.height = 1800;
-      const gCtx = gridCanvas.getContext('2d');
-
-      gCtx.fillStyle = '#FFFFFF';
-      gCtx.fillRect(0, 0, 1200, 1800);
-
-      const cols = spec.gridCols;
-      const rows = spec.gridRows;
-      const gapX = 35;
-      const gapY = 35;
-      
-      const totalW = cols * spec.w + (cols - 1) * gapX;
-      const totalH = rows * spec.h + (rows - 1) * gapY;
-      
-      const startX = (1200 - totalW) / 2;
-      const startY = (1800 - totalH) / 2;
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = startX + c * (spec.w + gapX);
-          const y = startY + r * (spec.h + gapY);
-          
-          gCtx.drawImage(processedSingleCanvas, x, y);
-          
-          gCtx.strokeStyle = '#E2E8F0';
-          gCtx.lineWidth = 1;
-          gCtx.strokeRect(x, y, spec.w, spec.h);
-        }
-      }
-
-      const a = document.createElement('a');
-      a.href = gridCanvas.toDataURL('image/png');
-      a.download = `idphoto_4x6_print_grid_${Date.now()}.png`;
-      a.click();
+      document.body.removeChild(a);
     });
   }
 
