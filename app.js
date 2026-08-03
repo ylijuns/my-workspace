@@ -1982,6 +1982,9 @@ const initBible = () => {
 // -------------------------------------------------------------
 // 11. AI 智能证件照处理模块 (自动实时渲染 & 高精排版)
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 11. AI 智能证件照处理模块 (智能抠图换背景 & 高精排版)
+// -------------------------------------------------------------
 const initIdPhoto = () => {
   const btnTestApi = document.getElementById('btn-idphoto-test-api');
   const txtApiUrl = document.getElementById('txt-idphoto-api-url');
@@ -2002,7 +2005,7 @@ const initIdPhoto = () => {
   const btnDownloadSingle = document.getElementById('btn-idphoto-download-single');
   const btnDownloadGrid = document.getElementById('btn-idphoto-download-grid');
 
-  let currentImageSrc = './apple-touch-icon.png'; // 默认内置示例人像
+  let currentImageSrc = null;
   let activeColor = '#3498DB';
   let processedSingleCanvas = null;
 
@@ -2014,13 +2017,88 @@ const initIdPhoto = () => {
     'small2in': { name: '小二寸 (413×531px)', w: 413, h: 531, gridCols: 3, gridRows: 2 }
   };
 
-  // 核心：全自动实时渲染绘制函数 (Instant Render)
+  // 🧠 核心算法：纯前端人像智能抠图与背景替换引擎 (Smart Color & Edge Matting Engine)
+  const processMattingAndRender = (img, targetCanvas, bgColor) => {
+    const w = targetCanvas.width;
+    const h = targetCanvas.height;
+    const ctx = targetCanvas.getContext('2d');
+
+    // 1. 先在临时 Canvas 上绘制缩放调整后的人像
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w;
+    tempCanvas.height = h;
+    const tCtx = tempCanvas.getContext('2d');
+
+    const scale = Math.max(w / img.width, h / img.height);
+    const nw = img.width * scale;
+    const nh = img.height * scale;
+    const nx = (w - nw) / 2;
+    const ny = (h - nh) / 2;
+
+    tCtx.drawImage(img, nx, ny, nw, nh);
+
+    // 2. 获取像素点数据
+    const imgData = tCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    // 采样四个顶角的背景色平均值
+    const getPixel = (x, y) => {
+      const idx = (y * w + x) * 4;
+      return [data[idx], data[idx + 1], data[idx + 2]];
+    };
+
+    const bgSamples = [
+      getPixel(5, 5),
+      getPixel(w - 5, 5),
+      getPixel(5, 15),
+      getPixel(w - 5, 15)
+    ];
+
+    const avgBgR = (bgSamples[0][0] + bgSamples[1][0] + bgSamples[2][0] + bgSamples[3][0]) / 4;
+    const avgBgG = (bgSamples[0][1] + bgSamples[1][1] + bgSamples[2][1] + bgSamples[3][1]) / 4;
+    const avgBgB = (bgSamples[0][2] + bgSamples[1][2] + bgSamples[2][2] + bgSamples[3][2]) / 4;
+
+    // 算法遍历：计算像素点与背景采样的色差距离
+    const colorDistanceThreshold = 65; // 色差阈值
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const dist = Math.sqrt(
+        (r - avgBgR) * (r - avgBgR) +
+        (g - avgBgG) * (g - avgBgG) +
+        (b - avgBgB) * (b - avgBgB)
+      );
+
+      if (dist < colorDistanceThreshold) {
+        // 背景部分设置为全透明
+        data[i + 3] = 0;
+      } else if (dist < colorDistanceThreshold + 20) {
+        // 边缘渐变羽化平滑，防止边缘粗糙锯齿
+        const alphaRatio = (dist - colorDistanceThreshold) / 20;
+        data[i + 3] = Math.floor(data[i + 3] * alphaRatio);
+      }
+    }
+
+    tCtx.putImageData(imgData, 0, 0);
+
+    // 3. 在目标 Canvas 上绘制用户选中的全新背景色 (红底/蓝底/白底)
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, w, h);
+
+    // 4. 将抠好的透明人像无缝叠加在全新背景上方
+    ctx.drawImage(tempCanvas, 0, 0);
+  };
+
+  // 核心：全自动渲染出图函数
   const renderIDPhoto = () => {
     if (!currentImageSrc) return;
     
     if (btnGenerate) {
       btnGenerate.disabled = true;
-      btnGenerate.textContent = '⏳ 正在实时渲染...';
+      btnGenerate.textContent = '⏳ AI 正在智能抠图与排版中...';
     }
 
     const specKey = selSize ? selSize.value : '1in';
@@ -2037,20 +2115,9 @@ const initIdPhoto = () => {
         const canvas = document.createElement('canvas');
         canvas.width = spec.w;
         canvas.height = spec.h;
-        const ctx = canvas.getContext('2d');
 
-        // 1. 填充底色
-        ctx.fillStyle = activeColor;
-        ctx.fillRect(0, 0, spec.w, spec.h);
-
-        // 2. 计算居中对齐与绘制
-        const scale = Math.max(spec.w / img.width, spec.h / img.height);
-        const nw = img.width * scale;
-        const nh = img.height * scale;
-        const nx = (spec.w - nw) / 2;
-        const ny = (spec.h - nh) / 2;
-
-        ctx.drawImage(img, nx, ny, nw, nh);
+        // 执行智能抠图与换底色
+        processMattingAndRender(img, canvas, activeColor);
 
         processedSingleCanvas = canvas;
         const singleResultUrl = canvas.toDataURL('image/png');
@@ -2101,7 +2168,7 @@ const initIdPhoto = () => {
       lblStatus.style.background = '#D1FAE5';
       lblStatus.style.color = '#059669';
     } catch (e) {
-      lblStatus.textContent = '🟢 本地合成模式就绪 (零延迟)';
+      lblStatus.textContent = '🟢 本地 AI 抠图模式就绪 (零延迟)';
       lblStatus.style.background = '#EFF6FF';
       lblStatus.style.color = '#2563EB';
     }
@@ -2116,7 +2183,7 @@ const initIdPhoto = () => {
       btn.classList.add('active');
       activeColor = btn.getAttribute('data-color');
       if (pickerColor) pickerColor.value = activeColor.startsWith('#') ? activeColor : '#3498DB';
-      renderIDPhoto(); // 底色变动即刻自动出图！
+      renderIDPhoto(); // 换背景底色立即重新智能抠图出图！
     });
   });
 
@@ -2124,14 +2191,14 @@ const initIdPhoto = () => {
     pickerColor.addEventListener('input', (e) => {
       activeColor = e.target.value;
       colorBtns.forEach(b => b.classList.remove('active'));
-      renderIDPhoto(); // 底色变动即刻自动出图！
+      renderIDPhoto();
     });
   }
 
   // 3. 规格变动
   if (selSize) {
     selSize.addEventListener('change', () => {
-      renderIDPhoto(); // 规格变动即刻自动出图！
+      renderIDPhoto();
     });
   }
 
@@ -2143,7 +2210,7 @@ const initIdPhoto = () => {
     const reader = new FileReader();
     reader.onload = (evt) => {
       currentImageSrc = evt.target.result;
-      renderIDPhoto(); // 选择照片即刻全自动绘图呈现！
+      renderIDPhoto(); // 载入即刻抠图换底色呈现！
     };
     reader.readAsDataURL(file);
   };
@@ -2175,6 +2242,9 @@ const initIdPhoto = () => {
   // 5. 点击按钮触发
   if (btnGenerate) {
     btnGenerate.addEventListener('click', () => {
+      if (!currentImageSrc) {
+        return alert('请先点击上方“选择人像照片”区域上传照片！');
+      }
       renderIDPhoto();
     });
   }
@@ -2236,9 +2306,7 @@ const initIdPhoto = () => {
     });
   }
 
-  // 初始化即刻呈现预设效果
   checkLocalService();
-  renderIDPhoto();
 };
 
 // -------------------------------------------------------------
