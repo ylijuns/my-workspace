@@ -9,7 +9,7 @@ const setLocalData = (key, val) => {
 
 const updateProfileUI = () => {
   const cachedName = localStorage.getItem('admin_profile_name') || '同工';
-  const cachedAvatar = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
+  const cachedAvatar = localStorage.getItem('admin_profile_avatar') || './apple-touch-icon.png';
 
   const sidebarName = document.getElementById('lbl-sidebar-name');
   const sidebarAvatar = document.getElementById('lbl-sidebar-avatar');
@@ -2507,7 +2507,7 @@ const initAdmin = () => {
   // 初始化个人资料数值
   if (profileNameInput) profileNameInput.value = localStorage.getItem('admin_profile_name') || '同工';
   
-  let selectedAvatarUrl = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
+  let selectedAvatarUrl = localStorage.getItem('admin_profile_avatar') || './apple-touch-icon.png';
   if (avatarPreview) {
     avatarPreview.style.backgroundImage = `url('${selectedAvatarUrl}')`;
   }
