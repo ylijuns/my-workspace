@@ -910,14 +910,19 @@
           </div>
           <div class="admin-form-group">
             <label>头像选择</label>
-            <div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; gap:12px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
               <span style="font-size:11px; color:var(--text-secondary);">快捷预设:</span>
               <img src="https://img.icons8.com/color/512/user-male-circle.png" class="preset-avatar-img active" data-avatar="https://img.icons8.com/color/512/user-male-circle.png">
               <img src="https://img.icons8.com/color/512/user-female-circle.png" class="preset-avatar-img" data-avatar="https://img.icons8.com/color/512/user-female-circle.png">
               <img src="https://img.icons8.com/color/512/monk.png" class="preset-avatar-img" data-avatar="https://img.icons8.com/color/512/monk.png">
             </div>
-            <label>或输入自定义头像图片 URL 地址</label>
-            <input type="text" id="txt-admin-profile-avatar" class="admin-input" placeholder="https://...">
+            
+            <label>或者上传自定义图片 (尺寸自动固定为 128x128 像素)</label>
+            <div style="display:flex; align-items:center; gap:14px; margin-top:6px;">
+              <div id="admin-profile-avatar-preview" style="width:48px; height:48px; border-radius:50%; background-size:cover; background-position:center; border:2px solid var(--theme-accent); background-image:url('https://img.icons8.com/color/512/user-male-circle.png');"></div>
+              <label for="file-admin-avatar-upload" class="btn-pill" style="cursor:pointer; background:var(--theme-accent); color:#FFFFFF; font-size:11px; padding:6px 12px; font-weight:700; border-radius:6px; margin:0;">📤 本地图片上传</label>
+              <input type="file" id="file-admin-avatar-upload" accept="image/*" style="display:none;">
+            </div>
           </div>
           <button class="btn-pill btn-accent" id="btn-admin-save-profile" style="width:100%; border-radius:15px; padding:10px; font-size:12px;">保存资料到本地缓存 ＋</button>
         </div>

@@ -2457,14 +2457,17 @@ const initAdmin = () => {
 
   // 4. 个人信息设置
   const profileNameInput = document.getElementById('txt-admin-profile-name');
-  const profileAvatarInput = document.getElementById('txt-admin-profile-avatar');
+  const fileAvatarUpload = document.getElementById('file-admin-avatar-upload');
+  const avatarPreview = document.getElementById('admin-profile-avatar-preview');
   const btnSaveProfile = document.getElementById('btn-admin-save-profile');
 
-  // 初始化个人资料输入框数值
+  // 初始化个人资料数值
   if (profileNameInput) profileNameInput.value = localStorage.getItem('admin_profile_name') || '同工';
   
   let selectedAvatarUrl = localStorage.getItem('admin_profile_avatar') || 'https://img.icons8.com/color/512/user-male-circle.png';
-  if (profileAvatarInput) profileAvatarInput.value = selectedAvatarUrl;
+  if (avatarPreview) {
+    avatarPreview.style.backgroundImage = `url('${selectedAvatarUrl}')`;
+  }
 
   // 绑定预设头像的高亮点击
   const presetAvatarImgs = document.querySelectorAll('#page-admin .preset-avatar-img');
@@ -2480,9 +2483,52 @@ const initAdmin = () => {
       presetAvatarImgs.forEach(i => i.classList.remove('active'));
       img.classList.add('active');
       selectedAvatarUrl = avatarUrl;
-      if (profileAvatarInput) profileAvatarInput.value = avatarUrl;
+      if (avatarPreview) {
+        avatarPreview.style.backgroundImage = `url('${avatarUrl}')`;
+      }
     });
   });
+
+  // 监听本地头像文件上传，并使用 Canvas 在前端强剪裁压缩为 128x128 像素
+  if (fileAvatarUpload) {
+    fileAvatarUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // 利用 Canvas 裁剪为固定的 128x128 圆形头像数据
+          const canvas = document.createElement('canvas');
+          canvas.width = 128;
+          canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+
+          // 计算等比居中正方形
+          const size = Math.min(img.width, img.height);
+          const sx = (img.width - size) / 2;
+          const sy = (img.height - size) / 2;
+
+          ctx.drawImage(img, sx, sy, size, size, 0, 0, 128, 128);
+
+          // 压缩为 JPEG base64 (品质设置为 0.85)
+          const compressedData = canvas.toDataURL('image/jpeg', 0.85);
+
+          // 更新状态与界面
+          selectedAvatarUrl = compressedData;
+          if (avatarPreview) {
+            avatarPreview.style.backgroundImage = `url('${compressedData}')`;
+          }
+
+          // 取消预设头像的高亮
+          presetAvatarImgs.forEach(i => i.classList.remove('active'));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   if (btnSaveProfile) {
     const newBtn = btnSaveProfile.cloneNode(true);
@@ -2490,19 +2536,16 @@ const initAdmin = () => {
 
     newBtn.addEventListener('click', () => {
       const nameVal = profileNameInput.value.trim();
-      const customAvatarUrl = profileAvatarInput.value.trim();
 
       if (!nameVal) {
         return alert('展示昵称不能为空！');
       }
 
-      const finalAvatar = customAvatarUrl || selectedAvatarUrl;
-
       localStorage.setItem('admin_profile_name', nameVal);
-      localStorage.setItem('admin_profile_avatar', finalAvatar);
+      localStorage.setItem('admin_profile_avatar', selectedAvatarUrl);
 
       updateProfileUI();
-      alert('个人信息配置更新成功！多端同步已生效。');
+      alert('个人信息配置更新成功！请刷新网页，随后即可在手机端「添加到主屏幕」时自动显示你的专属头像。');
     });
   }
 
